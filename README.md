@@ -33,7 +33,7 @@ These commands (unless otherwise specified) should be run from the top level of 
    ```bash
    metaconfigure/generate.py cmake
    ```
-8. Inspect resulting CMake file
+8. Inspect resulting `CMakelists.txt` file
 	 - Is the target of the expected type (executable, interface, or library)?
 	 - Are the tests specified?
 	 - Are the compiler flags specified?
