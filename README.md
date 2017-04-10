@@ -28,7 +28,7 @@ These commands (unless otherwise specified) should be run from the top level of 
 6. Inspect the new `metaconfigure/description.json`. In particular check:
 	- `implementation files`—ensure the correct relative path (to top-level of project) is correct.
 	- `header files`—ensure the correct relative path (to top-level of project) is correct.
-	- `include path`—ensure that this points to the correct path. This is used for projects external to NJOY such as [catch-adapter](https://github.com/njoy/catch-adapter).
+	- `include path`—ensure that this points to the correct path. This is needed for any C++ project.
 7. Generate a [CMake](https://cmake.org) file
    ```bash
    metaconfigure/generate.py cmake
