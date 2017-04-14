@@ -596,7 +596,11 @@ def install(state):
 def generate():
     state=description.deserialize()
     description.collect_subprojects(state, state['project path'])
-    contents = "cmake_minimum_required( VERSION 3.2 ) \n"
+    contents = \
+        """
+cmake_minimum_required( VERSION 3.2 ) 
+set( CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Supported configuration types" FORCE )
+        """
     contents += fetch_subprojects(state)
     contents += project_statement(state)
     if not state['is external project']:
