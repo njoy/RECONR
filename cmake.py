@@ -432,7 +432,7 @@ target_link_libraries( {name} {policy} {link_flags} )
 if ( NOT is_subproject )
     add_executable( {name}_executable {driver} )
     set_target_properties( {name}_executable PROPERTIES OUTPUT_NAME {name} )
-    target_compile_options( {name}_executable PRIVATE {compile_flags} )
+    target_compile_options( {name}_executable PRIVATE {indented_compile_flags} )
     target_link_libraries( {name}_executable {policy} {name} )
 endif()
         """)
@@ -443,6 +443,7 @@ endif()
                                            policy=policy,
                                            sources=sources,
                                            compile_flags=compile_flags,
+                                           indented_compile_flags=compile_flags.replace('\n', '\n    '),
                                            link_flags=link_flags,
                                            include_path=state['include path'] if 'include path' in state else ''))
 
@@ -525,9 +526,8 @@ def install(state):
         targets.append("{name}_executable".format(name=state['name']))
 
     if targets:
-        targets=' '.join(targets)
-        contents += """
-        install( TARGETS {targets} 
+        block = """
+        install( TARGETS ${{installation_targets}} 
                  RUNTIME DESTINATION bin
                  LIBRARY DESTINATION lib
                  ARCHIVE DESTINATION lib
@@ -535,11 +535,32 @@ def install(state):
                              GROUP_EXECUTE GROUP_READ 
                              WORLD_EXECUTE WORLD_READ"""
         if "group id" in state:
-            contents += """
+            block += """
                              SETGID {gid}"""
 
-        contents += """ )
+        block += """ )
         """
+        
+        if has_executable(state):
+            if len(targets) > 1:
+                contents += """
+        set( installation_targets {0} )""".format(targets[0])
+                contents += """
+        if (NOT subproject)
+            list( APPEND installation_targets {0} )
+        endif()
+                """.format(targets[-1])
+                contents += block
+            else:
+                contents += """
+        if (NOT subproject)
+            list( APPEND installation_targets {0} )"""
+                contents += block.replace('\n', '\n    ')
+                contents += """
+        endif()
+                """
+                
+
 
     regex=[]
     if 'include path' in state and is_subdirectory(state['include path'], os.getcwd()):
