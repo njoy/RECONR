@@ -2,7 +2,7 @@
 layout: page
 title: Metaconfigure
 ---
-## [Upating metaconfigure in a project](Updating.html)
+## [Updating metaconfigure in a project](Updating.html)
 
 ## Creating signatures
 Metaconfigure has the ability to create a "signature" for a project. A signature is a unique combination of the project and each of its dependencies---with their specific versions. The signature enables the ability to load a project from a point in time and ensure that you have the same version you had then.
