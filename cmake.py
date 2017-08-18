@@ -462,7 +462,12 @@ def add_tests(state):
                 if ( unit_tests )"""
                 for test_name, sources in state['tests'].items():
                     executable_name=test_name + '.test'
-                    directory=os.path.dirname(sources[0])
+                    try:
+                      directory=os.path.dirname(sources[0])
+                    except IndexError:
+                      print("Error while generating CMakeLists.txt for {}".format(executable_name))
+                      print("There seem to be no associated source files. Does this project use unusual file extensions?")
+                      raise
                     contents += """
                     add_subdirectory( {} )""".format(directory)
                     test_contents="""
