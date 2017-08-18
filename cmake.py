@@ -261,7 +261,7 @@ def target_flags_expression(state):
     release = template.format('RELEASE')
 
     option_template = "\n$<$<BOOL:${{{{{0}}}}}>:${{{{${{{{PREFIX}}}}_{0}_flags}}}}>"
-    strict = option_template.format('{name}_strict')
+    strict = "\n$<$<BOOL:${{{{{0}}}}}>:${{{{${{{{PREFIX}}}}_strict_flags}}}}>".format('{name}_strict')
     coverage = option_template.format('coverage')
     profile_generate = option_template.format('profile_generate')
     link_time_optimization = option_template.format('link_time_optimization')
