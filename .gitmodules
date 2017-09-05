@@ -1,0 +1,9 @@
+[submodule "dependencies/ENDFtk"]
+	path = dependencies/ENDFtk
+	url = https://github.com/njoy/ENDFtk.git
+[submodule "dependencies/Log"]
+	path = dependencies/Log
+	url = https://github.com/njoy/Log.git
+[submodule "dependencies/twig"]
+	path = dependencies/twig
+	url = https://github.com/njoy/twig.git
