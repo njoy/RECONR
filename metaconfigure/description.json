@@ -368,7 +368,8 @@
   },
   "header files": [
     "src/RECONR.hpp",
-    "src/RECONR/src/collectEnergyLimits.hpp"
+    "src/RECONR/ReferenceGrid.hpp",
+    "src/RECONR/ReferenceGrid/src/call.hpp"
   ],
   "ignore pattern": "$^",
   "implementation files": [],
@@ -386,8 +387,9 @@
   "strict": true,
   "test pattern": "test$",
   "tests": {
-    "RECONR": [
-      "src/RECONR/test/RECONR.test.cpp"
+    "RECONR.ReferenceGrid": [
+      "src/RECONR/ReferenceGrid/test/call.test.cpp",
+      "src/RECONR/ReferenceGrid/test/ReferenceGrid.test.cpp"
     ]
   },
   "update": true

@@ -1,7 +1,11 @@
+#include "ENDFtk.hpp"
+
 namespace njoy {
 namespace njoy21 {
+namespace RECONR {
 
-#include "RECONR/src/collectEnergyLimits.hpp"
+#include "RECONR/ReferenceGrid.hpp"
 
+}
 }
 }
