@@ -367,7 +367,8 @@
     ]
   },
   "header files": [
-    "src/RECONR.hpp"
+    "src/RECONR.hpp",
+    "src/RECONR/src/collectEnergyLimits.hpp"
   ],
   "ignore pattern": "$^",
   "implementation files": [],
@@ -384,6 +385,10 @@
   ],
   "strict": true,
   "test pattern": "test$",
-  "tests": {},
+  "tests": {
+    "RECONR": [
+      "src/RECONR/test/RECONR.test.cpp"
+    ]
+  },
   "update": true
 }
