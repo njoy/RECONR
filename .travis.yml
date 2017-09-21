@@ -1,0 +1,48 @@
+sudo: required
+dist: trusty
+git:
+  submodules: false
+addons:
+  apt:
+    sources:
+    - sourceline: deb http://apt.llvm.org/precise/ llvm-toolchain-precise-3.8 main
+      key_url: http://apt.llvm.org/llvm-snapshot.gpg.key
+    - ubuntu-toolchain-r-test
+    - george-edison55-precise-backports
+    packages:
+    - gcc-6
+    - g++-6
+    - clang-3.8
+    - llvm-dev
+    - cmake
+    - cmake-data
+language: cpp
+compiler:
+- gcc
+- clang
+os:
+- linux
+- osx
+osx_image: xcode8
+script: "./.travis/build.sh"
+after_success: "./.travis/signature.sh"
+env:
+  matrix:
+  - build_type=debug static_libraries=FALSE
+  - build_type=release static_libraries=FALSE
+  - build_type=debug static_libraries=TRUE
+  - build_type=release static_libraries=TRUE
+  global:
+    secure: odVCXaKxXjtuX9k6DZERdAnek3m4LwTBOuec8Z/mQ9IDbFqBh50FFSFtMSwok8grNVbFMlRx0A9tZKs9Yn1qunJzz3gReERhMcFp5puV2ju5rqxc4upBedhbZfcWvxUwn1Te8YswpL2DvD3PcIOPi9yegKH+ruAh4++OWbeSfQsIMWccaXAaBTPsQ7CgA49CvqtUcufnuONyesxm8oN+Rd0PeKgZggSnx0mFwaSlVKIGfTrsB02e1u4FSx2lp7CrYOuIcW8fy6MFDqjLJzEOI/YZkOblfj69XsewO1joL94KJuzepcfaGOj0vaZhNpqwT9j6/iG4qQRCxNCmlgw1AOw2urTyV31a7NKKXpR1zkLNVH1+RuFaKMtZQJV8JQNgyKEX40t6B9e4abHDTT+cKyLBKnD1hUbb2O/TNwk5NcTis+qNBXXWKim8e65BBNnvWQCAIr99uIN+BD4BU+J/Xqb4uuBumncp41yjSxu5RPtbK9x7IbgBH49ijVldYibv/7tlP48/2Lv3dwOi+oOFMDN8VGrJCR3t/u2OH1ThA9fFNjFDlt5tQCpF4A4MYKCU7gpj2QX+rHcLsFQF4zZRRvthQ6bbWWI0MEuldPKKvCNhrtezb4WS1bT7BZ+TeUjYvFurudl3CSUh6m5An86RHwr3AXSCiichUKheVXZOCh8=
+
+matrix:
+  include:
+  - os: linux
+    compiler: gcc
+    env: build_type=coverage static_libraries=FALSE
+  - os: linux
+    compiler: clang
+    env: build_type=debug static_libraries=FALSE appended_flags="-fsanitize=address;-fno-omit-frame-pointer;"
+  - os: linux
+    compiler: clang
+    env: build_type=debug static_libraries=FALSE appended_flags="-fsanitize=undefined;-fsanitize=integer;-fno-omit-frame-pointer;"
