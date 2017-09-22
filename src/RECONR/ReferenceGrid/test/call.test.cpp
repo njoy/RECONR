@@ -122,10 +122,10 @@ SCENARIO( "Extracting energy values" ){
               REQUIRE( ranges::equal( refGrid, grid ) );
             } // AND_THEN
           } // for r
-          AND_THEN( "the extracted l-value energy values can be verified" ){
-            auto grid = RG( l_values[L] );
-            // REQUIRE( ranges::equal( lEnergies, grid ) );
-          }
+          // AND_THEN( "the extracted l-value energy values can be verified" ){
+          //   auto grid = RG( l_values[L] );
+          //   REQUIRE( ranges::equal( lEnergies, grid ) );
+          // }
         } // for L
       } // THEN
     } // WHEN
@@ -167,8 +167,12 @@ void checkBWResonanceEnergies( const RP::resolved::BreitWigner& BW ){
           } // AND_THEN
         } // for r
         // AND_THEN( "the extracted l-value energy values can be verified" ){
-        //   auto grid = RG( l_values[L] );
-        //   REQUIRE( ranges::equal( lEnergies, grid ) );
+        //   njoy::Log::info("Indexing L-th l_value" );
+        //   auto lv = l_values[L];
+        //   njoy::Log::info("extracted L-th l_value" );
+        //   auto grid = RG( lv );
+        //   njoy::Log::info( "found energy grid for L-th l_value" );
+        //   // REQUIRE( ranges::equal( lEnergies, grid ) );
         // }
       } // for L
     } // THEN
