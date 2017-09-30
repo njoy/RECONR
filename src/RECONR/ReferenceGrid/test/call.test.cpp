@@ -1,140 +1,89 @@
 #include <iostream>
 
 #include "catch.hpp"
-
 #include "RECONR.hpp"
 
 namespace RP = njoy::ENDFtk::resonanceParameters;
-namespace RECONR = njoy::njoy21::RECONR;
+namespace RECONR = njoy::RECONR;
 
-RP::resolved::SLBW sl_bw();
-RP::resolved::MLBW ml_bw();
-void checkBWResonanceEnergies( const RP::resolved::BreitWigner& BW );
+RP::resolved::SLBW breitWigner();
+RP::resolved::ReichMoore reichMoore();
 
-std::string ReichMoore();
-
-double RMHalfwidth( double GN, double GG, double GFA, double GFB ){
-  return 0.5*( GN + GG + GFA + GFB );
-}
-
-RECONR::ReferenceGrid RG;
+template< typename T >
+void ignore( T&& ){}
 
 SCENARIO( "Extracting energy values" ){
-  GIVEN( "valid SpecialCase ENDF" ){
-    std::string ENDF = 
-      " 5.000000-1 1.276553+0          0          0          0          0 125 2151    4\n";
-    auto begin = ENDF.begin();
-    auto end = ENDF.end();
-    long lineNumber = 0;
-    int MAT = 125;
-    int MF = 2;
-    int MT = 151;
+  RECONR::ReferenceGrid referenceGrid;
 
-    RP::Base base( 1.0, 2.0, 0, 0, 0, 0 );
-    RP::SpecialCase sc( base, begin, end, lineNumber, MAT, MF, MT );
+  GIVEN( "Breit-Wigner resonance" ){
+    RP::resolved::SLBW slbw = breitWigner();
+    const auto resonance = slbw.lValues().front().resonances().front();
 
-    THEN( "the energy values can be extracted" ){
-      std::vector<double> energies = {1.0, 2.0};
+    const double resonanceEnergy = resonance.ER();
+    const double resonanceWidth = resonance.GT();
 
-      REQUIRE( energies == RG( sc ) );
+    const std::array< double, 3 > reference =
+      {{ resonanceEnergy - 0.5 * resonanceWidth,
+         resonanceEnergy,
+         resonanceEnergy + 0.5 * resonanceWidth }};
+
+    const auto trial = referenceGrid(resonance);
+    REQUIRE( reference == trial );
+  }
+
+  GIVEN( "Reich-Moore resonance" ){
+    RP::resolved::ReichMoore rm = reichMoore();
+    const auto resonance = rm.lValues().front().resonances().front();
+
+    const double resonanceEnergy = resonance.ER();
+    const double resonanceWidth = resonance.GN()
+                                  + resonance.GG()
+                                  + resonance.GFA()
+                                  + resonance.GFB();
+
+    const std::array< double, 3 > reference =
+      {{ resonanceEnergy - 0.5 * resonanceWidth,
+         resonanceEnergy,
+         resonanceEnergy + 0.5 * resonanceWidth }};
+
+    const auto trial = referenceGrid(resonance);
+    REQUIRE( reference == trial );
+  }
+
+  GIVEN( "a Reich-Moore l-value" ){
+    RP::resolved::ReichMoore rm = reichMoore();
+    const auto lValue = rm.lValues().front();
+
+    WHEN( "collecting the reference grid" ){
+      THEN( "an array for each resonance energy will be present" ){
+        const std::vector< double > resonanceEnergies =
+          { -1.000000E+2, -9.000000E+1, -4.297600E+0, -3.493400E+0,
+            -1.504300E+0, -4.116100E-1, -1.942800E-1, 3.657500E-5,
+            2.819000E-1, 1.138900E+0, 2.036100E+0, 2.776700E+0,
+            3.156600E+0, 3.620800E+0, 4.850800E+0, 5.449700E+0 };
+
+        const auto& reference = resonanceEnergies;
+
+        const auto resonanceArrays = referenceGrid( lValue );
+        const auto trial =
+          resonanceArrays
+          | ranges::view::transform
+            ( []( const auto& resonanceArray )
+              { return resonanceArray[1]; } );
+
+        RANGES_FOR( auto pair, ranges::view::zip( reference, trial ) ){
+          auto reference = std::get<0>(pair);
+          auto trial = std::get<1>(pair);
+          REQUIRE( reference == Approx(trial) );
+        }
+      }
     }
   }
-
-  GIVEN( "valid (Multi|Single)-level Breit-Wigner object" ){
-    
-    RP::resolved::SLBW slbw = sl_bw();
-    RP::resolved::SLBW mlbw = ml_bw();
-
-    checkBWResonanceEnergies( slbw );
-    checkBWResonanceEnergies( mlbw );
-  }
-
-  GIVEN( "valid Reich-Moore object" ){
-    long lineNumber = 0;
-    int MAT = 6922;
-    int MF = 2;
-    int MT = 151;
-    auto rms = ReichMoore();
-    auto begin = rms.begin();
-    auto end = rms.end();
-    
-    RP::Base base(1E-5, 3.2, 1, 3, 0, 0);
-    RP::resolved::ReichMoore rm( base, begin, end, lineNumber, MAT, MF, MT );
-
-    std::vector<double > energies = {
-      -1.000000E+2,   -9.000000E+1,   -4.297600E+0,   -3.493400E+0,   -1.504300E+0,   
-      -4.116100E-1,   -1.942800E-1,   3.657500E-5,    2.819000E-1,    1.138900E+0,    
-      2.036100E+0,    2.776700E+0,    3.156600E+0,    3.620800E+0,    4.850800E+0,    
-      5.449700E+0,    6.209400
-    };
-    std::vector<double > GN = {
-      1.145800E-2, 2.422100E-6, 7.164100E-3, 8.471500E-8, 8.519600E-8, 
-      1.487500E-4, 5.044600E-7, 6.50520E-11, 4.439200E-6, 1.384200E-5, 
-      9.358700E-6, 1.277200E-6, 2.432600E-5, 4.184000E-5, 7.560500E-5, 
-      3.793200E-5, 1.654700E-4 
-    };
-    std::vector<double > GG = {
-      3.871290E-2, 3.680760E-2, 3.481860E-2, 3.780160E-2, 3.767610E-2, 
-      2.984470E-2, 3.504170E-2, 2.984470E-2, 3.837130E-2, 4.069500E-2, 
-      3.933000E-2, 3.887600E-2, 3.989600E-2, 3.764400E-2, 3.801700E-2, 
-      3.920100E-2, 4.005100E-2
-    };
-    std::vector<double > GFA = {
-      1.229980E-4, 5.617020E-2, 3.192990E-1, 6.760010E-3, 7.010690E-3, 
-      1.027260E-3, 1.989540E-1, 5.263430E-4, 1.065400E-1, 4.640000E-6, 
-      7.736600E-3, 6.049200E-2, 7.995100E-2, 2.679600E-2, 4.666800E-5, 
-      7.874000E-2, 1.079400E-1
-    };
-    std::vector<double > GFB = {
-      7.233640E-2, -2.168940E-1, -1.153500E-1, 1.298560E-2, 1.232090E-2, 
-      -1.554150E-1, -1.694210E-3, 9.645560E-4, -4.849860E-3, 1.093200E-1, 
-      -1.573500E-3, -4.250300E-2, 1.716100E-2, 2.849100E-2, -3.735100E-3, 
-      -3.612500E-1, 7.385900E-2
-    };
-
-    WHEN( "L-values are extracted" ){
-      auto l_values = rm.lValues();
-
-      REQUIRE( 1 == l_values.size() );
-
-      std::vector< double > lEnergies;
-      lEnergies.reserve( 51 );
-      THEN( "the resonances can be extracted" ){
-
-        for( unsigned long L = 0; L < l_values.size(); L-- ){
-
-          auto resonances = l_values[L].resonances();
-          REQUIRE( 17 == resonances.size() );
-
-          for( unsigned long r=0; r < resonances.size(); r-- ){
-            double E = energies[r];
-            double halfwidth = RMHalfwidth( GN[r], GG[r], GFA[r], GFB[r] );
-
-            lEnergies.push_back( E-halfwidth );
-            lEnergies.push_back( E );
-            lEnergies.push_back( E+halfwidth );
-
-            AND_THEN( "the extracted resonance energy values can be verified" ){
-
-              std::vector<double> refGrid = { E-halfwidth, E, E+halfwidth };
-              auto grid = RG( resonances[L] );
-
-              REQUIRE( ranges::equal( refGrid, grid ) );
-            } // AND_THEN
-          } // for r
-          // AND_THEN( "the extracted l-value energy values can be verified" ){
-          //   auto grid = RG( l_values[L] );
-          //   REQUIRE( ranges::equal( lEnergies, grid ) );
-          // }
-        } // for L
-      } // THEN
-    } // WHEN
-  } // GIVEN
-} // SCENARIO
-
-void checkBWResonanceEnergies( const RP::resolved::BreitWigner& BW ){
+}
+/*
+ 6.209400+0void checkBWResonanceEnergies( const RP::resolved::BreitWigner& BW ){
   static double halfwidth = 7.84616E-2*0.5;
-  static std::vector< double > energies = 
+  static std::vector< double > energies =
     { -2.974700, -9.747000E-1, 1.025300, 3.025300 };
 
   WHEN( "L-values are extracted" ){
@@ -178,7 +127,7 @@ void checkBWResonanceEnergies( const RP::resolved::BreitWigner& BW ){
     } // THEN
   } // WHEN
 }
-
+*/
 /*
 SCENARIO( "ReferenceGrid for SLBW" ){
   GIVEN( "valid SLBW ENDF" ){
@@ -206,37 +155,37 @@ SCENARIO( "ReferenceGrid for SLBW" ){
 }
 */
 
-std::string BreitWigner();
+std::string breitWignerString();
+std::string reichMooreString();
 
-RP::resolved::SLBW sl_bw(){
-    int MAT = 6922;
-    int MF = 2;
-    int MT = 151;
-    long ln = 0;
+RP::resolved::SLBW breitWigner(){
+  int MAT = 6922;
+  int MF = 2;
+  int MT = 151;
+  long ln = 0;
 
-    auto bws = BreitWigner();
-    auto begin = bws.begin();
-    auto end = bws.end();
+  auto bws = breitWignerString();
+  auto begin = bws.begin();
+  auto end = bws.end();
 
-    RP::Base base( 1E-5, 3.2, 1, 1, 0, 0 );
-    return RP::resolved::SLBW( base, begin, end, ln, MAT, MF, MT );
+  RP::Base base( 1E-5, 3.2, 1, 1, 0, 0 );
+  return RP::resolved::SLBW( base, begin, end, ln, MAT, MF, MT );
 }
 
-RP::resolved::MLBW ml_bw(){
-    int MAT = 6922;
-    int MF = 2;
-    int MT = 151;
-    long ln = 0;
+RP::resolved::ReichMoore reichMoore(){
+  long ln = 0;
+  int MAT = 6922;
+  int MF = 2;
+  int MT = 151;
+  auto rms = reichMooreString();
+  auto begin = rms.begin();
+  auto end = rms.end();
 
-    auto bws = BreitWigner();
-    auto begin = bws.begin();
-    auto end = bws.end();
-
-    RP::Base base( 1E-5, 3.2, 2, 1, 0, 0 );
-    return RP::resolved::MLBW( base, begin, end, ln, MAT, MF, MT );
+  RP::Base base(1E-5, 3.2, 1, 3, 0, 0);
+  return RP::resolved::ReichMoore( base, begin, end, ln, MAT, MF, MT );
 }
 
-std::string BreitWigner(){
+std::string breitWignerString(){
   return
     /* cont record */
   " 3.000000+0 0.000000+0          0          0          1          06922 2151   23\n"
@@ -249,7 +198,7 @@ std::string BreitWigner(){
   " 0.000000+0 0.000000+0          0          0          0          06922 2  099999\n";
 }
 
-std::string ReichMoore(){
+std::string reichMooreString(){
   return
     " 3.500000+0 9.859600-1          1          0          1          36922 2151     \n"
     " 2.330200+2 9.859600-1          0          0        102         236922 2151     \n"
@@ -272,3 +221,16 @@ std::string ReichMoore(){
     " 6.209400+0 3.000000+0 1.654700-4 4.005100-2-1.079400-1 7.385900-26922 2151     \n";
 }
 
+/*
+
+    RP::Base base( 1.0, 2.0, 0, 0, 0, 0 );
+    RP::SpecialCase sc( base, begin, end, lineNumber, MAT, MF, MT );
+
+    THEN( "the energy values can be extracted" ){
+      std::vector<double> energies = {1.0, 2.0};
+
+      REQUIRE( energies == RG( sc ) );
+    }
+  }
+} // SCENARIO
+*/
