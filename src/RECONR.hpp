@@ -1,4 +1,5 @@
 #include "ENDFtk.hpp"
+#include "orlp.hpp"
 
 namespace njoy   {
 namespace RECONR {

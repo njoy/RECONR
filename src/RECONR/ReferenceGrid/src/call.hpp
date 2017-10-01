@@ -23,40 +23,41 @@ operator()( const ResolvedLvalue& lValue ) const {
 }
 
 template< typename Range, if_< hasLvalues< Range > > = true >
-std::vector<double>
-operator()( const Range& range ) const {
+auto operator()( const Range& range ) const {
   std::vector< double > energies;
   energies.reserve( 12 * range.lValues().size() );
 
   const auto lowerLimit = range.EL();
-  const auto upperLimit =
-    std::nextafter( range.EH(), -std::numeric_limits< double >::infinity() );
+  const auto upperLimit = nudgeDown( range.EH() );
 
   energies.push_back( lowerLimit );
 
-  energies |=
-    ranges::action::push_back( range.lValues()
-                               | ranges::view::for_each( *this )
-                               | ranges::view::filter
-                                 ( [=]( const auto energy )
-                                   { return energy <= lowerLimit
-                                            or energy >= upperLimit; } ) );
+  {
+    auto resonances = range.lValues() | ranges::view::for_each( *this );
+    RANGES_FOR( auto resonance, resonances ){
+      ranges::action::push_back( energies,
+                                 resonance
+                                 | ranges::view::filter
+                                   ( [=]( const auto energy )
+                                     { return lowerLimit < energy
+                                              and energy < upperLimit; } ) );
+    }
+  }
 
   energies.push_back( upperLimit );
 
   if ( not ranges::is_sorted( energies ) ){
-    orpl::pdqsort( energies.begin(), energies.end() );
+    orlp::pdqsort( energies.begin(), energies.end() );
   }
 
   energies |= ranges::action::unique;
   return energies;
 }
 
-std::vector< double > operator()( const unresolved::CaseA& caseA ) const {
+auto operator()( const unresolved::CaseA& caseA ) const {
   std::vector< double > energies;
   const auto lowerLimit = caseA.EL();
-  const auto upperLimit =
-    std::nextafter( caseA.EH(), -std::numeric_limits< double >::infinity() );
+  const auto upperLimit = nudgeDown( caseA.EH() );
   energies.reserve( std::ceil( 5.645828264742274 *
                                std::log( upperLimit / lowerLimit ) ) );
   energies.push_back( lowerLimit );
@@ -64,58 +65,61 @@ std::vector< double > operator()( const unresolved::CaseA& caseA ) const {
   return energies;
 }
 
-std::vector< double > operator()( const unresolved::CaseB& caseB ) const {
+auto operator()( const unresolved::CaseB& caseB ) const {
   std::vector< double > energies;
-  const auto lowerLimit = range.EL();
-  const auto upperLimit =
-    std::nextafter( range.EH(), -std::numeric_limits< double >::infinity() );
+  const auto lowerLimit = caseB.EL();
+  const auto upperLimit = nudgeDown( caseB.EH() );
   energies.reserve( 8 * std::ceil( std::log( upperLimit / lowerLimit ) ) );
   energies.push_back( lowerLimit );
-  const auto clampedES =
+  auto clampedES =
     caseB.ES()
     | ranges::view::drop_while
-      ( [=]( auto energy ){ energy <= lowerLimit; } )
+      ( [=]( auto energy ){ return energy <= lowerLimit; } )
     | ranges::view::take_while
-      ( [=]( auto energy ){ energy < upperLimit; } );
+      ( [=]( auto energy ){ return energy < upperLimit; } );
 
-  for( const auto energy : clampedES ){
+  RANGES_FOR( const auto energy, clampedES ){
     fill( energies.back(), energy, energies );
   }
 
   fill( energies.back(), upperLimit, energies );
+  return energies;
 }
 
 template< typename UnresolvedLvalue,
-          if_< not hasResonances< UnresolvedLvalue > > = true >
+          if_< hasJvalues< UnresolvedLvalue > > = true >
 auto
 operator()( const UnresolvedLvalue& lValue ) const {
   return
     lValue.jValues()
-    | range::view::transform
+    | ranges::view::transform
       ( []( const auto& jValue ){ return jValue.ES(); } );
 }
 
-std::vector< double > operator()( const unresolved::CaseC& caseC ) const {
+auto operator()( const unresolved::CaseC& caseC ) const {
   std::vector< double > energies;
 
   const auto lowerLimit = caseC.EL();
-  const auto upperLimit =
-    std::nextafter( caseC.EH(), -std::numeric_limits< double >::infinity() );
+  const auto upperLimit = nudgeDown( caseC.EH() );
 
   std::vector< double > firstPass;
   firstPass.push_back( lowerLimit );
 
-  firstPass |=
-    ranges::action::push_back( range.lValues()
-                               | ranges::view::for_each( *this )
-                               | ranges::view::filter
-                                 ( [=]( const auto energy )
-                                   { return energy <= lowerLimit
-                                            or energy >= upperLimit; } ) );
+  {
+    auto jValues = caseC.lValues() | ranges::view::for_each( *this );
+    RANGES_FOR( const auto jValue, jValues ){
+      ranges::action::push_back( firstPass,
+                                 jValue
+                                 | ranges::view::filter
+                                   ( [=]( const auto energy )
+                                     { return lowerLimit < energy
+                                              and energy < upperLimit; } ) );
+    }
+  }
 
   firstPass.push_back( upperLimit );
-  orpl::pdqsort( energies.begin(), energies.end() );
-  firstPass |= ranges::action::unique;
+  orlp::pdqsort( energies.begin(), energies.end() );
+  ranges::action::unique( firstPass );
 
   energies.reserve( 8 * firstPass.size() );
   energies.push_back( firstPass.front() );
@@ -127,18 +131,42 @@ std::vector< double > operator()( const unresolved::CaseC& caseC ) const {
   return energies;
 }
 
-std::vector< double > operator()( const SpecialCase& sc ) const {
-  return { sc.EL(), sc.EH() };
-}
+std::vector< double >
+operator()( const SpecialCase& sc ) const { return { sc.EL(), sc.EH() }; }
 
 template< typename... TS >
 auto operator()( const std::variant< TS... >& range_variant ) const {
   return std::visit( *this, range_variant );
 }
 
-/*
-auto operator()( const RP::Isotope& isotope ) const {
-  return ranges::action::join(
-    isotope.energyRanges() | ranges::view::transform( *this ) );
+auto operator()( const Isotope& isotope ) const {
+  auto grids =
+    isotope.energyRanges()
+    | ranges::view::transform( *this )
+    | ranges::to_vector;
+
+  auto overlappingRegions =
+    grids
+    | ranges::view::sliding(2)
+    | ranges::view::filter
+      ( []( auto pair ){ return pair[0].back() >= pair[1].front(); } );
+
+  bool foundOverlap = false;
+
+  RANGES_FOR( auto pair, overlappingRegions ){
+    auto& lowerGrid = pair[0];
+    const auto boundary =
+      std::find_if( lowerGrid.rbegin(), lowerGrid.rend(),
+                    [ upperLimit = nudgeDown( pair[1].front() ) ]
+                    ( const auto energy )
+                    { return energy <= upperLimit; } ).base();
+    lowerGrid.erase( boundary, lowerGrid.end() );
+    foundOverlap = true;
+  }
+
+  if ( foundOverlap ){
+    Log::warning( "ENDF material has overlapping resonance ranges" );
+  }
+
+  return grids;
 }
-*/

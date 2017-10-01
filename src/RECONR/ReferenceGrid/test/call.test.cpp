@@ -12,7 +12,7 @@ RP::resolved::ReichMoore reichMoore();
 template< typename T >
 void ignore( T&& ){}
 
-SCENARIO( "Extracting energy values" ){
+SCENARIO( "Extracting the reference grid" ){
   RECONR::ReferenceGrid referenceGrid;
 
   GIVEN( "Breit-Wigner resonance" ){
@@ -31,37 +31,39 @@ SCENARIO( "Extracting energy values" ){
     REQUIRE( reference == trial );
   }
 
-  GIVEN( "Reich-Moore resonance" ){
+  GIVEN( "a Reich-Moore resolved region" ){
     RP::resolved::ReichMoore rm = reichMoore();
-    const auto resonance = rm.lValues().front().resonances().front();
 
-    const double resonanceEnergy = resonance.ER();
-    const double resonanceWidth = resonance.GN()
-                                  + resonance.GG()
-                                  + resonance.GFA()
-                                  + resonance.GFB();
+    const std::vector< double > resonanceEnergies =
+      { -1.000000E+2, -9.000000E+1, -4.297600E+0, -3.493400E+0,
+        -1.504300E+0, -4.116100E-1, -1.942800E-1,  3.657500E-5,
+         2.819000E-1,  1.138900E+0,  2.036100E+0,  2.776700E+0,
+         3.156600E+0,  3.620800E+0,  4.850800E+0,  5.449700E+0 };
 
-    const std::array< double, 3 > reference =
-      {{ resonanceEnergy - 0.5 * resonanceWidth,
-         resonanceEnergy,
-         resonanceEnergy + 0.5 * resonanceWidth }};
+    GIVEN( "an l-value" ){
+      const auto lValue = rm.lValues().front();
 
-    const auto trial = referenceGrid(resonance);
-    REQUIRE( reference == trial );
-  }
+      GIVEN( "a resonance" ){
+        const auto resonance = lValue.resonances().front();
 
-  GIVEN( "a Reich-Moore l-value" ){
-    RP::resolved::ReichMoore rm = reichMoore();
-    const auto lValue = rm.lValues().front();
+        THEN("the reference grid will be composed of 3-arrays"){
+          const double resonanceEnergy = resonanceEnergies.front();
+          const double resonanceWidth = resonance.GN()
+                                        + resonance.GG()
+                                        + resonance.GFA()
+                                        + resonance.GFB();
 
-    WHEN( "collecting the reference grid" ){
-      THEN( "an array for each resonance energy will be present" ){
-        const std::vector< double > resonanceEnergies =
-          { -1.000000E+2, -9.000000E+1, -4.297600E+0, -3.493400E+0,
-            -1.504300E+0, -4.116100E-1, -1.942800E-1, 3.657500E-5,
-            2.819000E-1, 1.138900E+0, 2.036100E+0, 2.776700E+0,
-            3.156600E+0, 3.620800E+0, 4.850800E+0, 5.449700E+0 };
+          const std::array< double, 3 > reference =
+            {{ resonanceEnergy - 0.5 * resonanceWidth,    // left full-width half-max
+               resonanceEnergy,                           // resonance peak
+               resonanceEnergy + 0.5 * resonanceWidth }}; // right full-width half-max
 
+          const auto trial = referenceGrid(resonance);
+          REQUIRE( reference == trial );
+        }
+      }
+
+      THEN( "the reference grid will have an entry for each resonance" ){
         const auto& reference = resonanceEnergies;
 
         const auto resonanceArrays = referenceGrid( lValue );
@@ -78,8 +80,26 @@ SCENARIO( "Extracting energy values" ){
         }
       }
     }
+
+    THEN( "the reference grid..." ){
+      const auto grid = referenceGrid( rm );
+
+      SECTION("will be sorted"){
+        REQUIRE( ranges::is_sorted( grid ) );
+      }
+
+      SECTION("will be unique"){
+        REQUIRE( grid.end() == std::adjacent_find( grid.begin(), grid.end() ) );
+      }
+
+      SECTION("will be bounded by the range limits"){
+        REQUIRE( grid.front() == 1E-5 );
+        REQUIRE( grid.back() == Approx(3.2) );
+      }
+    }
   }
 }
+
 /*
  6.209400+0void checkBWResonanceEnergies( const RP::resolved::BreitWigner& BW ){
   static double halfwidth = 7.84616E-2*0.5;
