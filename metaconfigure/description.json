@@ -371,9 +371,7 @@
     "src/RECONR/ReferenceGrid.hpp",
     "src/RECONR/ReferenceGrid/meta.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp",
-    "src/RECONR/ReferenceGrid/src/fill.hpp",
-    "src/RECONR/ReferenceGrid/src/ranges.hpp",
-    "src/RECONR/ReferenceGrid/src/resonances.hpp"
+    "src/RECONR/ReferenceGrid/src/fill.hpp"
   ],
   "ignore pattern": "$^",
   "implementation files": [],

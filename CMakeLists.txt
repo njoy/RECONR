@@ -26,9 +26,9 @@ project( RECONR LANGUAGES CXX )
 get_directory_property( is_subproject PARENT_DIRECTORY )
 include( CMakeDependentOption REQUIRED )
 
+set( RECONR_AppleClang_minimum_version 8.0 )
 set( RECONR_GNU_minimum_version 6.2 )
 set( RECONR_Clang_minimum_version 3.8 )
-set( RECONR_AppleClang_minimum_version 8.0 )
 
 if( RECONR_${CMAKE_CXX_COMPILER_ID}_minimum_version )
     if( CMAKE_CXX_COMPILER_VERSION AND
@@ -68,6 +68,18 @@ if ( profile_generate )
     file( MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/profiling" )
 endif()
 
+set( RECONR_AppleClang_Darwin_common_flags "-stdlib=libc++" "-Wall" "-Wextra" "-Wpedantic" "-std=c++14" )
+set( RECONR_AppleClang_Darwin_DEBUG_flags "-O0" "-g" "-gdwarf-3" )
+set( RECONR_AppleClang_Darwin_RELEASE_flags "-O3" "-DNDEBUG" )
+set( RECONR_AppleClang_Darwin_strict_flags "-Werror" )
+set( RECONR_AppleClang_Darwin_coverage_flags "--coverage" )
+set( RECONR_AppleClang_Darwin_subproject_flags  )
+set( RECONR_AppleClang_Darwin_base_project_flags  )
+set( RECONR_AppleClang_Darwin_profile_generate_flags "-fprofile-generate='${CMAKE_BINARY_DIR}/profiling'" )
+set( RECONR_AppleClang_Darwin_link_time_optimization_flags "-flto" )
+set( RECONR_AppleClang_Darwin_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
+set( RECONR_AppleClang_Darwin_nonportable_optimization_flags "-march=native" )
+set( RECONR_AppleClang_Darwin_static_flags "-static" )
 set( RECONR_GNU_Windows_common_flags "-Wall" "-Wextra" "-Wpedantic" "-std=c++14" )
 set( RECONR_GNU_Windows_DEBUG_flags "-O0" "-g" "-gdwarf-3" "-fsignaling-nans" )
 set( RECONR_GNU_Windows_RELEASE_flags "-O3" "-DNDEBUG" )
@@ -140,38 +152,18 @@ set( RECONR_Clang_Linux_link_time_optimization_flags "-flto" )
 set( RECONR_Clang_Linux_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
 set( RECONR_Clang_Linux_nonportable_optimization_flags "-march=native" )
 set( RECONR_Clang_Linux_static_flags "-static" )
-set( RECONR_AppleClang_Darwin_common_flags "-stdlib=libc++" "-Wall" "-Wextra" "-Wpedantic" "-std=c++14" )
-set( RECONR_AppleClang_Darwin_DEBUG_flags "-O0" "-g" "-gdwarf-3" )
-set( RECONR_AppleClang_Darwin_RELEASE_flags "-O3" "-DNDEBUG" )
-set( RECONR_AppleClang_Darwin_strict_flags "-Werror" )
-set( RECONR_AppleClang_Darwin_coverage_flags "--coverage" )
-set( RECONR_AppleClang_Darwin_subproject_flags  )
-set( RECONR_AppleClang_Darwin_base_project_flags  )
-set( RECONR_AppleClang_Darwin_profile_generate_flags "-fprofile-generate='${CMAKE_BINARY_DIR}/profiling'" )
-set( RECONR_AppleClang_Darwin_link_time_optimization_flags "-flto" )
-set( RECONR_AppleClang_Darwin_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
-set( RECONR_AppleClang_Darwin_nonportable_optimization_flags "-march=native" )
-set( RECONR_AppleClang_Darwin_static_flags "-static" )
 get_directory_property( is_subproject PARENT_DIRECTORY )
 
 if( NOT TARGET catch-adapter )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/catch-adapter )
 endif()
 
-if( NOT TARGET twig )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/twig )
-endif()
-
-if( NOT TARGET pdqsort-adapter )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/pdqsort-adapter )
+if( NOT TARGET disco )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/disco )
 endif()
 
 if( NOT TARGET fmt-adapter )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/fmt-adapter )
-endif()
-
-if( NOT TARGET hopscotch-map-adapter )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/hopscotch-map-adapter )
 endif()
 
 if( NOT TARGET spdlog-adapter )
@@ -186,20 +178,28 @@ if( NOT TARGET header-utilities )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/header-utilities )
 endif()
 
-if( NOT TARGET disco )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/disco )
-endif()
-
-if( NOT TARGET variant-adapter )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/variant-adapter )
+if( NOT TARGET hopscotch-map-adapter )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/hopscotch-map-adapter )
 endif()
 
 if( NOT TARGET range-v3-adapter )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/range-v3-adapter )
 endif()
 
+if( NOT TARGET variant-adapter )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/variant-adapter )
+endif()
+
 if( NOT TARGET ENDFtk )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/ENDFtk )
+endif()
+
+if( NOT TARGET pdqsort-adapter )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/pdqsort-adapter )
+endif()
+
+if( NOT TARGET twig )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/twig )
 endif()
 
 
@@ -237,9 +237,7 @@ target_sources( RECONR INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/meta.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/src/call.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/src/fill.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/src/ranges.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/src/resonances.hpp" )
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/src/fill.hpp" )
 
 target_include_directories( RECONR INTERFACE src )
 
@@ -247,7 +245,7 @@ set( PREFIX RECONR_${CMAKE_CXX_COMPILER_ID}_${CMAKE_SYSTEM_NAME} )
 
 target_link_libraries( RECONR INTERFACE "$<$<AND:$<CONFIG:RELEASE>,$<BOOL:${link_time_optimization}>>:${${PREFIX}_RELEASE_flags};${${PREFIX}_link_time_optimization_flags}$<$<BOOL:${profile_generate}>:${${PREFIX}_profile_generate_flags};>$<$<BOOL:${profile_use}>:${${PREFIX}_profile_use_flags};>$<$<BOOL:${nonportable_optimization}>:${${PREFIX}_nonportable_optimization_flags};>>$<$<CONFIG:DEBUG>:$<$<BOOL:${coverage}>:${${PREFIX}_coverage_flags};>>$<$<BOOL:CXX_appended_flags>:${CXX_appended_flags};>$<$<BOOL:RECONR_appended_flags>:${RECONR_appended_flags};>" )
 
-target_link_libraries( RECONR INTERFACE twig INTERFACE Log INTERFACE ENDFtk INTERFACE pdqsort-adapter )
+target_link_libraries( RECONR INTERFACE ENDFtk INTERFACE Log INTERFACE pdqsort-adapter INTERFACE twig )
 
 if( NOT is_subproject )
     enable_testing() 
