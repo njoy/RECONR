@@ -58,6 +58,11 @@ auto operator()( const unresolved::CaseA& caseA ) const {
   std::vector< double > energies;
   const auto lowerLimit = caseA.EL();
   const auto upperLimit = nudgeDown( caseA.EH() );
+  /*
+   * log( EH / EL ) / log( 10^(1/13) )
+   * = 13 * log( EH / EL ) / log( 10 )
+   * = 5.645828264742274 * log( EH / EL )
+   */
   energies.reserve( std::ceil( 5.645828264742274 *
                                std::log( upperLimit / lowerLimit ) ) );
   energies.push_back( lowerLimit );
@@ -132,7 +137,9 @@ auto operator()( const unresolved::CaseC& caseC ) const {
 }
 
 std::vector< double >
-operator()( const SpecialCase& sc ) const { return { sc.EL(), sc.EH() }; }
+operator()( const SpecialCase& sc ) const {
+  return { sc.EL(), nudgeDown( sc.EH() ) };
+}
 
 template< typename... TS >
 auto operator()( const std::variant< TS... >& range_variant ) const {

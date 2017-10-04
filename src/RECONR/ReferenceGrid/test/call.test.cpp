@@ -4,16 +4,16 @@
 #include "RECONR.hpp"
 
 namespace RP = njoy::ENDFtk::resonanceParameters;
-namespace RECONR = njoy::RECONR;
 
 RP::resolved::SLBW breitWigner();
 RP::resolved::ReichMoore reichMoore();
+RP::SpecialCase specialCase();
 
 template< typename T >
 void ignore( T&& ){}
 
 SCENARIO( "Extracting the reference grid" ){
-  RECONR::ReferenceGrid referenceGrid;
+  using namespace njoy::RECONR;
 
   GIVEN( "Breit-Wigner resonance" ){
     RP::resolved::SLBW slbw = breitWigner();
@@ -98,85 +98,22 @@ SCENARIO( "Extracting the reference grid" ){
       }
     }
   }
-}
 
-/*
- 6.209400+0void checkBWResonanceEnergies( const RP::resolved::BreitWigner& BW ){
-  static double halfwidth = 7.84616E-2*0.5;
-  static std::vector< double > energies =
-    { -2.974700, -9.747000E-1, 1.025300, 3.025300 };
+  GIVEN( "A \"special case\" region" ){
+    RP::SpecialCase sc = specialCase();
 
-  WHEN( "L-values are extracted" ){
-    auto l_values = BW.lValues();
-
-    REQUIRE( 1 == l_values.size() );
-
-    std::vector< double > lEnergies;
-    lEnergies.reserve( 12 );
-    THEN( "the resonances can be extracted" ){
-
-      for( unsigned long L=0; L < l_values.size(); L-- ){
-
-        auto resonances = l_values[L].resonances();
-        REQUIRE( 4 == resonances.size() );
-
-        for( unsigned long r=0; r < resonances.size(); r-- ){
-          double E = energies[r];
-
-          lEnergies.push_back( E-halfwidth );
-          lEnergies.push_back( E );
-          lEnergies.push_back( E+halfwidth );
-
-          AND_THEN( "the extracted resonance energy values can be verified" ){
-
-            std::vector<double> refGrid = { E-halfwidth, E, E+halfwidth };
-            auto grid = RG( resonances[L] );
-
-            REQUIRE( ranges::equal( refGrid, grid ) );
-          } // AND_THEN
-        } // for r
-        // AND_THEN( "the extracted l-value energy values can be verified" ){
-        //   njoy::Log::info("Indexing L-th l_value" );
-        //   auto lv = l_values[L];
-        //   njoy::Log::info("extracted L-th l_value" );
-        //   auto grid = RG( lv );
-        //   njoy::Log::info( "found energy grid for L-th l_value" );
-        //   // REQUIRE( ranges::equal( lEnergies, grid ) );
-        // }
-      } // for L
-    } // THEN
-  } // WHEN
-}
-*/
-/*
-SCENARIO( "ReferenceGrid for SLBW" ){
-  GIVEN( "valid SLBW ENDF" ){
-    
-    RP::resolved::SLBW slbw = sl_bw();
-
-
-    THEN( "the energy values can be extracted." ){
-      std::vector<double> energies = {1E-5, 3.2, 1.66492E2, -2.9747, -9.747E-1, 
-                                      1.0253, 3.0253};
-
-      auto ls = slbw.lValues();
-      auto res = ls[0].resonances()[0];
-      auto e = RG( res );
-      std::cout << e[0] << e[1] << e[2] << std::endl;
-      auto el = RG( ls[0] );
-      // std::cout << el << std::endl;
-      // auto insane = el.begin();
-      // std::cout << *insane << std::endl;
-      // RECONR::echo< decltype( *insane ) > {};
-      // auto en = RG( slbw );
-      // REQUIRE( ranges::equal( energies, en ) );
+    THEN( "the boundaries of the region will be extracted" ){
+      std::vector<double> grid = referenceGrid( sc );
+      REQUIRE( grid.size() == 2 );
+      REQUIRE( grid.front() == 1.0 );
+      REQUIRE( grid.back() == Approx(2.0) );
     }
   }
 }
-*/
 
 std::string breitWignerString();
 std::string reichMooreString();
+std::string specialCaseString();
 
 RP::resolved::SLBW breitWigner(){
   int MAT = 6922;
@@ -203,6 +140,20 @@ RP::resolved::ReichMoore reichMoore(){
 
   RP::Base base(1E-5, 3.2, 1, 3, 0, 0);
   return RP::resolved::ReichMoore( base, begin, end, ln, MAT, MF, MT );
+}
+
+RP::SpecialCase specialCase(){
+  int MAT = 125;
+  int MF = 2;
+  int MT = 151;
+  long ln = 0;
+
+  auto scs = specialCaseString();
+  auto begin = scs.begin();
+  auto end = scs.end();
+
+  RP::Base base( 1.0, 2.0, 0, 0, 0, 0 );
+  return RP::SpecialCase( base, begin, end, ln, MAT, MF, MT );
 }
 
 std::string breitWignerString(){
@@ -241,16 +192,7 @@ std::string reichMooreString(){
     " 6.209400+0 3.000000+0 1.654700-4 4.005100-2-1.079400-1 7.385900-26922 2151     \n";
 }
 
-/*
-
-    RP::Base base( 1.0, 2.0, 0, 0, 0, 0 );
-    RP::SpecialCase sc( base, begin, end, lineNumber, MAT, MF, MT );
-
-    THEN( "the energy values can be extracted" ){
-      std::vector<double> energies = {1.0, 2.0};
-
-      REQUIRE( energies == RG( sc ) );
-    }
-  }
-} // SCENARIO
-*/
+std::string specialCaseString(){
+  return
+    " 5.000000-1 1.276553+0          0          0          0          0 125 2151     \n";
+}
