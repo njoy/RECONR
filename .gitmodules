@@ -7,3 +7,6 @@
 [submodule "dependencies/twig"]
 	path = dependencies/twig
 	url = https://github.com/njoy/twig.git
+[submodule "dependencies/pdqsort-adapter"]
+	path = dependencies/pdqsort-adapter
+	url = https://github.com/njoy/pdqsort-adapter.git

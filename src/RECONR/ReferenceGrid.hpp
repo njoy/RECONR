@@ -1,12 +1,14 @@
-namespace RP = ENDFtk::resonanceParameters;
-
-template< typename T >
-struct echo;
-
 class ReferenceGrid {
-private:
-  mutable std::array<double, 3> buffer;
+  #include "RECONR/ReferenceGrid/meta.hpp"
+
+  static double nudgeDown( const double value ){
+    return std::nextafter( value, -std::numeric_limits< double >::infinity() );
+  }
+
+  #include "RECONR/ReferenceGrid/src/fill.hpp"
 
 public:
   #include "RECONR/ReferenceGrid/src/call.hpp"
 };
+
+constexpr ReferenceGrid referenceGrid{};
