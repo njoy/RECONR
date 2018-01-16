@@ -391,6 +391,7 @@
   "tests": {
     "RECONR.ReferenceGrid": [
       "src/RECONR/ReferenceGrid/test/call.test.cpp",
+      "src/RECONR/ReferenceGrid/test/fill.test.cpp",
       "src/RECONR/ReferenceGrid/test/ReferenceGrid.test.cpp"
     ]
   },

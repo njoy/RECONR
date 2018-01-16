@@ -2,6 +2,7 @@ static void fill( const double lowerBound,
                   const double upperBound,
                   std::vector<double>& buffer ){
   constexpr double thresholdRatio = 1.193776641714434; // 10^(1/13)
+  Log::info("lB: {}, uB: {}", lowerBound, upperBound);
   if ( lowerBound * thresholdRatio < upperBound ){
     buffer |=
       ranges::action::push_back
@@ -9,6 +10,6 @@ static void fill( const double lowerBound,
         ( [ =, state = lowerBound ]() mutable { return state *= thresholdRatio; } )
         | ranges::view::take_while
           ( [ = ]( auto energy ){ return energy < upperBound; } ) );
+    buffer.push_back( upperBound );
   }
-  buffer.push_back( upperBound );
 }
