@@ -162,6 +162,10 @@ if( NOT TARGET disco )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/disco )
 endif()
 
+if( NOT TARGET hana-adapter )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/hana-adapter )
+endif()
+
 if( NOT TARGET fmt-adapter )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/fmt-adapter )
 endif()
