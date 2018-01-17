@@ -8,6 +8,8 @@ namespace RP = njoy::ENDFtk::resonanceParameters;
 RP::resolved::SLBW breitWigner();
 RP::resolved::ReichMoore reichMoore();
 RP::SpecialCase specialCase();
+RP::unresolved::EnergyIndependent caseA();
+RP::unresolved::EnergyDependentFissionWidths caseB();
 
 template< typename T >
 void ignore( T&& ){}
@@ -99,7 +101,7 @@ SCENARIO( "Extracting the reference grid" ){
     }
   }
 
-  GIVEN( "A \"special case\" region" ){
+  GIVEN( "a \"special case\" region" ){
     RP::SpecialCase sc = specialCase();
 
     THEN( "the boundaries of the region will be extracted" ){
@@ -109,11 +111,47 @@ SCENARIO( "Extracting the reference grid" ){
       REQUIRE( grid.back() == Approx(2.0) );
     }
   }
+
+  GIVEN( "a Case A unresolved region" ){
+    RP::unresolved::EnergyIndependent ca = caseA();
+
+    std::vector<double> refEnergies{
+      23.0000000000E3, 27.4568627590E3, 32.7773614170E3, 39.1288484370E3,
+      46.7111052810E3, 55.7626263930E3, 66.5681208680E3, 79.4674677760E3,
+      94.8664068070E3, 100E3 
+    };
+    auto energies = referenceGrid( ca );
+
+    RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
+      auto ref = std::get< 0 >( en );
+      auto trial = std::get< 1 >( en );
+      REQUIRE( ref == Approx( trial ) );
+    }
+  }
+
+  GIVEN( "a Case B unresolved region" ){
+    RP::unresolved::EnergyDependentFissionWidths cb = caseB();
+
+    std::vector<double> refEnergies{
+      23.0000000000E3, 27.4568627590E3, 32.7773614170E3, 39.1288484370E3,
+      46.7111052810E3, 55.7626263930E3, 66.5681208680E3, 79.4674677760E3,
+      94.8664068070E3, 100E3 
+    };
+    auto energies = referenceGrid( cb );
+
+    RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
+      auto ref = std::get< 0 >( en );
+      auto trial = std::get< 1 >( en );
+      REQUIRE( ref == Approx( trial ) );
+    }
+  }
 }
 
 std::string breitWignerString();
 std::string reichMooreString();
 std::string specialCaseString();
+std::string caseAString();
+std::string caseBString();
 
 RP::resolved::SLBW breitWigner(){
   int MAT = 6922;
@@ -156,6 +194,37 @@ RP::SpecialCase specialCase(){
   return RP::SpecialCase( base, begin, end, ln, MAT, MF, MT );
 }
 
+RP::unresolved::EnergyIndependent caseA(){
+    long lineNumber = 0;
+    int MAT = 5655;
+    int MF = 2;
+    int MT = 151;
+    
+    std::string ENDF = caseAString();
+    auto begin = ENDF.begin();
+    auto end = ENDF.end();
+
+    RP::Base base( 2.3E4, 1.0E5, 2, 1, 0, 0 );
+          
+    return RP::unresolved::EnergyIndependent( 
+        base, begin, end, lineNumber, MAT, MF, MT );
+}
+
+RP::unresolved::EnergyDependentFissionWidths caseB(){
+    long lineNumber = 0;
+    int MAT = 9440;
+    int MF = 2;
+    int MT = 151;
+
+    std::string ENDF = caseBString();
+    auto begin = ENDF.begin();
+    auto end = ENDF.end();
+
+    RP::Base base( 5.7E3, 4.0E4, 2, 1, 0, 0 );
+    return RP::unresolved::EnergyDependentFissionWidths( 
+        base, begin, end, lineNumber, 9440, 2, 151 );
+}
+
 std::string breitWignerString(){
   return
     /* cont record */
@@ -195,4 +264,69 @@ std::string reichMooreString(){
 std::string specialCaseString(){
   return
     " 5.000000-1 1.276553+0          0          0          0          0 125 2151     \n";
+}
+
+std::string caseAString(){
+  return
+      // base
+    // " 2.300000+4 1.000000+5          2          1          0          05655 2151\n"
+    // range CONT
+    " 0.000000+0 6.233000-1          0          0          3          05655 2151     \n"
+    // L=0 LIST                                                                      
+    " 1.387090+2 0.000000+0          0          0          6          15655 2151     \n"
+    " 4.400000+3 5.000000-1 1.000000+0 4.400000-1 5.000000-2 0.000000+05655 2151     \n"
+    // L=1 LIST                                                                      
+    " 1.387090+2 0.000000+0          1          0         12          25655 2151     \n"
+    " 4.400000+3 5.000000-1 1.000000+0 5.280000-1 9.000000-2 0.000000+05655 2151     \n"
+    " 2.200000+3 1.500000+0 1.000000+0 2.640000-1 9.000000-2 0.000000+05655 2151     \n"
+    // L=2 LIST                                                                      
+    " 1.387090+2 0.000000+0          2          0         12          25655 2151     \n"
+    " 2.200000+3 1.500000+0 1.000000+0 3.300000-2 5.000000-2 0.000000+05655 2151     \n"
+    " 1.466670+3 2.500000+0 1.000000+0 2.200000-2 5.000000-2 0.000000+05655 2151     \n";
+}
+
+std::string caseBString(){
+  return 
+    // " 5.700000+3 4.000000+4          2          1          0          09440 2151\n"
+    // LIST
+    " 0.000000+0 8.880000-1          0          0         14          39440 2151     \n"
+    " 5.700000+3 7.000000+3 8.000000+3 9.000000+3 1.000000+4 1.200000+49440 2151     \n"
+    " 1.400000+4 1.600000+4 1.800000+4 2.000000+4 2.500000+4 3.000000+49440 2151     \n"
+    " 3.500000+4 4.000000+4                                            9440 2151     \n"
+    // L=0 CONT                                                                      
+    " 2.379920+2 0.000000+0          0          0          1          09440 2151     \n"
+    // L=0 LIST                                                                      
+    " 0.000000+0 0.000000+0          0          1         20          09440 2151     \n"
+    " 1.310000+1 5.000000-1 1.000000+0 1.572000-3 3.100000-2 0.000000+09440 2151     \n"
+    " 1.256000-3 1.544000-3 1.825000-3 2.025000-3 2.119000-3 2.051000-39440 2151     \n"
+    " 1.992000-3 1.879000-3 1.860000-3 1.838000-3 1.694000-3 1.581000-39440 2151     \n"
+    " 1.481000-3 1.403000-3                                            9440 2151     \n"
+    // L=1 CONT                                                                      
+    " 2.379920+2 0.000000+0          1          0          2          09440 2151     \n"
+    // L=1,J=0 LIST                                                                  
+    " 0.000000+0 0.000000+0          1          1         20          09440 2151     \n"
+    " 1.310000+1 5.000000-1 1.000000+0 3.013000-3 3.100000-2 0.000000+09440 2151     \n"
+    " 4.314000-3 4.572000-3 4.740000-3 5.000000-3 5.520000-3 7.057000-39440 2151     \n"
+    " 8.251000-3 9.276000-3 9.930000-3 1.035000-2 1.210000-2 1.341000-29440 2151     \n"
+    " 1.456000-2 1.542000-2                                            9440 2151     \n"
+    // L=1,J=1 LIST                                                                  
+    " 0.000000+0 0.000000+0          1          2         20          09440 2151     \n"
+    " 6.697000+0 1.500000+0 1.000000+0 1.540000-3 3.100000-2 0.000000+09440 2151     \n"
+    " 1.207000-3 1.299000-3 1.326000-3 1.397000-3 1.544000-3 1.973000-39440 2151     \n"
+    " 2.317000-3 2.581000-3 2.811000-3 3.075000-3 3.494000-3 3.887000-39440 2151     \n"
+    " 4.290000-3 4.586000-3                                            9440 2151     \n"
+    // L=2 CONT                                                                      
+    " 2.379920+2 0.000000+0          2          0          2          09440 2151     \n"
+    // L=2,J=0 LIST                                                                  
+    " 0.000000+0 0.000000+0          2          1         20          09440 2151     \n"
+    " 6.697000+0 1.500000+0 1.000000+0 8.304300-4 3.100000-2 0.000000+09440 2151     \n"
+    " 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-99440 2151     \n"
+    " 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-99440 2151     \n"
+    " 1.000000-9 1.000000-9                                            9440 2151     \n"
+    // L=2,J=1 LIST                                                                  
+    " 0.000000+0 0.000000+0          2          2         20          09440 2151     \n"
+    " 4.633000+0 2.500000+0 1.000000+0 5.744900-4 3.100000-2 0.000000+09440 2151     \n"
+    " 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-99440 2151     \n"
+    " 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-9 1.000000-99440 2151     \n"
+    " 1.000000-9 1.000000-9                                            9440 2151     \n";
 }
