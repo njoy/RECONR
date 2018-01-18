@@ -9,6 +9,6 @@ static void fill( const double lowerBound,
         ( [ =, state = lowerBound ]() mutable { return state *= thresholdRatio; } )
         | ranges::view::take_while
           ( [ = ]( auto energy ){ return energy < upperBound; } ) );
-    buffer.push_back( upperBound );
   }
+  buffer.push_back( upperBound );
 }

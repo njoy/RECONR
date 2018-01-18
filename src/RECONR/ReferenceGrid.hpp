@@ -5,8 +5,10 @@ class ReferenceGrid {
     return std::nextafter( value, -std::numeric_limits< double >::infinity() );
   }
 
-public:
+protected:
   #include "RECONR/ReferenceGrid/src/fill.hpp"
+
+public:
   #include "RECONR/ReferenceGrid/src/call.hpp"
 };
 

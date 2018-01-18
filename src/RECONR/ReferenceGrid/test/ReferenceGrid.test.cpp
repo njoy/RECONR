@@ -4,5 +4,3 @@
 
 #include "RECONR.hpp"
 
-SCENARIO( "ReferenceGrid" ){
-}
