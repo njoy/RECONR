@@ -107,14 +107,24 @@ auto operator()( const unresolved::CaseC& caseC ) const {
   const auto lowerLimit = caseC.EL();
   const auto upperLimit = nudgeDown( caseC.EH() );
 
+  /* Case C is composed of Lvalues which are in turn composed of Jvalues 
+   * which in turn composed of a tuple of region averaged resonance parameter 
+   * values. Each such tuple has an energy element. This energy value may
+   * actually fall outside the energy range of the unresolved region.
+   *
+   * In order to recover a reference grid for reconstruction, we make two passes
+   * over this collection of energies.
+   *
+   * In the first pass, we begin by extracting all energy values within the
+   * range of the unresolved region, sorting them, and removing duplicates.
+   */
   std::vector< double > firstPass;
   firstPass.push_back( lowerLimit );
-
   {
-    auto jValues = caseC.lValues() | ranges::view::for_each( *this );
-    RANGES_FOR( const auto jValue, jValues ){
+    auto jEnergies = caseC.lValues() | ranges::view::for_each( *this );
+    RANGES_FOR( const auto jEnergy, jEnergies ){
       ranges::action::push_back( firstPass,
-                                 jValue
+                                 jEnergy
                                  | ranges::view::filter
                                    ( [=]( const auto energy )
                                      { return lowerLimit < energy
@@ -123,9 +133,12 @@ auto operator()( const unresolved::CaseC& caseC ) const {
   }
 
   firstPass.push_back( upperLimit );
-  orlp::pdqsort( energies.begin(), energies.end() );
+  orlp::pdqsort( firstPass.begin(), firstPass.end() );
   ranges::action::unique( firstPass );
 
+  /* In the second pass, beginning with the first pass grid, we insert points 
+   * such that the reference grid meets some minimum density requirements.
+   */
   energies.reserve( 8 * firstPass.size() );
   energies.push_back( firstPass.front() );
 
