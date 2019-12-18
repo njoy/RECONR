@@ -590,6 +590,7 @@
   "header files": [
     "src/RECONR.hpp",
     "src/RECONR/ReferenceGrid.hpp",
+    "src/RECONR/RECONR.hpp",
     "src/RECONR/ReferenceGrid/meta.hpp",
     "src/RECONR/ReferenceGrid/src/fill.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp"
@@ -611,6 +612,9 @@
   "strict": true,
   "test pattern": "test$",
   "tests": {
+    "RECONR.RECONR": [
+      "src/RECONR/RECONR/test/RECONR.test.cpp"
+    ],
     "RECONR.ReferenceGrid": [
       "src/RECONR/ReferenceGrid/test/call.test.cpp",
       "src/RECONR/ReferenceGrid/test/fill.test.cpp",
