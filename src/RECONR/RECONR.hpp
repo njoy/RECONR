@@ -1,6 +1,6 @@
 class RECONR{
 
 public:
-  RECONR( nlohmann::json&  )
+  RECONR( const nlohmann::json&, const nlohmann::json&   )
   { }
 };

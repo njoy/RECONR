@@ -5,7 +5,7 @@
 #include "RECONR.hpp"
 
 SCENARIO( "Testing creation of RECONR class" ){
-  GIVEN( "a JSON object" ){
+  GIVEN( "a JSON object, and extra arguments" ){
     nlohmann::json input = R"({
     "nendf": 21, "npend": 22,
     "tlabel": "This is a sample Card2",
@@ -19,8 +19,10 @@ SCENARIO( "Testing creation of RECONR class" ){
     ]
     })"_json;
 
+    auto args = nlohmann::json::object();
+
     THEN( "a RECONR object can be created" ){
-      njoy::RECONR::RECONR reconr{ input };
+      njoy::RECONR::RECONR reconr{ input, args };
     } // THEN
   } // GIVEN
   
