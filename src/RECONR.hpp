@@ -1,6 +1,8 @@
-#include "ENDFtk.hpp"
 #include "orlp.hpp"
 #include "json.hpp"
+
+#include "ENDFtk.hpp"
+#include "resonanceReconstruction.hpp"
 
 namespace njoy   {
 namespace RECONR {
