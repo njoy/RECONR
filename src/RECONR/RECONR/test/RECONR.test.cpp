@@ -21,8 +21,12 @@ SCENARIO( "Testing creation of RECONR class" ){
 
     auto args = nlohmann::json::object();
 
-    THEN( "a RECONR object can be created" ){
-      njoy::RECONR::RECONR reconr{ input, args };
+    WHEN( "creating a RECONR object" ){
+      njoy::RECONR::RECONR reconr{ njoy::utility::copy( input ), args };
+
+      THEN( "the members can be verified" ){
+        CHECK( input == reconr.njoyArgs );
+      }
     } // THEN
   } // GIVEN
   

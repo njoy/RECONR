@@ -593,7 +593,9 @@
     "src/RECONR/RECONR.hpp",
     "src/RECONR/ReferenceGrid/meta.hpp",
     "src/RECONR/ReferenceGrid/src/fill.hpp",
-    "src/RECONR/ReferenceGrid/src/call.hpp"
+    "src/RECONR/ReferenceGrid/src/call.hpp",
+    "src/RECONR/RECONR/src/getEvaluated.hpp",
+    "src/RECONR/RECONR/src/ctor.hpp"
   ],
   "ignore pattern": "$^",
   "implementation files": [],
