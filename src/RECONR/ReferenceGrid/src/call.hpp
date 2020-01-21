@@ -47,7 +47,8 @@ auto operator()( const Range& range ) const {
   energies.push_back( upperLimit );
 
   if ( not ranges::is_sorted( energies ) ){
-    orlp::pdqsort( energies.begin(), energies.end() );
+    std::sort( energies.begin(), energies.end() );
+    // orlp::pdqsort( energies.begin(), energies.end() );
   }
 
   energies |= ranges::action::unique;
@@ -133,7 +134,8 @@ auto operator()( const unresolved::CaseC& caseC ) const {
   }
 
   firstPass.push_back( upperLimit );
-  orlp::pdqsort( firstPass.begin(), firstPass.end() );
+  std::sort( firstPass.begin(), firstPass.end() );
+  // orlp::pdqsort( firstPass.begin(), firstPass.end() );
   ranges::action::unique( firstPass );
 
   /* In the second pass, beginning with the first pass grid, we insert points 
