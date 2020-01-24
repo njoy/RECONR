@@ -591,12 +591,13 @@
     "src/RECONR.hpp",
     "src/RECONR/ReferenceGrid.hpp",
     "src/RECONR/RECONR.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery.hpp",
     "src/RECONR/ReferenceGrid/meta.hpp",
     "src/RECONR/ReferenceGrid/src/fill.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp",
-    "src/RECONR/RECONR/src/populateEnergies.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp",
     "src/RECONR/RECONR/src/getEvaluated.hpp",
-    "src/RECONR/RECONR/src/processMaterial.hpp",
+    "src/RECONR/RECONR/src/collectData.hpp",
     "src/RECONR/RECONR/src/ctor.hpp",
     "src/RECONR/RECONR/src/call.hpp"
   ],
@@ -618,13 +619,15 @@
   "test pattern": "test$",
   "tests": {
     "RECONR.RECONR": [
-      "src/RECONR/RECONR/test/RECONR.test.cpp",
-      "src/RECONR/RECONR/test/processMaterial.test.cpp"
+      "src/RECONR/RECONR/test/RECONR.test.cpp"
     ],
     "RECONR.ReferenceGrid": [
       "src/RECONR/ReferenceGrid/test/call.test.cpp",
       "src/RECONR/ReferenceGrid/test/fill.test.cpp",
       "src/RECONR/ReferenceGrid/test/ReferenceGrid.test.cpp"
+    ],
+    "RECONR.ResonanceReconstructionDataDelivery": [
+      "src/RECONR/ResonanceReconstructionDataDelivery/test/ResonanceReconstructionDataDelivery.test.cpp"
     ]
   },
   "update": true

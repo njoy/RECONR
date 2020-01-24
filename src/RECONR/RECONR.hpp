@@ -20,6 +20,6 @@ protected:
 
 public:
   #include "RECONR/RECONR/src/ctor.hpp"
-  #include "RECONR/RECONR/src/processMaterial.hpp"
+  #include "RECONR/RECONR/src/collectData.hpp"
   #include "RECONR/RECONR/src/call.hpp"
 };
