@@ -7,6 +7,7 @@ XSmap_t collectXS(){
     if(section.MT() != 17 ) continue;
     Log::info( "MT: {}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", section.MT() );
 
+    // We have to convert to a vector to "own" the data
     auto energies = section.energies() | ranges::to_vector;
     auto barns = section.crossSections() | ranges::to_vector;
 

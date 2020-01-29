@@ -589,6 +589,7 @@
   },
   "header files": [
     "src/RECONR.hpp",
+    "src/RECONR/ENDF.hpp",
     "src/RECONR/ReferenceGrid.hpp",
     "src/RECONR/RECONR.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery.hpp",
@@ -596,6 +597,7 @@
     "src/RECONR/ReferenceGrid/src/fill.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/src/collectXS.hpp",
     "src/RECONR/RECONR/src/getEvaluated.hpp",
     "src/RECONR/RECONR/src/collectData.hpp",
     "src/RECONR/RECONR/src/ctor.hpp",
@@ -627,7 +629,8 @@
       "src/RECONR/ReferenceGrid/test/ReferenceGrid.test.cpp"
     ],
     "RECONR.ResonanceReconstructionDataDelivery": [
-      "src/RECONR/ResonanceReconstructionDataDelivery/test/ResonanceReconstructionDataDelivery.test.cpp"
+      "src/RECONR/ResonanceReconstructionDataDelivery/test/ResonanceReconstructionDataDelivery.test.cpp",
+      "src/RECONR/ResonanceReconstructionDataDelivery/test/collectXS.test.cpp"
     ]
   },
   "update": true

@@ -1,10 +1,5 @@
 class ResonanceReconstructionDataDelivery {
-  using Buffer_t = decltype( njoy::utility::slurpFileToMemory( "" ) );
-  using Tape_t = std::decay_t< 
-    decltype( ENDFtk::syntaxTree::makeTape( Buffer_t{} ) ) >;
-  // using Material_t = ENDFtk::syntaxTree::Material< Buffer_t >;
-  using Material_t = decltype( 
-      ENDFtk::syntaxTree::makeTape( Buffer_t{} ).materialNumber( 1 ).front() );
+  using Material_t = ENDFtk::syntaxTree::Material< std::string::iterator >;
 
   Material_t material;
   using XSmap_t = std::map< int, ENDF::Tab1 >;
