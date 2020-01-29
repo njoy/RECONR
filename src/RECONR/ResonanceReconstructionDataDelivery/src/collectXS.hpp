@@ -4,7 +4,7 @@ XSmap_t collectXS(){
   auto MF3 = this->material.fileNumber( 3 ).parse< 3 >();
   for( auto& section : MF3.sections() ){
     std::vector< ENDF::Variant > cs;
-    if(section.MT() != 17 ) continue;
+    // if(section.MT() != 17 ) continue;
     Log::info( "MT: {}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", section.MT() );
 
     // We have to convert to a vector to "own" the data
