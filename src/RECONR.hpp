@@ -11,7 +11,7 @@ namespace RECONR {
 using namespace ENDFtk::resonanceParameters;
 
 #include "RECONR/RECONR.hpp"
-// #include "RECONR/ReferenceGrid.hpp"
+#include "RECONR/ReferenceGrid.hpp"
 #include "RECONR/ENDF.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
 
