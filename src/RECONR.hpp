@@ -12,7 +12,7 @@ using namespace ENDFtk::resonanceParameters;
 
 #include "RECONR/RECONR.hpp"
 #include "RECONR/ReferenceGrid.hpp"
-#include "RECONR/ENDF.hpp"
+#include "RECONR/interp.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
 
 }
