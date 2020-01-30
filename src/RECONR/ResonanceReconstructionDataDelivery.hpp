@@ -1,6 +1,7 @@
 class ResonanceReconstructionDataDelivery {
-  using Material_t = ENDFtk::syntaxTree::Material< std::string::iterator >;
+  using ENDFMaterial_t = ENDFtk::syntaxTree::Material< std::string::iterator >;
 
+  using Material_t = std::variant< ENDFMaterial_t >;
   Material_t material;
   using XSmap_t = std::map< int, interp::Table >;
   XSmap_t crossSections_;

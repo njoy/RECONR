@@ -1,7 +1,13 @@
 XSmap_t collectXS(){
+  return std::visit( 
+    [&](auto&& arg ){ return this->collectXS( arg ); },
+    this->material );
+}
+
+XSmap_t collectXS( const ENDFMaterial_t& material ){
   XSmap_t xs{};
 
-  auto MF3 = this->material.fileNumber( 3 ).parse< 3 >();
+  auto MF3 = material.fileNumber( 3 ).parse< 3 >();
   for( auto& section : MF3.sections() ){
     std::vector< interp::Variant > cs;
 
