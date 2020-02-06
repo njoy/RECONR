@@ -1,7 +1,7 @@
-void collectData( const nlohmann::json& sequence ){
+void collectData( const nlohmann::json& sequence, Format_t evaluatedData ){
   std::visit( 
     [&]( auto&& arg ){ return this->collectData( sequence, arg ); },
-    this->evaluatedData
+    evaluatedData
   );
 }
 

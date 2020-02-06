@@ -1,7 +1,6 @@
-Format_t getEvaluated( ){
+static Format_t getEvaluated( int nendf ){
 
-  std::string filename = "tape" + std::to_string( 
-      this->njoyArgs.at( "nendf" ).get< int >() );
+  std::string filename = "tape" + std::to_string( nendf );
   buffer_t ENDF;
   try {
     ENDF = njoy::utility::slurpFileToMemory( filename );
