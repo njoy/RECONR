@@ -1,7 +1,9 @@
-R2D2 findR2D2( const nlohmann::json& sequence, Tape_t& tape ){
+R2D2 findR2D2( const nlohmann::json& sequence, const Tape_t& tape ){
 
   try {
-    return R2D2{ tape.materialNumber( sequence[ "mat" ] ).front() };
+    auto material = tape.materialNumber( sequence[ "mat" ] ).front();
+    return R2D2{ std::move( material ) };
+
   } catch( ... ){
     Log::info( "Error while extracting material from ENDF Tape." );
     throw;

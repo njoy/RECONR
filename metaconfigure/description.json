@@ -599,8 +599,8 @@
     "src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/src/collectXS.hpp",
     "src/RECONR/RECONR/src/getEvaluated.hpp",
-    "src/RECONR/RECONR/src/collectData.hpp",
-    "src/RECONR/RECONR/src/call.hpp"
+    "src/RECONR/RECONR/src/call.hpp",
+    "src/RECONR/RECONR/src/findR2D2.hpp"
   ],
   "ignore pattern": "$^",
   "implementation files": [],
@@ -620,6 +620,7 @@
   "test pattern": "test$",
   "tests": {
     "RECONR.RECONR": [
+      "src/RECONR/RECONR/test/findR2D2.test.cpp",
       "src/RECONR/RECONR/test/RECONR.test.cpp",
       "src/RECONR/RECONR/test/getEvaluated.test.cpp"
     ],

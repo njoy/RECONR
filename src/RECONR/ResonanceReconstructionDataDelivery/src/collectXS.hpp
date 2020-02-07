@@ -4,7 +4,7 @@ XSmap_t collectXS(){
     this->material );
 }
 
-XSmap_t collectXS( const ENDFMaterial_t& material ){
+XSmap_t collectXS( ENDFMaterial_t& material ){
   XSmap_t xs{};
 
   auto MF3 = material.fileNumber( 3 ).parse< 3 >();
