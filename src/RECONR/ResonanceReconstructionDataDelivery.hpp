@@ -1,5 +1,7 @@
 class ResonanceReconstructionDataDelivery {
-  using ENDFMaterial_t = ENDFtk::syntaxTree::Material< std::string::iterator >;
+  using buffer_t = std::string;
+  using Tape_t = ENDFtk::syntaxTree::Tape< buffer_t >;
+  using ENDFMaterial_t = std::decay_t< decltype( Tape_t{ std::string{} }.materialNumber( 1 ).front() ) >;
 
   using Material_t = std::variant< ENDFMaterial_t >;
   Material_t material;
