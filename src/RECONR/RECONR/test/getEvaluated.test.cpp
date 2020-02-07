@@ -29,8 +29,8 @@ SCENARIO( "Getting evaluated data" ){
           CHECK( not tape.hasMAT( MAT ) );
           CHECK_THROWS( tape.MAT( MAT ) );
         } // THEN
-      */
       }
+      */
     } // GIVEN
   } // WHEN
 } // SCENARIO

@@ -8,7 +8,5 @@ static Format_t getEvaluated( int nendf ){
     Log::info( "Error ocurred when trying to open evaluated data file: {}.",
                filename);
   }
-
   return njoy::ENDFtk::syntaxTree::makeTape( std::move( ENDF ) );
-
 }
