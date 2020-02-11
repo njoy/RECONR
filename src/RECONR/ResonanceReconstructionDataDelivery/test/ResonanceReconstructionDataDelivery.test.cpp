@@ -68,22 +68,22 @@ std::string RM(){
 // njoy::ENDFtk::syntaxTree::Material< std::string::iterator > 
 njoy::RECONR::R2D2::ENDFMaterial_t
 ENDFMaterial( std::string formalism ){
-  std::string endf = MF1();
+  std::string ENDF = MF1();
 
-  if( formalism == "SLBW" ) endf += SLBW();
-  if( formalism == "MLBW" ) endf += MLBW();
-  if( formalism == "RM" ) endf += RM();
+  if( formalism == "SLBW" ) ENDF += SLBW();
+  if( formalism == "MLBW" ) ENDF += MLBW();
+  if( formalism == "RM" )   ENDF += RM();
 
-  endf += MF3() + MEND();
+  const std::string endf = ENDF + MF3() + MEND();
 
   auto begin = endf.begin();
   auto start = begin;
   auto end = endf.end();
   long lineNumber = 0;
   njoy::ENDFtk::HeadRecord head( begin, end, lineNumber );
-  auto beg = begin;
+  const auto beg = begin;
 
   // return njoy::ENDFtk::syntaxTree::Material< std::string::iterator >( 
   return njoy::RECONR::R2D2::ENDFMaterial_t(
-    head, start, beg, end, lineNumber );
+    head, start, begin, end, lineNumber );
 }
