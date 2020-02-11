@@ -620,7 +620,6 @@
   "test pattern": "test$",
   "tests": {
     "RECONR.RECONR": [
-      "src/RECONR/RECONR/test/findR2D2.test.cpp",
       "src/RECONR/RECONR/test/RECONR.test.cpp",
       "src/RECONR/RECONR/test/getEvaluated.test.cpp"
     ],

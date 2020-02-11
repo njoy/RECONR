@@ -65,7 +65,8 @@ std::string RM(){
   return "";
 }
 
-njoy::ENDFtk::syntaxTree::Material< std::string::iterator > 
+// njoy::ENDFtk::syntaxTree::Material< std::string::iterator > 
+njoy::RECONR::R2D2::ENDFMaterial_t
 ENDFMaterial( std::string formalism ){
   std::string endf = MF1();
 
@@ -82,6 +83,7 @@ ENDFMaterial( std::string formalism ){
   njoy::ENDFtk::HeadRecord head( begin, end, lineNumber );
   auto beg = begin;
 
-  return njoy::ENDFtk::syntaxTree::Material< std::string::iterator >( 
+  // return njoy::ENDFtk::syntaxTree::Material< std::string::iterator >( 
+  return njoy::RECONR::R2D2::ENDFMaterial_t(
     head, start, beg, end, lineNumber );
 }

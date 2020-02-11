@@ -1,6 +1,5 @@
 
 add_executable( RECONR.RECONR.test
-                findR2D2.test.cpp
                 RECONR.test.cpp
                 getEvaluated.test.cpp )
 target_compile_options( RECONR.RECONR.test PRIVATE ${${PREFIX}_common_flags}

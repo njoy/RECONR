@@ -2,7 +2,8 @@
 
 #include "RECONR.hpp"
 
-njoy::ENDFtk::syntaxTree::Material< std::string::iterator > ENDFMaterial( std::string );
+// njoy::ENDFtk::syntaxTree::Material< std::string::iterator > ENDFMaterial( std::string );
+njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
 
 SCENARIO( "Testing the collection of resonance reconstruction data for SLBW" ){
   GIVEN( "an ENDF Material with SLBW parameters" ){

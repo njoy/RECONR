@@ -7,7 +7,7 @@ public:
 
 protected:
   using Format_t = std::variant< Tape_t >;
-
+  using Map_t = std::map< int, R2D2 >;
 
 public:
   #include "RECONR/RECONR/src/getEvaluated.hpp"
