@@ -14,6 +14,7 @@ private:
 public:
   #include "RECONR/ResonanceReconstructionDataDelivery/src/collectXS.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
+  #include "RECONR/ResonanceReconstructionDataDelivery/src/linearize.hpp"
 
   auto crossSections() const{ return this->crossSections_; }
 };

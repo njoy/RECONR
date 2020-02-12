@@ -81,7 +81,6 @@ ENDFMaterial( std::string formalism ){
   auto end = endf.end();
   long lineNumber = 0;
   njoy::ENDFtk::HeadRecord head( begin, end, lineNumber );
-  const auto beg = begin;
 
   // return njoy::ENDFtk::syntaxTree::Material< std::string::iterator >( 
   return njoy::RECONR::R2D2::ENDFMaterial_t(

@@ -1,6 +1,7 @@
 
 add_executable( RECONR.ResonanceReconstructionDataDelivery.test
                 ResonanceReconstructionDataDelivery.test.cpp
+                linearize.test.cpp
                 collectXS.test.cpp )
 target_compile_options( RECONR.ResonanceReconstructionDataDelivery.test PRIVATE ${${PREFIX}_common_flags}
 $<$<BOOL:${strict}>:${${PREFIX}_strict_flags}>$<$<CONFIG:DEBUG>:
