@@ -601,8 +601,8 @@
   "initialized": true,
   "is external project": false,
   "language": "c++",
-  "name": "RECONR",
-  "standard": "c++14",
+  "name": "reconr",
+  "standard": "c++17",
   "standards": [
     "c++98",
     "c++11",
