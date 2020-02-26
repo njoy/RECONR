@@ -600,7 +600,6 @@
     "src/RECONR/ReferenceGrid/src/call.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/src/collectXS.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery/src/linearize.hpp",
     "src/RECONR/RECONR/src/getEvaluated.hpp",
     "src/RECONR/RECONR/src/call.hpp",
     "src/RECONR/RECONR/src/findR2D2.hpp"
