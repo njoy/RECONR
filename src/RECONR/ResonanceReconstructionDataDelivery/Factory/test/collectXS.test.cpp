@@ -7,7 +7,7 @@
 // njoy::ENDFtk::syntaxTree::Material< std::string::iterator > ENDFMaterial( std::string );
 njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
 
-SCENARIO( "Testing the collection of resonance reconstruction data for SLBW" ){
+SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
   GIVEN( "an ENDF Material with SLBW parameters" ){
     auto material = ENDFMaterial( "SLBW" );
 
@@ -29,11 +29,13 @@ SCENARIO( "Testing the collection of resonance reconstruction data for SLBW" ){
 
         CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& p : ranges::view::zip( refEnergies, energies ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ref, ene ] : 
+             ranges::view::zip( refEnergies, energies ) ){
+          CHECK( ref == Approx( ene ) );
         }
-        for( const auto& p : ranges::view::zip( refBarns, barns ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ ref, barn ] : 
+             ranges::view::zip( refBarns, barns ) ){
+          CHECK( ref == Approx( barn ) );
         }
       }
       { auto xs = XSs.at( 16 );
@@ -48,11 +50,13 @@ SCENARIO( "Testing the collection of resonance reconstruction data for SLBW" ){
 
         CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& p : ranges::view::zip( refEnergies, energies ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ref, ene ] : 
+             ranges::view::zip( refEnergies, energies ) ){
+          CHECK( ref == Approx( ene ) );
         }
-        for( const auto& p : ranges::view::zip( refBarns, barns ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ ref, barn ] : 
+             ranges::view::zip( refBarns, barns ) ){
+          CHECK( ref == Approx( barn ) );
         }
       }
       { auto xs = XSs.at( 18 );
@@ -67,11 +71,13 @@ SCENARIO( "Testing the collection of resonance reconstruction data for SLBW" ){
 
         CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& p : ranges::view::zip( refEnergies, energies ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ref, ene ] : 
+             ranges::view::zip( refEnergies, energies ) ){
+          CHECK( ref == Approx( ene ) );
         }
-        for( const auto& p : ranges::view::zip( refBarns, barns ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ ref, barn ] : 
+             ranges::view::zip( refBarns, barns ) ){
+          CHECK( ref == Approx( barn ) );
         }
       }
       { auto xs = XSs.at( 102 );
@@ -86,11 +92,13 @@ SCENARIO( "Testing the collection of resonance reconstruction data for SLBW" ){
 
         CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& p : ranges::view::zip( refEnergies, energies ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ref, ene ] : 
+             ranges::view::zip( refEnergies, energies ) ){
+          CHECK( ref == Approx( ene ) );
         }
-        for( const auto& p : ranges::view::zip( refBarns, barns ) ){
-          CHECK( std::get< 0 >( p ) == Approx( std::get< 1 >( p ) ) );
+        for( const auto& [ ref, barn ] : 
+             ranges::view::zip( refBarns, barns ) ){
+          CHECK( ref == Approx( barn ) );
         }
       }
     } // THEN

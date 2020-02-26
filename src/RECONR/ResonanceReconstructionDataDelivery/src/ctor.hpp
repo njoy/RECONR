@@ -14,6 +14,8 @@
 //     throw;
 //   }
 
+ResonanceReconstructionDataDelivery() = default;
+
 ResonanceReconstructionDataDelivery( XSmap_t&& crossSections )
   try:
     crossSections_( crossSections )

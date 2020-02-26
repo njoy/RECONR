@@ -62,7 +62,7 @@ std::string RM(){
 
 // njoy::ENDFtk::syntaxTree::Material< std::string::iterator > 
 inline njoy::RECONR::R2D2::ENDFMaterial_t
-ENDFMaterial( std::string formalism ){
+ENDFMaterial( std::string formalism = "SLBW" ){
   std::string ENDF = MF1();
 
   if( formalism == "SLBW" ) ENDF += SLBW();
