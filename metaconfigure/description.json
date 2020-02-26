@@ -589,10 +589,12 @@
   },
   "header files": [
     "src/RECONR.hpp",
+    "src/RECONR/details.hpp",
     "src/RECONR/ReferenceGrid.hpp",
     "src/RECONR/RECONR.hpp",
     "src/RECONR/interp.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery.hpp",
+    "src/RECONR/details/simpleENDFTestString.hpp",
     "src/RECONR/ReferenceGrid/meta.hpp",
     "src/RECONR/ReferenceGrid/src/fill.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp",
@@ -621,6 +623,7 @@
   "test pattern": "test$",
   "tests": {
     "RECONR.RECONR": [
+      "src/RECONR/RECONR/test/linearize.test.cpp",
       "src/RECONR/RECONR/test/RECONR.test.cpp",
       "src/RECONR/RECONR/test/getEvaluated.test.cpp"
     ],
@@ -631,7 +634,6 @@
     ],
     "RECONR.ResonanceReconstructionDataDelivery": [
       "src/RECONR/ResonanceReconstructionDataDelivery/test/ResonanceReconstructionDataDelivery.test.cpp",
-      "src/RECONR/ResonanceReconstructionDataDelivery/test/linearize.test.cpp",
       "src/RECONR/ResonanceReconstructionDataDelivery/test/collectXS.test.cpp"
     ]
   },

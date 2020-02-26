@@ -1,0 +1,4 @@
+namespace details{
+
+
+} // namespace details
