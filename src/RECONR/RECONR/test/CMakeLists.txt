@@ -1,5 +1,7 @@
 
-add_executable( RECONR.RECONR.test RECONR.test.cpp )
+add_executable( RECONR.RECONR.test
+                RECONR.test.cpp
+                getEvaluated.test.cpp )
 target_compile_options( RECONR.RECONR.test PRIVATE ${${PREFIX}_common_flags}
 $<$<BOOL:${strict}>:${${PREFIX}_strict_flags}>$<$<CONFIG:DEBUG>:
 ${${PREFIX}_DEBUG_flags}
@@ -11,4 +13,8 @@ $<$<BOOL:${nonportable_optimization}>:${${PREFIX}_nonportable_optimization_flags
 
 ${CXX_appended_flags} ${reconr_appended_flags} )
 target_link_libraries( RECONR.RECONR.test PUBLIC reconr ) 
+file( GLOB resources "resources/*" )
+foreach( resource ${resources})
+    file( COPY "${resource}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}" )
+endforeach()
 add_test( NAME RECONR.RECONR COMMAND RECONR.RECONR.test )

@@ -16,3 +16,6 @@
 [submodule "dependencies/resonanceReconstruction"]
 	path = dependencies/resonanceReconstruction
 	url = https://github.com/njoy/resonanceReconstruction.git
+[submodule "dependencies/interpolation"]
+	path = dependencies/interpolation
+	url = https://github.com/njoy/interpolation.git
