@@ -29,6 +29,7 @@ nlohmann::json input = R"({
     }
   ]
 })"_json;
+
 SCENARIO( "Testing creation of RECONR class" ){
   GIVEN( "a JSON object, and extra arguments" ){
 
