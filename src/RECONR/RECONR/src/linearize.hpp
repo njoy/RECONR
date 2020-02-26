@@ -1,6 +1,6 @@
-R2D2 linearize( ResonanceReconstructionDataDelivery& r2d2 ){
+static R2D2 linearize( ResonanceReconstructionDataDelivery& ){
 
-  R2D2 linearized{};
+  // R2D2 linearized{};
 
-  return linearized;
+  // return linearized;
 }

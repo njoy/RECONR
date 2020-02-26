@@ -1,3 +1,5 @@
+#ifndef RECONR_DETAILS_SIMPLEENDFTESTSTRING_HPP
+#define RECONR_DETAILS_SIMPLEENDFTESTSTRING_HPP
 std::string MF1(){
   return R"(1.001000+3 9.991673-1          0          0          0          5 125 1451     
  0.000000+0 0.000000+0          0          0          0          6 125 1451     
@@ -59,7 +61,7 @@ std::string RM(){
 }
 
 // njoy::ENDFtk::syntaxTree::Material< std::string::iterator > 
-njoy::RECONR::R2D2::ENDFMaterial_t
+inline njoy::RECONR::R2D2::ENDFMaterial_t
 ENDFMaterial( std::string formalism ){
   std::string ENDF = MF1();
 
@@ -80,3 +82,4 @@ ENDFMaterial( std::string formalism ){
     head, start, begin, end, lineNumber );
 }
 
+#endif // RECONR_DETAILS_SIMPLEENDFTESTSTRING_HPP

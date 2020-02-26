@@ -1,10 +1,10 @@
-XSmap_t collectXS(){
+XSmap_t collectXS( const Material_t material){
   return std::visit( 
     [&](auto&& arg ){ return this->collectXS( arg ); },
-    this->material );
+    material );
 }
 
-XSmap_t collectXS( ENDFMaterial_t& material ){
+XSmap_t collectXS( const ENDFMaterial_t& material ){
   XSmap_t xs{};
 
   auto MF3 = material.fileNumber( 3 ).parse< 3 >();

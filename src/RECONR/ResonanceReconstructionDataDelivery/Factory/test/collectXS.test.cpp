@@ -2,6 +2,8 @@
 
 #include "RECONR.hpp"
 
+#include "RECONR/details/simpleENDFTestString.hpp"
+
 // njoy::ENDFtk::syntaxTree::Material< std::string::iterator > ENDFMaterial( std::string );
 njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
 
@@ -10,7 +12,7 @@ SCENARIO( "Testing the collection of resonance reconstruction data for SLBW" ){
     auto material = ENDFMaterial( "SLBW" );
 
     THEN( "the resonance reconstruction data can be extracted" ){
-      njoy::RECONR::R2D2 r2d2{ std::move( material ) };
+      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
 
       auto XSs = r2d2.crossSections();
 
