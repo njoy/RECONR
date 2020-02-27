@@ -36,7 +36,7 @@ SCENARIO( "Testing creation of RECONR class" ){
     auto args = nlohmann::json::object();
 
     WHEN( "a RECONR object is called" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, args ) );
+      // CHECK_NOTHROW( njoy::RECONR::RECONR()( input, args ) );
 
     } // THEN
   } // GIVEN

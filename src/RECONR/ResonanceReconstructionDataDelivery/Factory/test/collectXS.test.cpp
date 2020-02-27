@@ -4,7 +4,6 @@
 
 #include "RECONR/details/simpleENDFTestString.hpp"
 
-// njoy::ENDFtk::syntaxTree::Material< std::string::iterator > ENDFMaterial( std::string );
 njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
 
 SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
