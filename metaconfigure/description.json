@@ -599,6 +599,7 @@
     "src/RECONR/ReferenceGrid/src/fill.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/Factory.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/ctor.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectXS.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/call.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp",
@@ -640,6 +641,9 @@
     "RECONR.ResonanceReconstructionDataDelivery.Factory": [
       "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/Factory.test.cpp",
       "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.test.cpp"
+    ],
+    "RECONR.interp": [
+      "src/RECONR/interp/test/interp.test.cpp"
     ]
   },
   "update": true
