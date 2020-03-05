@@ -150,5 +150,35 @@ SCENARIO( "Testing interpolation 'LAWS'." ){
         CHECK( loglogInterpolation( 5.5, 5, 8, 7, 5.5 ) == var( 5.5 ) );
       } // AND_THEN
     } // WHEN
+    WHEN( "creating a Vector Table" ){
+
+    std::vector< interp::Variant > XS;
+
+      interp::Histogram histo1{ njoy::utility::copy( x1 ),
+                                              njoy::utility::copy( y1 ) };
+      XS.emplace_back( interp::Variant(
+        interp::LinearLinear( njoy::utility::copy( x1 ),
+                              njoy::utility::copy( y1 ) ) ) );
+      XS.emplace_back( interp::Variant(
+        interp::LogarithmicLogarithmic( njoy::utility::copy( x2 ),
+                                        njoy::utility::copy( y2 ) ) ) );
+
+      auto table = interp::Table( std::move( XS ) );
+
+      THEN( "We can verify interpolated values" ){
+        CHECK( 2.0 == table( 1.0 ) );
+        CHECK( 7.0 == table( 5.0 ) );
+        CHECK( 5.5 == table( 8.0 ) );
+        CHECK( 5.5 == table( 8.0 ) );
+        CHECK( 7.2 == table( 10.0 ) );
+        CHECK( 5.7 == table( 18.0 ) );
+
+        // Somewhere inbetween
+        CHECK( linlinInterpolation( 1.5, 1, 5, 2, 7 ) == table( 1.5 ) );
+        CHECK( linlinInterpolation( 5.5, 5, 8, 7, 5.5 ) == table( 5.5 ) );
+        CHECK( loglogInterpolation( 8.1, 8, 10, 2.2, 7.2 ) == table( 8.1 ) );
+        CHECK( loglogInterpolation( 10.1, 10, 18, 7.2, 5.7 ) == table( 10.1 ) );
+      } // THEN
+    } // WHEN
   } // GIVEN
 } // SCENARIO
