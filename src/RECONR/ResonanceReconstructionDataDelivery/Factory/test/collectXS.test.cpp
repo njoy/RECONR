@@ -3,6 +3,8 @@
 #include "RECONR.hpp"
 
 #include "RECONR/details/simpleENDFTestString.hpp"
+#include "RECONR/details/interpLambdas.hpp"
+
 
 njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
 
@@ -26,6 +28,16 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
 
+        double x1 = refEnergies[0];
+        double x2 = refEnergies[1];
+        double y1 = refBarns[0];
+        double y2 = refBarns[1];
+        double x{ 1.0 };
+        auto refY = linlinInterpolation( x, x1, x2, y1, y2 );
+        auto y = xs( x );
+                                      
+        CHECK( refY == y );
+        
         CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
         for( const auto& [ref, ene ] : 
@@ -35,6 +47,16 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
         for( const auto& [ ref, barn ] : 
              ranges::view::zip( refBarns, barns ) ){
           CHECK( ref == Approx( barn ) );
+        }
+        for(size_t i=0; i< refEnergies.size()-1; i++){
+          auto x1 = refEnergies[ i ];
+          auto x2 = refEnergies[ i+1 ];
+          auto y1 = refBarns[ i ];
+          auto y2 = refBarns[ i+1 ];
+          auto x = 0.5*( x1 + x2 );
+          auto y = linlinInterpolation( x, x1, x2, y1, y2 );
+                                        
+          CHECK( y == xs( x ) );
         }
       }
       { auto xs = XSs.at( 16 );

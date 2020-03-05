@@ -595,6 +595,7 @@
     "src/RECONR/interp.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery.hpp",
     "src/RECONR/details/simpleENDFTestString.hpp",
+    "src/RECONR/details/interpLambdas.hpp",
     "src/RECONR/ReferenceGrid/meta.hpp",
     "src/RECONR/ReferenceGrid/src/fill.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp",

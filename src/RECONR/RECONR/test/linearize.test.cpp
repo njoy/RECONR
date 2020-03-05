@@ -38,8 +38,6 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         // CHECK( ranges::equal( refX, linX ) );
       }
 
-
-
     } // THEN
   } // GIVEN
 } // SCENARIO

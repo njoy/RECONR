@@ -19,6 +19,7 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
       auto pE = interp::partition( energies, drop,  take );
       auto pB = interp::partition( barns, drop,  take );
 
+      Log::info( "LAW={}", LAW );
       switch( LAW ){
         case 1:
           cs.emplace_back( interp::Variant( 

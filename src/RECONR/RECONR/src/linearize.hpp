@@ -29,6 +29,9 @@ R2D2 linearize( ResonanceReconstructionDataDelivery& r2d2,
     linearization( first, last, table, criterion, midpoint );
 
     auto y = x | ranges::view::transform( table ) | ranges::to_vector;
+    // std::vector< double > zx{ 1E-4, 1E-2, 1, 1E2, 1E4 };
+    // auto z = zx | ranges::view::transform( table ) | ranges::to_vector;
+    // Log::info( "z: {}", z | ranges::view::all );
 
     linearized.emplace( MT, 
       std::vector< interp::Variant >{ interp::Variant( 
