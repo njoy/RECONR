@@ -14,8 +14,11 @@ using LogarithmicLogarithmic = LAW< interpolation::LogarithmicLogarithmic >;
 
 using Variant = interpolation::Table< 
     interpolation::table::Variant< 
-      Histogram, LinearLinear, LinearLogarithmic, 
-      LogarithmicLinear, LogarithmicLogarithmic > >;
+      Histogram, 
+      LinearLinear, 
+      LinearLogarithmic, 
+      LogarithmicLinear, 
+      LogarithmicLogarithmic > >;
 using Table = interpolation::Table< interpolation::table::Vector< Variant > >;
 
 auto partition = []( auto&& range, int drop, int take ){
