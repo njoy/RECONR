@@ -1,9 +1,11 @@
+static
 XSmap_t collectXS( const Material_t material){
   return std::visit( 
-    [&](auto&& arg ){ return this->collectXS( arg ); },
+    [&](auto&& arg ){ return Factory::collectXS( arg ); },
     material );
 }
 
+static
 XSmap_t collectXS( const ENDFMaterial_t& material ){
   XSmap_t xs{};
 
@@ -19,7 +21,6 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
       auto pE = interp::partition( energies, drop,  take );
       auto pB = interp::partition( barns, drop,  take );
 
-      Log::info( "LAW={}", LAW );
       switch( LAW ){
         case 1:
           cs.emplace_back( interp::Variant( 
@@ -72,7 +73,7 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
       makeInterpTable( drop, take, std::get< 0 >( params ) );
     }
     xs.insert( 
-      std::make_pair( section.MT(), interp::Table( std::move( cs ) ) ) );
+      std::make_pair( section.MT(), interp::Table{ std::move( cs ) } ) );
   }
 
   return xs;

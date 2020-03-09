@@ -1,5 +1,5 @@
 ResonanceReconstructionDataDelivery operator()(){
 
   return ResonanceReconstructionDataDelivery{ 
-    this->collectXS( this->material_ ) };
+    Factory::collectXS( this->material_ ) };
 }

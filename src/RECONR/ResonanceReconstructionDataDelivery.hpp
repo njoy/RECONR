@@ -15,7 +15,6 @@ public:
   auto crossSections() const{ return this->crossSections_; }
   auto emplace( XSmap_t::key_type i, XSmap_t::mapped_type&& table ){ 
     return this->crossSections_.insert_or_assign( i, table ); };
-  // interp::Table& operator[]( int i ){ return crossSections_[ i ]; }
   auto at( int i ){ return crossSections_.at( i ); }
 };
 
