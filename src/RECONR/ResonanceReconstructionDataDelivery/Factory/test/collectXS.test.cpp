@@ -112,13 +112,13 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
           CHECK( ref == Approx( barn ) );
         }
         double refY = histoInterpolation( 
-          1.5E-5, refEnergies[ 0 ], refEnergies[ 1 ],
+          1.25E+5, refEnergies[ 0 ], refEnergies[ 1 ],
                   refBarns[ 0 ], refBarns[ 1 ] );
-        CHECK( refY == Approx( xs( 1.5E-5 ) ) );
+        CHECK( refY == Approx( xs( 1.25E+5 ) ) );
         refY = histoInterpolation( 
-          1, refEnergies[ 1 ], refEnergies[ 2 ],
+          2E+5, refEnergies[ 1 ], refEnergies[ 2 ],
                   refBarns[ 1 ], refBarns[ 2 ] );
-        CHECK( refY == Approx( xs( 1 ) ) );
+        CHECK( refY == Approx( xs( 2E+5 ) ) );
         refY = histoInterpolation( 
           8E5, refEnergies[ 2 ], refEnergies[ 3 ],
                   refBarns[ 2 ], refBarns[ 3 ] );
