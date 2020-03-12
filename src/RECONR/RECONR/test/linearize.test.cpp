@@ -30,6 +30,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         auto linX = lxs.x() | ranges::to_vector;
         auto linY = lxs.y() | ranges::to_vector;
         auto oY = lxs.x() | ranges::view::transform( rxs ) | ranges::to_vector;
+        njoy::Log::info( "length: {}", ranges::distance( linY ) );
         // njoy::Log::info( "{}, refX: {}", MT, refX | ranges::view::all );
         // njoy::Log::info( "{}, refY: {}", MT, refY | ranges::view::all );
         // njoy::Log::info( "{}, linX: {}", MT, linX | ranges::view::all );

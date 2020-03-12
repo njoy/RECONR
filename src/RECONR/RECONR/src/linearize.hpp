@@ -9,10 +9,19 @@ R2D2 linearize( ResonanceReconstructionDataDelivery& r2d2,
   auto criterion = [&]( auto&& trial, auto&& reference,
 		       auto&& xLeft, auto&& xRight,
 		       auto&&, auto&& ){
+		       // auto&& yLeft, auto&& yRight ){
     if ( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
-    auto difference = std::abs( trial - reference );
-    return ( difference < absoluteTolerance ) or
-           ( (difference / reference) < relativeTolerance );
+    auto diff = std::abs( trial - reference );
+    auto reldiff = (diff/reference);
+
+    // Log::info( R"(
+// criterion:
+  // trial: {}, refer: {}
+  // xleft: {}, xRight: {} 
+  // yleft: {}, yRight: {} 
+  // diffe: {}, reldif: {}
+    // )", trial, reference, xLeft, xRight, yLeft, yRight, diff, reldiff );
+    return ( diff < absoluteTolerance ) or ( reldiff < relativeTolerance );
   };
 
   auto midpoint = []( auto&& x, auto&& ){
@@ -20,7 +29,7 @@ R2D2 linearize( ResonanceReconstructionDataDelivery& r2d2,
   };
   
   for( const auto& [ MT, table ] : r2d2.crossSections() ){
-    Log::info( "MT: {}", MT );
+    Log::info( "------------------------------------------------\nMT: {}", MT );
     auto eGrid = table.x() | ranges::to_vector;
     auto first = eGrid.begin();
     auto last = eGrid.end();
@@ -29,15 +38,13 @@ R2D2 linearize( ResonanceReconstructionDataDelivery& r2d2,
     linearization( first, last, table, criterion, midpoint );
 
     auto y = x | ranges::view::transform( table ) | ranges::to_vector;
-    // std::vector< double > zx{ 1E-4, 1E-2, 1, 1E2, 1E4 };
-    // auto z = zx | ranges::view::transform( table ) | ranges::to_vector;
-    // Log::info( "z: {}", z | ranges::view::all );
 
     linearized.emplace( MT, 
       std::vector< interp::Variant >{ interp::Variant( 
             interp::LinearLinear( std::move( x ), std::move( y ) ) )
       }
     );
+    Log::info( "------------------------------------------------" );
   }
 
   return linearized;
