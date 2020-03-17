@@ -6,6 +6,14 @@
 
 njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
 
+template< typename G >
+void printV( std::string name, G&& grid ){
+  njoy::Log::info( "{}, {}", name, ranges::distance( grid ) );
+  for(auto& E : grid ){
+    njoy::Log::info( "\t{:.16E}", E );
+  }
+}
+
 SCENARIO( "Testing the linearization of collected cross sections" ){
   GIVEN( "an ResonanceReconstructionDataDelivery object" ){
     auto material = ENDFMaterial( "SLBW" );
@@ -20,7 +28,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       auto keys = ranges::view::keys( rXSs );
       CHECK( ranges::equal( keys, ranges::view::keys( lXSs ) ) );
       
-      for( auto MT: keys ){
+      for( auto MT: keys | ranges::view::take_exactly( 1 ) ){
         njoy::Log::info( "MT: {}", MT );
         auto rxs = rXSs.at( MT );
         auto lxs = lXSs.at( MT );
@@ -31,12 +39,11 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         auto linY = lxs.y() | ranges::to_vector;
         auto oY = lxs.x() | ranges::view::transform( rxs ) | ranges::to_vector;
         njoy::Log::info( "length: {}", ranges::distance( linY ) );
-        // njoy::Log::info( "{}, refX: {}", MT, refX | ranges::view::all );
-        // njoy::Log::info( "{}, refY: {}", MT, refY | ranges::view::all );
-        // njoy::Log::info( "{}, linX: {}", MT, linX | ranges::view::all );
-        // njoy::Log::info( "{}, linY: {}", MT, linY | ranges::view::all );
+        // printV( "refX", refX );
+        // printV( "refY", refY );
+        // printV( "linX", linX );
+        // printV( "linY", linY );
         // njoy::Log::info( "{}, oY: {}", MT, oY | ranges::view::all );
-        // CHECK( ranges::equal( refX, linX ) );
       }
 
     } // THEN

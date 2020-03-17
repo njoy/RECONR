@@ -22,30 +22,36 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
       auto pB = interp::partition( barns, drop,  take );
 
       switch( LAW ){
-        case 1:
+        case 1: {
           cs.emplace_back( interp::Variant( 
               interp::Histogram( std::move( pE ), std::move( pB ) ) ) );
           break;
-        case 2:
+				}
+        case 2: {
           cs.emplace_back( interp::Variant( 
             interp::LinearLinear( std::move( pE ), std::move( pB ) ) ) );
           break;
-        case 3:
+				}
+        case 3: {
           cs.emplace_back( interp::Variant( 
             interp::LinearLogarithmic( std::move( pE ), std::move( pB ) ) ) );
           break;
-        case 4:
+				}
+        case 4: {
           cs.emplace_back( interp::Variant( 
             interp::LogarithmicLinear( std::move( pE ), std::move( pB ) ) ) );
           break;
-        case 5:
+				}
+        case 5: {
           cs.emplace_back( interp::Variant( 
             interp::LogarithmicLogarithmic( 
                 std::move( pE ), std::move( pB ) ) ) );
           break;
-        default:
+				}
+        default: {
           Log::error( "Invalid interpolation parameter." );
           throw std::exception();
+				}
       }
     };
 

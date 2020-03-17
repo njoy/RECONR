@@ -13,10 +13,7 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
     auto material = ENDFMaterial( "SLBW" );
 
     WHEN( "the resonance reconstruction data can be extracted" ){
-      // This calls collectXS
-      // auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
       auto XSs = njoy::RECONR::R2D2::Factory::collectXS( material );
-      // auto XSs = r2d2.crossSections();
 
       std::vector< int > MTs{ 1, 16, 18, 102 };
       CHECK( ranges::equal( MTs, ranges::view::keys( XSs ) ) );
@@ -42,6 +39,8 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
           CHECK( ref == Approx( barn ) );
         }
         CHECK( 1.0 == Approx( xs( 1.5E-5 ) ) );
+        CHECK( 1.0 == Approx( xs( 1.999999999E-5 ) ) );
+        CHECK( 1.1828971E1 == Approx( xs( 2.0E-5 ) ) );
         CHECK( 1.1828971E1 == Approx( xs( 1 ) ) );
         CHECK( 3.347392E-5 == Approx( xs( 8E5 ) ) );
         CHECK( 2.751761E-5 == Approx( xs( 1.925E7 ) ) );
@@ -111,19 +110,10 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
              ranges::view::zip( refBarns, barns ) ){
           CHECK( ref == Approx( barn ) );
         }
-        double refY = histoInterpolation( 
-          1.25E+5, refEnergies[ 0 ], refEnergies[ 1 ],
-                  refBarns[ 0 ], refBarns[ 1 ] );
-        CHECK( refY == Approx( xs( 1.25E+5 ) ) );
-        refY = histoInterpolation( 
-          2E+5, refEnergies[ 1 ], refEnergies[ 2 ],
-                  refBarns[ 1 ], refBarns[ 2 ] );
-        CHECK( refY == Approx( xs( 2E+5 ) ) );
-        refY = histoInterpolation( 
-          8E5, refEnergies[ 2 ], refEnergies[ 3 ],
-                  refBarns[ 2 ], refBarns[ 3 ] );
-        CHECK( refY == Approx( xs( 8E5 ) ) );
-        refY = linlinInterpolation( 
+        CHECK( 18.0 == Approx( xs( 1.25E+5 ) ) );
+        CHECK( 1.182897E1 == Approx( xs( 2E+5 ) ) );
+        CHECK( 3.347392E-5 == Approx( xs( 8E5 ) ) );
+        auto refY = linlinInterpolation( 
           1.925E7, refEnergies[ 3 ], refEnergies[ 4 ],
                    refBarns[ 3 ], refBarns[ 4 ] );
         CHECK( refY == Approx( xs( 1.925E7 ) ) );
