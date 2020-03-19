@@ -1,51 +1,25 @@
 static
-R2D2 linearize( ResonanceReconstructionDataDelivery& r2d2, 
-                double relativeTolerance, double absoluteTolerance ){
+void linearize( ResonanceReconstructionDataDelivery& r2d2, 
+                double relTol, double absTol ){
 
-  R2D2 linearized{};
+  R2D2::LinMap_t linearMap{};
 
   for( const auto& [ MT, table ] : r2d2.crossSections() ){
-    std::vector< double > x;
+    Log::info( "MT: {}--------------------------", MT );
+    std::vector< interp::LinearLinear > linearized{};
 
-    constexpr double infinity = std::numeric_limits<double>::infinity();
+    for( const auto& law : table ){
+      auto l = std::visit( 
+          [&]( auto&& arg ){ 
+            Log::info( "x: {}", arg.x() | ranges::view::all );
+            Log::info( "y: {}", arg.y() | ranges::view::all );
+            return njoy::RECONR::linearize( arg, relTol, absTol ); }, 
+          law );
+      // Log::info( "l.x: {}", l.x() | ranges::view::all );
+      linearized.emplace_back( l );
+    }
 
-    auto criterion = [ & ]( auto&& trial, auto&& reference,
-            auto&& xLeft, auto&& xRight,
-            // auto&&, auto&&  ){
-            auto&& yLeft, auto&& yRight ){
-
-      if ( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
-      auto diff = std::abs( trial - reference );
-      auto reldiff = (diff/reference);
-
-      Log::info( R"(
-criterion:
-  trial: {:.16E}, refer: {:.16E}
-  xleft: {:.16E}, xRight: {:.16E} 
-  yleft: {:.16E}, yRight: {:.16E} 
-  diffe: {:.16E}, reldif: {:.16E}
-    )", trial, reference, xLeft, xRight, yLeft, yRight, diff, reldiff );
-      return ( diff < absoluteTolerance ) or ( reldiff < relativeTolerance );
-    };
-
-    auto midpoint = []( auto&& x, auto&& ){
-      return 0.5 * ( std::get<0>(x) + std::get<1>(x) );
-    };
-    
-    auto eGrid = table.x() | ranges::to_vector;
-    auto first = eGrid.begin();
-    auto last = eGrid.end();
-    auto linearization = twig::linearize::callable< double >( x );
-    linearization( first, last, table, criterion, midpoint );
-
-    auto y = x | ranges::view::transform( table ) | ranges::to_vector;
-
-    linearized.emplace( MT, 
-      std::vector< interp::Variant >{ interp::Variant( 
-            interp::LinearLinear( std::move( x ), std::move( y ) ) )
-      }
-    );
+    linearMap.emplace( MT, std::move( linearized ) );
   }
-
-  return linearized;
 }
+

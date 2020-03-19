@@ -2,12 +2,11 @@ namespace interp{
 
 // These are taken from interpolation/src/test/Example8.cpp
 template< typename I >
-/*
 using LAW = decltype( 
   interpolation::table::make< I >( 
     std::vector< double >(), std::vector< double >() ) );
-*/
 
+/*
 using LAW = interpolation::Table<
   interpolation::table::Type< I,
     interpolation::table::search::Binary,
@@ -15,6 +14,7 @@ using LAW = interpolation::Table<
     std::vector< double >, std::vector< double > 
   >
 >;
+*/
 
 using Histogram              = LAW< interpolation::Histogram >;
 using LinearLinear           = LAW< interpolation::LinearLinear >;
@@ -28,6 +28,9 @@ using Variant = std::variant<
       LinearLogarithmic, 
       LogarithmicLinear, 
       LogarithmicLogarithmic >;
+
+using LinearTable = interpolation::Table< 
+  interpolation::table::Vector< LinearLinear > >;
 
 auto partition = []( auto&& range, int drop, int take ){
   return range

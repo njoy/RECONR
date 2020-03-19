@@ -20,8 +20,6 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
     auto makeInterpTable = [&]( int drop, int take, auto& LAW ){
       auto pE = interp::partition( energies, drop,  take );
       auto pB = interp::partition( barns, drop,  take );
-      // Log::info( "pE: {}", pE | ranges::view::all );
-      // Log::info( "pB: {}", pB | ranges::view::all );
 
       switch( LAW ){
         case 1: {

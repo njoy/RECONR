@@ -3,6 +3,7 @@ class ResonanceReconstructionDataDelivery {
   XSmap_t crossSections_;
 
 public:
+  using LinMap_t = std::map< int, interp::LinearTable >;
 
   using Buffer_t = std::string;
   using Tape_t = ENDFtk::syntaxTree::Tape< Buffer_t >;
