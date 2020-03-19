@@ -28,7 +28,8 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       auto keys = ranges::view::keys( rXSs );
       CHECK( ranges::equal( keys, ranges::view::keys( lXSs ) ) );
       
-      for( auto MT: keys | ranges::view::take_exactly( 1 ) ){
+      // for( auto MT: keys | ranges::view::take_exactly( 1 ) ){
+      for( auto MT: keys ){
         njoy::Log::info( "MT: {}", MT );
         auto rxs = rXSs.at( MT );
         auto lxs = lXSs.at( MT );
@@ -39,10 +40,10 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         auto linY = lxs.y() | ranges::to_vector;
         auto oY = lxs.x() | ranges::view::transform( rxs ) | ranges::to_vector;
         njoy::Log::info( "length: {}", ranges::distance( linY ) );
-        // printV( "refX", refX );
-        // printV( "refY", refY );
-        // printV( "linX", linX );
-        // printV( "linY", linY );
+        printV( "refX", refX );
+        printV( "refY", refY );
+        printV( "linX", linX );
+        printV( "linY", linY );
         // njoy::Log::info( "{}, oY: {}", MT, oY | ranges::view::all );
       }
 

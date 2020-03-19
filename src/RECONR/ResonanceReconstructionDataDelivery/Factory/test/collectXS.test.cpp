@@ -20,22 +20,20 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
 
       THEN( "MT=1 can be checked" ){
         auto xs = XSs.at( 1 );
-        std::vector< double > refEnergies{
+        std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
-        std::vector< double > refBarns{
-          1.0, 1.182897E1, 3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
+        std::vector< double > refB{
+          1.0, 1.0, 1.182897E1, 3.347392E-5, 2.751761E-5, 2.731301E-5 };
       
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
       
-        CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& [ref, ene ] : 
-              ranges::view::zip( refEnergies, energies ) ){
+        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
+        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
+        for( const auto& [ref, ene ] : ranges::view::zip( refE, energies ) ){
           CHECK( ref == Approx( ene ) );
         }
-        for( const auto& [ ref, barn ] : 
-              ranges::view::zip( refBarns, barns ) ){
+        for( const auto& [ ref, barn ] : ranges::view::zip( refB, barns ) ){
           CHECK( ref == Approx( barn ) );
         }
         CHECK( 1.0 == Approx( xs( 1.5E-5 ) ) );
@@ -48,120 +46,110 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
       } // THEN
       THEN( "MT=16 can be checked" ){ 
         auto xs = XSs.at( 16 );
-        std::vector< double > refEnergies{
+        std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
-        std::vector< double > refBarns{
+        std::vector< double > refB{
           1.6E1, 1.182897E1, 3.347392E-5, 
           2.751761E-5, 2.731301E-5, 2.710792E-5 };
 
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
 
-        CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& [ref, ene ] : 
-             ranges::view::zip( refEnergies, energies ) ){
+        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
+        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
+        for( const auto& [ref, ene ] : ranges::view::zip( refE, energies ) ){
           CHECK( ref == Approx( ene ) );
         }
-        for( const auto& [ ref, barn ] : 
-             ranges::view::zip( refBarns, barns ) ){
+        for( const auto& [ ref, barn ] : ranges::view::zip( refB, barns ) ){
           CHECK( ref == Approx( barn ) );
         }
 
         double refY = loglogInterpolation( 
-          1.5E-5, refEnergies[ 0 ], refEnergies[ 1 ],
-                  refBarns[ 0 ], refBarns[ 1 ] );
+          1.5E-5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
         CHECK( refY == Approx( xs( 1.5E-5 ) ) );
+
         refY = loglogInterpolation( 
-          1, refEnergies[ 1 ], refEnergies[ 2 ],
-                  refBarns[ 1 ], refBarns[ 2 ] );
+          1, refE[ 1 ], refE[ 2 ], refB[ 1 ], refB[ 2 ] );
         CHECK( refY == Approx( xs( 1 ) ) );
+
         refY = loglogInterpolation( 
-          8E5, refEnergies[ 2 ], refEnergies[ 3 ],
-                  refBarns[ 2 ], refBarns[ 3 ] );
+          8E5, refE[ 2 ], refE[ 3 ], refB[ 2 ], refB[ 3 ] );
         CHECK( refY == Approx( xs( 8E5 ) ) );
+
         refY = loglogInterpolation( 
-          1.925E7, refEnergies[ 3 ], refEnergies[ 4 ],
-                   refBarns[ 3 ], refBarns[ 4 ] );
+          1.925E7, refE[ 3 ], refE[ 4 ], refB[ 3 ], refB[ 4 ] );
         CHECK( refY == Approx( xs( 1.925E7 ) ) );
+
         refY = loglogInterpolation( 
-          1.975E7, refEnergies[ 4 ], refEnergies[ 5 ],
-                  refBarns[ 4 ], refBarns[ 5 ] );
+          1.975E7, refE[ 4 ], refE[ 5 ], refB[ 4 ], refB[ 5 ] );
         CHECK( refY == Approx( xs( 1.975E7 ) ) );
       }
       THEN( "MT=18 can be checked" ){ 
         auto xs = XSs.at( 18 );
-        std::vector< double > refEnergies{
+        std::vector< double > refE{
           1.0E+5, 1.5E+5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
-        std::vector< double > refBarns{
-          1.8E+1, 1.182897E+1, 3.347392E-5, 
-          2.751761E-5, 2.731301E-5, 2.710792E-5 };
+        std::vector< double > refB{
+          1.8E+1, 18.0, 1.182897E+1, 2.751761E-5, 2.731301E-5, 2.719792E-5 };
 
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
 
-        CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& [ref, ene ] : 
-             ranges::view::zip( refEnergies, energies ) ){
+        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
+        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
+        for( const auto& [ref, ene ] : ranges::view::zip( refE, energies ) ){
           CHECK( ref == Approx( ene ) );
         }
-        for( const auto& [ ref, barn ] : 
-             ranges::view::zip( refBarns, barns ) ){
+        for( const auto& [ ref, barn ] : ranges::view::zip( refB, barns ) ){
           CHECK( ref == Approx( barn ) );
         }
         CHECK( 18.0 == Approx( xs( 1.25E+5 ) ) );
         CHECK( 1.182897E1 == Approx( xs( 2E+5 ) ) );
         CHECK( 3.347392E-5 == Approx( xs( 8E5 ) ) );
         auto refY = linlinInterpolation( 
-          1.925E7, refEnergies[ 3 ], refEnergies[ 4 ],
-                   refBarns[ 3 ], refBarns[ 4 ] );
+          1.925E7, refE[ 3 ], refE[ 4 ], refB[ 3 ], refB[ 4 ] );
         CHECK( refY == Approx( xs( 1.925E7 ) ) );
+
         refY = linlinInterpolation( 
-          1.975E7, refEnergies[ 4 ], refEnergies[ 5 ],
-                  refBarns[ 4 ], refBarns[ 5 ] );
+          1.975E7, refE[ 4 ], refE[ 5 ], refB[ 4 ], refB[ 5 ] );
         CHECK( refY == Approx( xs( 1.975E7 ) ) );
       }
       THEN( "MT=102 can be checked" ){ 
         auto xs = XSs.at( 102 );
-        std::vector< double > refEnergies{
+        std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
-        std::vector< double > refBarns{
+        std::vector< double > refB{
           1.02E+2, 1.182897E+1, 3.347392E-5, 
           2.751761E-5, 2.731301E-5, 2.710792E-5 };
 
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
 
-        CHECK( ranges::distance( refEnergies ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refBarns ) == ranges::distance( barns ) );
-        for( const auto& [ref, ene ] : 
-             ranges::view::zip( refEnergies, energies ) ){
+        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
+        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
+        for( const auto& [ref, ene ] : ranges::view::zip( refE, energies ) ){
           CHECK( ref == Approx( ene ) );
         }
-        for( const auto& [ ref, barn ] : 
-             ranges::view::zip( refBarns, barns ) ){
+        for( const auto& [ ref, barn ] : ranges::view::zip( refB, barns ) ){
           CHECK( ref == Approx( barn ) );
         }
         double refY = linlogInterpolation( 
-          1.5E-5, refEnergies[ 0 ], refEnergies[ 1 ],
-                  refBarns[ 0 ], refBarns[ 1 ] );
+          1.5E-5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
         CHECK( refY == Approx( xs( 1.5E-5 ) ).margin( 1E-7 ) );
+
         refY = linlogInterpolation( 
-          1, refEnergies[ 1 ], refEnergies[ 2 ],
-                  refBarns[ 1 ], refBarns[ 2 ] );
+          1, refE[ 1 ], refE[ 2 ], refB[ 1 ], refB[ 2 ] );
         CHECK( refY == Approx( xs( 1 ) ).margin( 1E-7 ) );
+
         refY = linlogInterpolation( 
-          8E5, refEnergies[ 2 ], refEnergies[ 3 ],
-                  refBarns[ 2 ], refBarns[ 3 ] );
+          8E5, refE[ 2 ], refE[ 3 ], refB[ 2 ], refB[ 3 ] );
         CHECK( refY == Approx( xs( 8E5 ) ).margin( 1E-7 ) );
+
         refY = loglinInterpolation( 
-          1.925E7, refEnergies[ 3 ], refEnergies[ 4 ],
-                   refBarns[ 3 ], refBarns[ 4 ] );
+          1.925E7, refE[ 3 ], refE[ 4 ], refB[ 3 ], refB[ 4 ] );
         CHECK( refY == Approx( xs( 1.925E7 ) ).margin( 1E-7 ) );
+
         refY = loglinInterpolation( 
-          1.975E7, refEnergies[ 4 ], refEnergies[ 5 ],
-                  refBarns[ 4 ], refBarns[ 5 ] );
+          1.975E7, refE[ 4 ], refE[ 5 ], refB[ 4 ], refB[ 5 ] );
         CHECK( refY == Approx( xs( 1.975E7 ) ).margin( 1E-7 ) );
       }
     } // WHEN

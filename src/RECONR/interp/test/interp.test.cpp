@@ -152,7 +152,7 @@ SCENARIO( "Testing interpolation 'LAWS'." ){
     } // WHEN
     WHEN( "creating a Vector Table" ){
 
-    std::vector< interp::Variant > XS;
+      std::vector< interp::Variant > XS;
 
       interp::Histogram histo1{ njoy::utility::copy( x1 ),
                                               njoy::utility::copy( y1 ) };
@@ -169,7 +169,6 @@ SCENARIO( "Testing interpolation 'LAWS'." ){
         CHECK( 2.0 == table( 1.0 ) );
         CHECK( 7.0 == table( 5.0 ) );
         CHECK( 5.5 == table( 8.0 ) );
-        CHECK( 5.5 == table( 8.0 ) );
         CHECK( 7.2 == table( 10.0 ) );
         CHECK( 5.7 == table( 18.0 ) );
 
@@ -179,6 +178,39 @@ SCENARIO( "Testing interpolation 'LAWS'." ){
         CHECK( loglogInterpolation( 8.1, 8, 10, 2.2, 7.2 ) == table( 8.1 ) );
         CHECK( loglogInterpolation( 10.1, 10, 18, 7.2, 5.7 ) == table( 10.1 ) );
       } // THEN
+      WHEN( "creating a Vector Table with fake histograms" ){
+        
+        std::vector< interp::Variant > XS;
+
+        std::vector< double > x3{ 1.0, 5.0 };
+        std::vector< double > y3{ 2.0, 2.0 };
+        std::vector< double > x4{ 5.0, 8.0 };
+        std::vector< double > y4{ 7.0, 7.0 };
+
+        XS.emplace_back( interp::Variant(
+          interp::LinearLinear( njoy::utility::copy( x3 ),
+                                njoy::utility::copy( y3 ) ) ) );
+        XS.emplace_back( interp::Variant(
+          interp::LinearLinear( njoy::utility::copy( x4 ),
+                                njoy::utility::copy( y4 ) ) ) );
+        XS.emplace_back( interp::Variant(
+          interp::LogarithmicLogarithmic( njoy::utility::copy( x2 ),
+                                          njoy::utility::copy( y2 ) ) ) );
+
+        auto table = interp::Table( std::move( XS ) );
+        THEN( "we can verify interpolated values" ){
+          CHECK( 2.0 == table( 1.0 ) );
+          CHECK( 2.0 == table( 1.0000000001 ) );
+          CHECK( 2.0 == table( 4.9999999999 ) );
+          CHECK( 2.0 == table( 5.0 ) );
+          CHECK( 7.0 == table( 5.0000000001 ) );
+          CHECK( 7.0 == table( 8.0 ) );
+          CHECK( 7.2 == table( 10.0 ) );
+          CHECK( 5.7 == table( 18.0 ) );
+          CHECK( loglogInterpolation( 8.1, 8, 10, 2.2, 7.2 ) == table( 8.1 ) );
+          CHECK( loglogInterpolation( 10.1, 10, 18, 7.2, 5.7 ) == table( 10.1 ) );
+        } // THEN
+      } // WHEN
     } // WHEN
   } // GIVEN
 } // SCENARIO
