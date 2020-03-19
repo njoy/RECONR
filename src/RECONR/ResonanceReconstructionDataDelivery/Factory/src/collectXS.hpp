@@ -30,18 +30,19 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
            *
            * Instead of making one interpolation table for the whole histogram,
            * I'm making one lin-lin table for every "group" of the histogram
-           * */
           auto length = ranges::distance( pE );
           for(auto drop = 0; drop < length - 1; drop++ ){
+            Log::info( "drop: {}", drop );
             auto tpE = interp::partition( pE, drop, 2 );
             std::vector< double > tpB( 2, pB[ drop ] );
-            // Log::info( "tpE: {}", tpE | ranges::view::all );
-            // Log::info( "tpB: {}", tpB | ranges::view::all );
+            Log::info( "tpE: {}", tpE | ranges::view::all );
+            Log::info( "tpB: {}", tpB | ranges::view::all );
             cs.emplace_back( interp::Variant( 
                 interp::LinearLinear( std::move( tpE ), std::move( tpB ) ) ) );
           }
-          // cs.emplace_back( interp::Variant( 
-          //     interp::Histogram( std::move( pE ), std::move( pB ) ) ) );
+           * */
+          cs.emplace_back( interp::Variant( 
+              interp::Histogram( std::move( pE ), std::move( pB ) ) ) );
           break;
 				}
         case 2: {
@@ -95,8 +96,7 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
       }
       makeInterpTable( drop, take, std::get< 0 >( params ) );
     }
-    xs.insert( 
-      std::make_pair( section.MT(), interp::Table{ std::move( cs ) } ) );
+    xs.insert( std::make_pair( section.MT(), std::move( cs ) ) );
   }
 
   return xs;

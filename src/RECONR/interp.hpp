@@ -22,14 +22,12 @@ using LinearLogarithmic      = LAW< interpolation::LinearLogarithmic >;
 using LogarithmicLinear      = LAW< interpolation::LogarithmicLinear >;
 using LogarithmicLogarithmic = LAW< interpolation::LogarithmicLogarithmic >;
 
-using Variant = interpolation::Table< 
-    interpolation::table::Variant< 
+using Variant = std::variant< 
       Histogram, 
       LinearLinear, 
       LinearLogarithmic, 
       LogarithmicLinear, 
-      LogarithmicLogarithmic > >;
-using Table = interpolation::Table< interpolation::table::Vector< Variant > >;
+      LogarithmicLogarithmic >;
 
 auto partition = []( auto&& range, int drop, int take ){
   return range

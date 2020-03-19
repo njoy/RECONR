@@ -1,5 +1,5 @@
 class ResonanceReconstructionDataDelivery {
-  using XSmap_t = std::map< int, interp::Table >;
+  using XSmap_t = std::map< int, std::vector< interp::Variant > >;
   XSmap_t crossSections_;
 
 public:
@@ -13,8 +13,6 @@ public:
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
 
   auto crossSections() const{ return this->crossSections_; }
-  auto emplace( XSmap_t::key_type i, XSmap_t::mapped_type&& table ){ 
-    return this->crossSections_.insert_or_assign( i, table ); };
   auto at( int i ){ return crossSections_.at( i ); }
 };
 
