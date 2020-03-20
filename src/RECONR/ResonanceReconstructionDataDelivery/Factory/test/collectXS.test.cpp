@@ -82,7 +82,7 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
           auto xs1 = std::get< njoy::RECONR::interp::Histogram >(
               XSs.at( 18 )[ 0 ] );
           std::vector< double > refE{ 1.0E+5, 1.5E+5, 7.5E+5 };
-          std::vector< double > refB{ 1.8E+1, 1.182897E+1, 2.751761E-5 };
+          std::vector< double > refB{ 1.8E+1, 1.182897E+1, 3.347392E-5 };
 
           auto energies = xs1.x() | ranges::to_vector;
           auto barns = xs1.y() | ranges::to_vector;
@@ -100,7 +100,7 @@ SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
               XSs.at( 18 )[ 1 ] );
           std::vector< double > refE{ 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
           std::vector< double > refB{ 
-            3.347392E-5, 2.751761E-5, 2.731301E-5, 2.719792E-5 };
+            3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
 
           auto energies = xs2.x() | ranges::to_vector;
           auto barns = xs2.y() | ranges::to_vector;
@@ -172,6 +172,6 @@ template< typename R1, typename R2 >
 void checkReferenceRange( const R1& ref, const R2& trial){
   CHECK( ranges::distance( ref ) == ranges::distance( trial ) );
   for( const auto& [r, t ] : ranges::view::zip( ref, trial ) ){
-    CHECK( r == Approx( t ) );
+    CHECK( r == Approx( t ).scale( 1E-7 ) );
   }
 }
