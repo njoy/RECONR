@@ -6,16 +6,6 @@ using LAW = decltype(
   interpolation::table::make< I >( 
     std::vector< double >(), std::vector< double >() ) );
 
-/*
-using LAW = interpolation::Table<
-  interpolation::table::Type< I,
-    interpolation::table::search::Binary,
-    interpolation::table::discontinuity::TakeLeft,
-    std::vector< double >, std::vector< double > 
-  >
->;
-*/
-
 using Histogram              = LAW< interpolation::Histogram >;
 using LinearLinear           = LAW< interpolation::LinearLinear >;
 using LinearLogarithmic      = LAW< interpolation::LinearLogarithmic >;

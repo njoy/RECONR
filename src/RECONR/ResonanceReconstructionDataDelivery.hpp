@@ -1,9 +1,13 @@
 class ResonanceReconstructionDataDelivery {
+public:
   using XSmap_t = std::map< int, std::vector< interp::Variant > >;
+  using LinMap_t = std::map< int, interp::LinearTable >;
+
+private:
   XSmap_t crossSections_;
+  LinMap_t linearCrossSections_;
 
 public:
-  using LinMap_t = std::map< int, interp::LinearTable >;
 
   using Buffer_t = std::string;
   using Tape_t = ENDFtk::syntaxTree::Tape< Buffer_t >;
@@ -15,6 +19,10 @@ public:
 
   auto crossSections() const{ return this->crossSections_; }
   auto at( int i ){ return crossSections_.at( i ); }
+
+  auto linearCrossSections() const{ return this->linearCrossSections_; }
+  void linearCrossSections( LinMap_t&& lXS ){ 
+    this-> linearCrossSections_ = lXS; }
 };
 
 using R2D2 = ResonanceReconstructionDataDelivery;
