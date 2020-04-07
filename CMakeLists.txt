@@ -115,6 +115,18 @@ set( reconr_GNU_Windows_link_time_optimization_flags "-flto" )
 set( reconr_GNU_Windows_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
 set( reconr_GNU_Windows_nonportable_optimization_flags "-march=native" )
 set( reconr_GNU_Windows_static_flags "-static" )
+set( reconr_GNU_Darwin_common_flags "-Wno-subobject-linkage" "-Wall" "-Wextra" "-Wpedantic" "-std=c++17" )
+set( reconr_GNU_Darwin_DEBUG_flags "-O0" "-g" "-gdwarf-3" "-fsignaling-nans" )
+set( reconr_GNU_Darwin_RELEASE_flags "-O3" "-DNDEBUG" )
+set( reconr_GNU_Darwin_strict_flags "-Werror" )
+set( reconr_GNU_Darwin_coverage_flags "--coverage" )
+set( reconr_GNU_Darwin_subproject_flags  )
+set( reconr_GNU_Darwin_base_project_flags  )
+set( reconr_GNU_Darwin_profile_generate_flags "-fprofile-generate='${CMAKE_BINARY_DIR}/profiling'" )
+set( reconr_GNU_Darwin_link_time_optimization_flags "-flto" )
+set( reconr_GNU_Darwin_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
+set( reconr_GNU_Darwin_nonportable_optimization_flags "-march=native" )
+set( reconr_GNU_Darwin_static_flags "-static" )
 set( reconr_GNU_Linux_common_flags "-Wno-subobject-linkage" "-Wall" "-Wextra" "-Wpedantic" "-std=c++17" )
 set( reconr_GNU_Linux_DEBUG_flags "-O0" "-g" "-gdwarf-3" "-fsignaling-nans" )
 set( reconr_GNU_Linux_RELEASE_flags "-O3" "-DNDEBUG" )
@@ -151,18 +163,6 @@ set( reconr_GNU_MinGW_link_time_optimization_flags "-flto" )
 set( reconr_GNU_MinGW_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
 set( reconr_GNU_MinGW_nonportable_optimization_flags "-march=native" )
 set( reconr_GNU_MinGW_static_flags "-static" )
-set( reconr_GNU_Darwin_common_flags "-Wno-subobject-linkage" "-Wall" "-Wextra" "-Wpedantic" "-std=c++17" )
-set( reconr_GNU_Darwin_DEBUG_flags "-O0" "-g" "-gdwarf-3" "-fsignaling-nans" )
-set( reconr_GNU_Darwin_RELEASE_flags "-O3" "-DNDEBUG" )
-set( reconr_GNU_Darwin_strict_flags "-Werror" )
-set( reconr_GNU_Darwin_coverage_flags "--coverage" )
-set( reconr_GNU_Darwin_subproject_flags  )
-set( reconr_GNU_Darwin_base_project_flags  )
-set( reconr_GNU_Darwin_profile_generate_flags "-fprofile-generate='${CMAKE_BINARY_DIR}/profiling'" )
-set( reconr_GNU_Darwin_link_time_optimization_flags "-flto" )
-set( reconr_GNU_Darwin_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
-set( reconr_GNU_Darwin_nonportable_optimization_flags "-march=native" )
-set( reconr_GNU_Darwin_static_flags "-static" )
 set( reconr_Clang_Windows_common_flags "-stdlib=libc++" "-Wall" "-Wextra" "-Wpedantic" "-std=c++17" )
 set( reconr_Clang_Windows_DEBUG_flags "-O0" "-g" "-gdwarf-3" )
 set( reconr_Clang_Windows_RELEASE_flags "-O3" "-DNDEBUG" )
@@ -175,6 +175,18 @@ set( reconr_Clang_Windows_link_time_optimization_flags "-flto" )
 set( reconr_Clang_Windows_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
 set( reconr_Clang_Windows_nonportable_optimization_flags "-march=native" )
 set( reconr_Clang_Windows_static_flags "-static" )
+set( reconr_Clang_Darwin_common_flags "-stdlib=libc++" "-Wall" "-Wextra" "-Wpedantic" "-std=c++17" )
+set( reconr_Clang_Darwin_DEBUG_flags "-O0" "-g" "-gdwarf-3" )
+set( reconr_Clang_Darwin_RELEASE_flags "-O3" "-DNDEBUG" )
+set( reconr_Clang_Darwin_strict_flags "-Werror" )
+set( reconr_Clang_Darwin_coverage_flags "--coverage" )
+set( reconr_Clang_Darwin_subproject_flags  )
+set( reconr_Clang_Darwin_base_project_flags  )
+set( reconr_Clang_Darwin_profile_generate_flags "-fprofile-generate='${CMAKE_BINARY_DIR}/profiling'" )
+set( reconr_Clang_Darwin_link_time_optimization_flags "-flto" )
+set( reconr_Clang_Darwin_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
+set( reconr_Clang_Darwin_nonportable_optimization_flags "-march=native" )
+set( reconr_Clang_Darwin_static_flags "-static" )
 set( reconr_Clang_Linux_common_flags "-stdlib=libstdc++" "-Wall" "-Wextra" "-Wpedantic" "-std=c++17" )
 set( reconr_Clang_Linux_DEBUG_flags "-O0" "-g" "-gdwarf-3" )
 set( reconr_Clang_Linux_RELEASE_flags "-O3" "-DNDEBUG" )
@@ -211,19 +223,11 @@ set( reconr_Clang_MinGW_link_time_optimization_flags "-flto" )
 set( reconr_Clang_MinGW_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
 set( reconr_Clang_MinGW_nonportable_optimization_flags "-march=native" )
 set( reconr_Clang_MinGW_static_flags "-static" )
-set( reconr_Clang_Darwin_common_flags "-stdlib=libc++" "-Wall" "-Wextra" "-Wpedantic" "-std=c++17" )
-set( reconr_Clang_Darwin_DEBUG_flags "-O0" "-g" "-gdwarf-3" )
-set( reconr_Clang_Darwin_RELEASE_flags "-O3" "-DNDEBUG" )
-set( reconr_Clang_Darwin_strict_flags "-Werror" )
-set( reconr_Clang_Darwin_coverage_flags "--coverage" )
-set( reconr_Clang_Darwin_subproject_flags  )
-set( reconr_Clang_Darwin_base_project_flags  )
-set( reconr_Clang_Darwin_profile_generate_flags "-fprofile-generate='${CMAKE_BINARY_DIR}/profiling'" )
-set( reconr_Clang_Darwin_link_time_optimization_flags "-flto" )
-set( reconr_Clang_Darwin_profile_use_flags "-fprofile-use='${CMAKE_BINARY_DIR}/profiling'" )
-set( reconr_Clang_Darwin_nonportable_optimization_flags "-march=native" )
-set( reconr_Clang_Darwin_static_flags "-static" )
 get_directory_property( is_subproject PARENT_DIRECTORY )
+
+if( NOT TARGET pdqsort-adapter )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/pdqsort-adapter )
+endif()
 
 if( NOT TARGET range-v3-adapter )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/range-v3-adapter )
@@ -261,8 +265,12 @@ if( NOT TARGET ENDFtk )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/ENDFtk )
 endif()
 
-if( NOT TARGET eigen-adapter )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/eigen-adapter )
+if( NOT TARGET twig )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/twig )
+endif()
+
+if( NOT TARGET json-adapter )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/json-adapter )
 endif()
 
 if( NOT TARGET dimwits )
@@ -273,20 +281,12 @@ if( NOT TARGET interpolation )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/interpolation )
 endif()
 
+if( NOT TARGET eigen-adapter )
+    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/eigen-adapter )
+endif()
+
 if( NOT TARGET resonanceReconstruction )
     add_subdirectory( ${ROOT_DIRECTORY}/subprojects/resonanceReconstruction )
-endif()
-
-if( NOT TARGET pdqsort-adapter )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/pdqsort-adapter )
-endif()
-
-if( NOT TARGET twig )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/twig )
-endif()
-
-if( NOT TARGET json-adapter )
-    add_subdirectory( ${ROOT_DIRECTORY}/subprojects/json-adapter )
 endif()
 
 
@@ -322,24 +322,25 @@ message( STATUS "-----------------------------------------------------------" )
 add_library( reconr INTERFACE )
 target_sources( reconr INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/details.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/interp.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/details/simpleENDFTestString.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/details/interpLambdas.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectXS.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/ctor.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/call.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/meta.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/src/fill.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ReferenceGrid/src/call.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/ctor.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectXS.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/call.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR/src/getEvaluated.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR/src/call.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/details/interpLambdas.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/details/simpleENDFTestString.hpp"
              "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR/src/findR2D2.hpp"
-             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR/src/linearize.hpp" )
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR/src/call.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR/src/getEvaluated.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/RECONR/src/linearize.hpp"
+             "${CMAKE_CURRENT_SOURCE_DIR}/src/RECONR/src/linearize.hpp" )
 
 target_include_directories( reconr INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/src src/ )
 
@@ -347,7 +348,7 @@ set( PREFIX reconr_${CMAKE_CXX_COMPILER_ID}_${CMAKE_SYSTEM_NAME} )
 
 target_link_libraries( reconr INTERFACE "$<$<AND:$<CONFIG:RELEASE>,$<BOOL:${link_time_optimization}>>:${${PREFIX}_RELEASE_flags};${${PREFIX}_link_time_optimization_flags}$<$<BOOL:${profile_generate}>:${${PREFIX}_profile_generate_flags};>$<$<BOOL:${profile_use}>:${${PREFIX}_profile_use_flags};>$<$<BOOL:${nonportable_optimization}>:${${PREFIX}_nonportable_optimization_flags};>>$<$<CONFIG:DEBUG>:$<$<BOOL:${coverage}>:${${PREFIX}_coverage_flags};>>$<$<BOOL:CXX_appended_flags>:${CXX_appended_flags};>$<$<BOOL:reconr_appended_flags>:${reconr_appended_flags};>" )
 
-target_link_libraries( reconr INTERFACE ENDFtk INTERFACE resonanceReconstruction INTERFACE pdqsort-adapter INTERFACE Log INTERFACE twig INTERFACE json-adapter INTERFACE interpolation )
+target_link_libraries( reconr INTERFACE pdqsort-adapter INTERFACE ENDFtk INTERFACE twig INTERFACE json-adapter INTERFACE interpolation INTERFACE Log INTERFACE resonanceReconstruction )
 
 if( NOT is_subproject )
     enable_testing() 
