@@ -85,7 +85,9 @@ SCENARIO( "Extracting the reference grid" ){
     }
 
     THEN( "the reference grid..." ){
-      const auto grid = referenceGrid( rm, 3.5, 9.8596E-1 );
+      double lowerEnergy{ 9.8596E-1 };
+      double upperEnergy{ 5.5 };
+      const auto grid = referenceGrid( rm, lowerEnergy, upperEnergy );
 
       SECTION("will be sorted"){
         CHECK( ranges::is_sorted( grid ) );
@@ -96,8 +98,8 @@ SCENARIO( "Extracting the reference grid" ){
       }
 
       SECTION("will be bounded by the range limits"){
-        CHECK( grid.front() == 1E-5 );
-        CHECK( grid.back() == Approx(3.2) );
+        CHECK( grid.front() == lowerEnergy );
+        CHECK( grid.back() == upperEnergy );
       }
     }
   }
