@@ -41,11 +41,12 @@ auto operator()( const Range& range,
     auto resonances = range.lValues() | ranges::view::for_each( *this );
     RANGES_FOR( auto resonance, resonances ){
       ranges::action::push_back( energies,
-                                 resonance
-                                 | ranges::view::filter
-                                   ( [=]( const auto energy )
-                                     { return lowerEnergy < energy
-                                              and energy < upperEnergy; } ) );
+        resonance
+        | ranges::view::filter
+          ( [=]( const auto energy )
+            { return lowerEnergy < energy and energy < upperEnergy; } 
+          ) 
+      );
     }
   }
 
@@ -62,7 +63,30 @@ auto operator()( const Range& range,
 
 auto operator()( const resolved::RMatrixLimited& rml,
                  const double& lowerEnergy, const double& upperEnergy  ) const {
-  return std::vector< double >{};
+  std::vector< double > energies;
+
+  energies.push_back( lowerEnergy );
+
+  auto groups = rml.spinGroups();
+  RANGES_FOR( auto group, groups ){
+    ranges::action::push_back( energies, 
+      group.parameters().resonanceEnergies()
+      | ranges::view::filter(
+          [=]( auto&& energy ){
+            return ( lowerEnergy < energy ) and ( energy < upperEnergy );
+          }
+        )
+    );
+  }
+
+  energies.push_back( upperEnergy );
+
+  if ( not ranges::is_sorted( energies ) ){
+    std::sort( energies.begin(), energies.end() );
+  }
+
+  energies |= ranges::action::unique;
+  return energies;
 };
 
 auto operator()( const unresolved::CaseA&,

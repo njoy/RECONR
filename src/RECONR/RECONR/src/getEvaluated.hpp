@@ -8,5 +8,6 @@ static Format_t getEvaluated( int nendf ){
     Log::info( "Error ocurred when trying to open evaluated data file: {}.",
                filename);
   }
-  return njoy::ENDFtk::syntaxTree::makeTape( std::move( ENDF ) );
+  // return njoy::ENDFtk::syntaxTree::Tape< buffer_t >( std::move( ENDF ) );
+  return Format_t{ njoy::ENDFtk::syntaxTree::makeTape( std::move( ENDF ) ) };
 }

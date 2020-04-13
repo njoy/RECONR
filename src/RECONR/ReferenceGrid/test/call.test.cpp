@@ -7,6 +7,7 @@ namespace RP = njoy::ENDFtk::resonanceParameters;
 
 RP::resolved::SLBW breitWigner();
 RP::resolved::ReichMoore reichMoore();
+RP::resolved::RMatrixLimited rMatrixLimited();
 RP::SpecialCase specialCase();
 RP::unresolved::EnergyIndependent caseA();
 RP::unresolved::EnergyDependentFissionWidths caseB();
@@ -37,11 +38,11 @@ SCENARIO( "Extracting the reference grid" ){
   GIVEN( "a Reich-Moore resolved region" ){
     RP::resolved::ReichMoore rm = reichMoore();
 
-    const std::vector< double > resonanceEnergies =
-      { -1.000000E+2, -9.000000E+1, -4.297600E+0, -3.493400E+0,
-        -1.504300E+0, -4.116100E-1, -1.942800E-1,  3.657500E-5,
-         2.819000E-1,  1.138900E+0,  2.036100E+0,  2.776700E+0,
-         3.156600E+0,  3.620800E+0,  4.850800E+0,  5.449700E+0 };
+    const std::vector< double > resonanceEnergies { 
+      -1.000000E+2, -9.000000E+1, -4.297600E+0, -3.493400E+0,
+      -1.504300E+0, -4.116100E-1, -1.942800E-1,  3.657500E-5,
+       2.819000E-1,  1.138900E+0,  2.036100E+0,  2.776700E+0,
+       3.156600E+0,  3.620800E+0,  4.850800E+0,  5.449700E+0 };
 
     GIVEN( "an l-value" ){
       const auto lValue = rm.lValues().front();
@@ -103,6 +104,23 @@ SCENARIO( "Extracting the reference grid" ){
       }
     }
   }
+
+  GIVEN( "a RMatrixLimited resolved region" ){
+    RP::resolved::RMatrixLimited rml = rMatrixLimited();
+    
+    std::vector< double > reference{
+      -1.223300e+6, 7.788000e+3, 5.152000e+4, 5.359000e+4 };
+
+    double lowerEnergy{ -1.9E6 };
+    double upperEnergy{ 5.5E5 };
+
+    reference.insert( reference.cbegin(), lowerEnergy );
+    reference.insert( reference.cend(), upperEnergy );
+
+    const auto grid = referenceGrid( rml, lowerEnergy, upperEnergy );
+
+    CHECK( reference == grid );
+  } // GIVEN
 
   GIVEN( "a \"special case\" region" ){
     RP::SpecialCase sc = specialCase();
@@ -182,6 +200,7 @@ SCENARIO( "Extracting the reference grid" ){
 
 std::string breitWignerString();
 std::string reichMooreString();
+std::string rmlString();
 std::string specialCaseString();
 std::string caseAString();
 std::string caseBString();
@@ -214,6 +233,18 @@ RP::resolved::ReichMoore reichMoore(){
   // RP::resolved::BreitWignerReichMooreBase< RP::resolved::ReichMoore >
   //     base(1E-5, 3.2, 1, 3, 0, 0);
   return RP::resolved::ReichMoore( begin, end, ln, MAT, MF, MT );
+}
+
+RP::resolved::RMatrixLimited rMatrixLimited(){
+  long ln = 0;
+  int MAT = 2625;
+  int MF = 2;
+  int MT = 151;
+  auto rml = rmlString();
+  auto begin = rml.begin();
+  auto end = rml.end();
+
+  return RP::resolved::RMatrixLimited( begin, end, ln, MAT, MF, MT );
 }
 
 RP::SpecialCase specialCase(){

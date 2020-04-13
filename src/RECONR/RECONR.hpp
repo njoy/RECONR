@@ -12,6 +12,6 @@ protected:
 public:
   #include "RECONR/RECONR/src/linearize.hpp"
   #include "RECONR/RECONR/src/getEvaluated.hpp"
-  // #include "RECONR/RECONR/src/findR2D2.hpp"
-  // #include "RECONR/RECONR/src/call.hpp"
+  #include "RECONR/RECONR/src/findR2D2.hpp"
+  #include "RECONR/RECONR/src/call.hpp"
 };
