@@ -23,22 +23,6 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
 
       switch( LAW ){
         case 1: {
-          /* This is a little hack to get histograms to work with the
-           * interplation library.
-           *
-           * Instead of making one interpolation table for the whole histogram,
-           * I'm making one lin-lin table for every "group" of the histogram
-          auto length = ranges::distance( pE );
-          for(auto drop = 0; drop < length - 1; drop++ ){
-            Log::info( "drop: {}", drop );
-            auto tpE = interp::partition( pE, drop, 2 );
-            std::vector< double > tpB( 2, pB[ drop ] );
-            Log::info( "tpE: {}", tpE | ranges::view::all );
-            Log::info( "tpB: {}", tpB | ranges::view::all );
-            cs.emplace_back( interp::Variant( 
-                interp::LinearLinear( std::move( tpE ), std::move( tpB ) ) ) );
-          }
-           * */
           cs.emplace_back( interp::Variant( 
               interp::Histogram( std::move( pE ), std::move( pB ) ) ) );
           break;

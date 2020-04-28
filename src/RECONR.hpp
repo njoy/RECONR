@@ -5,7 +5,7 @@
 #include "json.hpp"
 
 #include "ENDFtk.hpp"
-// #include "resonanceReconstruction.hpp"
+#include "resonanceReconstruction.hpp"
 #include "interpolation.hpp"
 #include "twig.hpp"
 

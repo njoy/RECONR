@@ -21,11 +21,9 @@ linearize2( LAW law, double relTol, double absTol ){
   auto eGrid = law.x() | ranges::to_vector;
   auto first = eGrid.begin();
   auto last = eGrid.end();
-  std::vector< double > x;
-  auto linearization = twig::linearize::callable< double >( x );
+  std::vector< double > x, y;
+  auto linearization = twig::linearize::callable( x, y );
   linearization( first, last, law, criterion, midpoint );
-
-  auto y = x | ranges::view::transform( law ) | ranges::to_vector;
 
   return interp::LinearLinear{ std::move( x ), std::move( y ) };
 
