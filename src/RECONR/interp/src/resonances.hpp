@@ -1,39 +1,18 @@
-using namespace resonances {
-struct SLBW_t : resonanceReconstruction::breitWigner::singleLevel::Apply {
+namespace resonances {
 
-  template< typename Range >
-  void verifyXGridAssumptions( Range&& ){ }
-  template< typename Range >
-  void verifyYGridAssumptions( Range&& ){ }
-};
-
-struct MLBW_t : resonanceReconstruction::breitWigner::multiLevel::Apply {
-
-  template< typename Range >
-  void verifyXGridAssumptions( Range&& ){ }
-  template< typename Range >
-  void verifyYGridAssumptions( Range&& ){ }
-};
-
-struct RM_t : resonanceReconstruction::reichMoore::Apply {
-
-  template< typename Range >
-  void verifyXGridAssumptions( Range&& ){ }
-  template< typename Range >
-  void verifyYGridAssumptions( Range&& ){ }
-};
-
-using SLBW = Table< SLBW_t >;
-using MLBW = Table< MLBW_t >;
-using RM = Table< RM_t >;
+#include "RECONR/interp/src/resonances/SLBW.hpp"
+#include "RECONR/interp/src/resonances/MLBW.hpp"
+#include "RECONR/interp/src/resonances/RM.hpp"
 
 using Variant = std::variant<
-  SLBW,
-  MLBW,
-  RM
+  SLBW< double >,
+  SLBW< double, double >,
+  MLBW< double >,
+  MLBW< double, double >,
+  RM< double >,
+  RM< double, double >
 >;
 
-using Vector = interpolation::Table< 
-  interpolation::table::Vector< Variant > >;
+using Vector = interpolation::Table< interpolation::table::Vector< Variant > >;
 
 } // namespace resonances
