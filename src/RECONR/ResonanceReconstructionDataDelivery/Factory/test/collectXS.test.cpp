@@ -10,8 +10,8 @@ void checkReferenceRange( const R1&, const R2& );
 
 njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
 
-SCENARIO( "Testing the factory of resonance reconstruction data for SLBW" ){
-  GIVEN( "an ENDF Material with SLBW parameters" ){
+SCENARIO( "Testing the the collection of cross sections" ){
+  GIVEN( "an ENDF Material" ){
     auto material = ENDFMaterial( "SLBW" );
 
     WHEN( "the resonance reconstruction data can be extracted" ){

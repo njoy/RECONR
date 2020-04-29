@@ -1,7 +1,6 @@
 
 add_executable( RECONR.RECONR.test
                 getEvaluated.test.cpp
-                makePENDF.test.cpp
                 linearize.test.cpp
                 RECONR.test.cpp )
 target_compile_options( RECONR.RECONR.test PRIVATE ${${PREFIX}_common_flags}

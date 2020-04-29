@@ -7,4 +7,5 @@ public:
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/ctor.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/call.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectXS.hpp"
+  #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectRP.hpp"
 };

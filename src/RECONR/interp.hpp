@@ -6,5 +6,5 @@ using Table = decltype(
     std::vector< double >(), std::vector< double >() ) );
 
 #include "RECONR/interp/src/ENDF.hpp"
-#include "RECONR/interp/src/resonances.hpp"
+#include "RECONR/interp/src/resonanceParameters.hpp"
 } // namespace interp

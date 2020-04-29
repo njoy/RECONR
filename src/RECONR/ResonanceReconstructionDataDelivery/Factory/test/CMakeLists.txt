@@ -1,7 +1,8 @@
 
 add_executable( RECONR.ResonanceReconstructionDataDelivery.Factory.test
                 Factory.test.cpp
-                collectXS.test.cpp )
+                collectXS.test.cpp
+                collectRP.test.cpp )
 target_compile_options( RECONR.ResonanceReconstructionDataDelivery.Factory.test PRIVATE ${${PREFIX}_common_flags}
 $<$<BOOL:${strict}>:${${PREFIX}_strict_flags}>$<$<CONFIG:DEBUG>:
 ${${PREFIX}_DEBUG_flags}

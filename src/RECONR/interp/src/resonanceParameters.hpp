@@ -1,8 +1,8 @@
-namespace resonances {
+namespace resonanceParameters {
 
-#include "RECONR/interp/src/resonances/SLBW.hpp"
-#include "RECONR/interp/src/resonances/MLBW.hpp"
-#include "RECONR/interp/src/resonances/RM.hpp"
+#include "RECONR/interp/src/resonanceParameters/SLBW.hpp"
+#include "RECONR/interp/src/resonanceParameters/MLBW.hpp"
+#include "RECONR/interp/src/resonanceParameters/RM.hpp"
 
 using Variant = std::variant<
   SLBW< double >,
