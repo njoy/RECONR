@@ -4,8 +4,6 @@
 
 #include "RECONR/details/simpleENDFTestString.hpp"
 
-njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
-
 template< typename G >
 void printV( std::string name, G&& grid ){
   njoy::Log::info( "{}, {}", name, ranges::distance( grid ) );

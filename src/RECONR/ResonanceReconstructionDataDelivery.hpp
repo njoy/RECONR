@@ -3,11 +3,14 @@ public:
   using XSmap_t = std::map< int, std::vector< interp::Variant > >;
   using LinMap_t = std::map< int, interp::LinearTable >;
 
+  using RPVariant = std::variant< 
+    std::vector< ENDFtk::resonanceParameters::Isotope >
+  >;
+  RPVariant resonanceParameters_;
+
 private:
   XSmap_t crossSections_;
   LinMap_t linearCrossSections_;
-
-  // std::optional< interp::resonanceParameters::Vector > resonanceParameters_;
 
 public:
 
@@ -19,14 +22,14 @@ public:
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
 
-  auto crossSections() const{ return this->crossSections_; }
+  auto crossSections() const { return this->crossSections_; }
   auto at( int i ){ return crossSections_.at( i ); }
 
-  auto linearCrossSections() const{ return this->linearCrossSections_; }
+  auto linearCrossSections() const { return this->linearCrossSections_; }
   void linearCrossSections( LinMap_t&& lXS ){ 
     this-> linearCrossSections_ = lXS; }
 
-  // auto resonanceParameters() const{ return this->resonanceParameters_; }
+  auto resonanceParameters() const { return this->resonanceParameters_; }
 };
 
 using R2D2 = ResonanceReconstructionDataDelivery;
