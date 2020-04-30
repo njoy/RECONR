@@ -19,7 +19,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       double absTolerance{ 1E-6 };
       // This tolerance is large by design
       double relTolerance{ 1E-1 };
-      njoy::RECONR::RECONR::linearize( r2d2, absTolerance, relTolerance );
+      njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
 
       auto rXSs = r2d2.crossSections();
       auto lXSs = r2d2.linearCrossSections();

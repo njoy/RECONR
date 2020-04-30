@@ -1,5 +1,5 @@
 static
-void linearize( ResonanceReconstructionDataDelivery& r2d2, 
+void linearizeXS( ResonanceReconstructionDataDelivery& r2d2, 
                 double relTol, double absTol ){
 
   R2D2::LinMap_t linearMap{};

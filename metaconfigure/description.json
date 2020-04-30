@@ -605,10 +605,10 @@
     "src/RECONR/ReferenceGrid/src/call.hpp",
     "src/RECONR/details/interpLambdas.hpp",
     "src/RECONR/details/simpleENDFTestString.hpp",
+    "src/RECONR/RECONR/src/linearizeXS.hpp",
     "src/RECONR/RECONR/src/findR2D2.hpp",
     "src/RECONR/RECONR/src/call.hpp",
     "src/RECONR/RECONR/src/getEvaluated.hpp",
-    "src/RECONR/RECONR/src/linearize.hpp",
     "src/RECONR/src/linearize.hpp"
   ],
   "ignore pattern": "$^",
@@ -630,7 +630,7 @@
   "tests": {
     "RECONR.RECONR": [
       "src/RECONR/RECONR/test/getEvaluated.test.cpp",
-      "src/RECONR/RECONR/test/linearize.test.cpp",
+      "src/RECONR/RECONR/test/linearizeXS.test.cpp",
       "src/RECONR/RECONR/test/RECONR.test.cpp"
     ],
     "RECONR.ReferenceGrid": [
