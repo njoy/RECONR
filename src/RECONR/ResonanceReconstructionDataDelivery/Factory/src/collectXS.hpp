@@ -1,5 +1,5 @@
 static
-XSmap_t collectXS( const Material_t material){
+XSmap_t collectXS( const Material_t& material){
   return std::visit( 
     [&](auto&& arg ){ return Factory::collectXS( arg ); },
     material );

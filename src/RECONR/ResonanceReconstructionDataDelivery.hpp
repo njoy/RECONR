@@ -7,7 +7,7 @@ private:
   XSmap_t crossSections_;
   LinMap_t linearCrossSections_;
 
-  interp::resonances::Vector resonanceParameters_;
+  // std::optional< interp::resonanceParameters::Vector > resonanceParameters_;
 
 public:
 
@@ -26,7 +26,7 @@ public:
   void linearCrossSections( LinMap_t&& lXS ){ 
     this-> linearCrossSections_ = lXS; }
 
-  auto resonanceParameters() const{ return this->resonanceParameters_; }
+  // auto resonanceParameters() const{ return this->resonanceParameters_; }
 };
 
 using R2D2 = ResonanceReconstructionDataDelivery;
