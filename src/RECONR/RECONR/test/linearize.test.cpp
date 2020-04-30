@@ -10,9 +10,6 @@ template< typename G >
 void printV( std::string name, G&& grid ){
   njoy::Log::info( "{}, {}", name, ranges::distance( grid ) );
   njoy::Log::info( "{}", grid | ranges::view::all );
-  // for(auto& E : grid ){
-  //   njoy::Log::info( "\t{:.16E}", E );
-  // }
 }
 
 SCENARIO( "Testing the linearization of collected cross sections" ){
