@@ -15,10 +15,10 @@ namespace RECONR {
 using namespace ENDFtk::resonanceParameters;
 
 #include "RECONR/interp.hpp"
+#include "RECONR/ReferenceGrid.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
 #include "RECONR/src/linearize.hpp"
 #include "RECONR/RECONR.hpp"
-#include "RECONR/ReferenceGrid.hpp"
 
 }
 }

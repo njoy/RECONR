@@ -229,6 +229,6 @@ auto operator()( const Isotope& isotope ) const {
   if ( foundOverlap ){
     Log::warning( "ENDF material has overlapping resonance ranges" );
   }
-
-  return grids;
+  grids |= ranges::action::unique;
+  return grids | ranges::view::join | ranges::to_vector;
 }

@@ -7,6 +7,7 @@
 
 namespace RP = njoy::ENDFtk::resonanceParameters;
 
+RP::Isotope isotope();
 RP::resolved::SLBW breitWigner();
 RP::resolved::ReichMoore reichMoore();
 RP::resolved::RMatrixLimited rMatrixLimited();
@@ -20,6 +21,21 @@ void ignore( T&& ){}
 
 SCENARIO( "Extracting the reference grid" ){
   using namespace njoy::RECONR;
+
+  GIVEN( "an Isotope" ){
+
+    const std::vector< double > resonanceEnergies { 
+      0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
+    };
+    RP::Isotope iso = isotope();
+
+    auto trial = referenceGrid( iso );
+
+    njoy::Log::info( "trial: {}", trial | ranges::view::all );
+
+    CHECK( resonanceEnergies == trial );
+    
+  } // GIVEN
 
   GIVEN( "Breit-Wigner resonance" ){
     RP::resolved::SLBW slbw = breitWigner();
@@ -191,7 +207,6 @@ SCENARIO( "Extracting the reference grid" ){
     };
     auto energies = referenceGrid( cc, 6.0E3, 1.0E5 );
 
-    njoy::Log::info("length: {}", energies.size() );
     RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
       auto ref = std::get< 0 >( en );
       auto trial = std::get< 1 >( en );
@@ -208,6 +223,14 @@ std::string caseAString();
 std::string caseBString();
 std::string caseCString();
 
+RP::Isotope isotope(){
+
+  auto material = details::ENDFMaterial( "SLBW" );
+  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+
+  return MT151.isotopes().front();
+}
+
 RP::resolved::SLBW breitWigner(){
 
   auto material = details::ENDFMaterial( "SLBW" );
@@ -219,7 +242,7 @@ RP::resolved::SLBW breitWigner(){
 
 RP::resolved::ReichMoore reichMoore(){
 
-  auto material = details::ENDFMaterial( "RM", true );
+  auto material = details::ENDFMaterial( "RM" );
   auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
 
   return std::get< RP::resolved::ReichMoore >(
@@ -228,7 +251,7 @@ RP::resolved::ReichMoore reichMoore(){
 
 RP::resolved::RMatrixLimited rMatrixLimited(){
 
-  auto material = details::ENDFMaterial( "RML", true );
+  auto material = details::ENDFMaterial( "RML" );
   auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
 
   return std::get< RP::resolved::RMatrixLimited >(

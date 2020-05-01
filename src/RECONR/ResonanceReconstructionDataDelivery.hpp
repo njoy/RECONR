@@ -21,6 +21,7 @@ public:
     decltype( Tape_t{ std::string{} }.materialNumber( 1 ).front() ) >;
 
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory.hpp"
+  #include "RECONR/ResonanceReconstructionDataDelivery/src/getResonanceReferenceGrid.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
 
   auto crossSections() const { return this->crossSections_; }
@@ -31,6 +32,8 @@ public:
     this-> linearCrossSections_ = lXS; }
 
   auto resonanceParameters() const { return this->resonanceParameters_; }
+
+  auto resonanceReferenceGrid() const { return this->resonanceReferenceGrid_; }
 };
 
 using R2D2 = ResonanceReconstructionDataDelivery;
