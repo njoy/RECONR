@@ -590,25 +590,26 @@
   "header files": [
     "src/RECONR.hpp",
     "src/RECONR/details.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery.hpp",
     "src/RECONR/ReferenceGrid.hpp",
     "src/RECONR/RECONR.hpp",
     "src/RECONR/interp.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery/Factory.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectXS.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectRP.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/ctor.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/call.hpp",
-    "src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery.hpp",
+    "src/RECONR/details/simpleENDFTestString.hpp",
+    "src/RECONR/details/interpLambdas.hpp",
     "src/RECONR/ReferenceGrid/meta.hpp",
     "src/RECONR/ReferenceGrid/src/fill.hpp",
     "src/RECONR/ReferenceGrid/src/call.hpp",
-    "src/RECONR/details/interpLambdas.hpp",
-    "src/RECONR/details/simpleENDFTestString.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/Factory.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/ctor.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectXS.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/call.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectRP.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp",
+    "src/RECONR/ResonanceReconstructionDataDelivery/src/getResonanceReferenceGrid.hpp",
+    "src/RECONR/RECONR/src/getEvaluated.hpp",
+    "src/RECONR/RECONR/src/call.hpp",
     "src/RECONR/RECONR/src/linearizeXS.hpp",
     "src/RECONR/RECONR/src/findR2D2.hpp",
-    "src/RECONR/RECONR/src/call.hpp",
-    "src/RECONR/RECONR/src/getEvaluated.hpp",
     "src/RECONR/src/linearize.hpp"
   ],
   "ignore pattern": "$^",
@@ -629,9 +630,9 @@
   "test pattern": "test$",
   "tests": {
     "RECONR.RECONR": [
-      "src/RECONR/RECONR/test/getEvaluated.test.cpp",
       "src/RECONR/RECONR/test/linearizeXS.test.cpp",
-      "src/RECONR/RECONR/test/RECONR.test.cpp"
+      "src/RECONR/RECONR/test/RECONR.test.cpp",
+      "src/RECONR/RECONR/test/getEvaluated.test.cpp"
     ],
     "RECONR.ReferenceGrid": [
       "src/RECONR/ReferenceGrid/test/call.test.cpp",
@@ -642,9 +643,9 @@
       "src/RECONR/ResonanceReconstructionDataDelivery/test/ResonanceReconstructionDataDelivery.test.cpp"
     ],
     "RECONR.ResonanceReconstructionDataDelivery.Factory": [
+      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectRP.test.cpp",
       "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/Factory.test.cpp",
-      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.test.cpp",
-      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectRP.test.cpp"
+      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.test.cpp"
     ]
   },
   "update": true

@@ -6,12 +6,13 @@ public:
   using RPVariant = std::variant< 
     std::vector< ENDFtk::resonanceParameters::Isotope >
   >;
-  RPVariant resonanceParameters_;
 
 private:
   XSmap_t crossSections_;
   LinMap_t linearCrossSections_;
 
+  RPVariant resonanceParameters_;
+  std::vector< double > resonanceReferenceGrid_;
 public:
 
   using Buffer_t = std::string;
