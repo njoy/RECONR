@@ -12,7 +12,7 @@ void printV( std::string name, G&& grid ){
 
 SCENARIO( "Testing the linearization of collected cross sections" ){
   GIVEN( "an ResonanceReconstructionDataDelivery object" ){
-    auto material = ENDFMaterial( "SLBW" );
+    auto material = details::ENDFMaterial( "SLBW" );
     auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
 
     WHEN( "the cross sections are linearized" ){

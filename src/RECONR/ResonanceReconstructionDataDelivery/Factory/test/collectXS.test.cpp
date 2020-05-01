@@ -8,11 +8,9 @@
 template< typename R1, typename R2 >
 void checkReferenceRange( const R1&, const R2& );
 
-njoy::RECONR::R2D2::ENDFMaterial_t ENDFMaterial( std::string );
-
 SCENARIO( "Testing the the collection of cross sections" ){
   GIVEN( "an ENDF Material" ){
-    auto material = ENDFMaterial( "SLBW", false );
+    auto material = details::ENDFMaterial( "SLBW", false );
 
     WHEN( "the resonance reconstruction data can be extracted" ){
       auto XSs = njoy::RECONR::R2D2::Factory::collectXS( material );

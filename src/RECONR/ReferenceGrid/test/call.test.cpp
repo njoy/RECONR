@@ -3,6 +3,8 @@
 #include "catch.hpp"
 #include "RECONR.hpp"
 
+#include "RECONR/details/simpleENDFTestString.hpp"
+
 namespace RP = njoy::ENDFtk::resonanceParameters;
 
 RP::resolved::SLBW breitWigner();
@@ -207,44 +209,30 @@ std::string caseBString();
 std::string caseCString();
 
 RP::resolved::SLBW breitWigner(){
-  int MAT = 6922;
-  int MF = 2;
-  int MT = 151;
-  long ln = 0;
 
-  auto bws = breitWignerString();
-  auto begin = bws.begin();
-  auto end = bws.end();
+  auto material = details::ENDFMaterial( "SLBW" );
+  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
 
-  // RP::resolved::BreitWignerReichMooreBase< RP::resolve::SLBW >
-  //     base( 1E-5, 3.2, 1, 1, 0, 0 );
-  return RP::resolved::SLBW( begin, end, ln, MAT, MF, MT );
+  return std::get< RP::resolved::SingleLevelBreitWigner >(
+      MT151.isotopes().front().resonanceRanges().front().parameters() );
 }
 
 RP::resolved::ReichMoore reichMoore(){
-  long ln = 0;
-  int MAT = 6922;
-  int MF = 2;
-  int MT = 151;
-  auto rms = reichMooreString();
-  auto begin = rms.begin();
-  auto end = rms.end();
 
-  // RP::resolved::BreitWignerReichMooreBase< RP::resolved::ReichMoore >
-  //     base(1E-5, 3.2, 1, 3, 0, 0);
-  return RP::resolved::ReichMoore( begin, end, ln, MAT, MF, MT );
+  auto material = details::ENDFMaterial( "RM", true );
+  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+
+  return std::get< RP::resolved::ReichMoore >(
+      MT151.isotopes().front().resonanceRanges().front().parameters() );
 }
 
 RP::resolved::RMatrixLimited rMatrixLimited(){
-  long ln = 0;
-  int MAT = 2625;
-  int MF = 2;
-  int MT = 151;
-  auto rml = rmlString();
-  auto begin = rml.begin();
-  auto end = rml.end();
 
-  return RP::resolved::RMatrixLimited( begin, end, ln, MAT, MF, MT );
+  auto material = details::ENDFMaterial( "RML", true );
+  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+
+  return std::get< RP::resolved::RMatrixLimited >(
+      MT151.isotopes().front().resonanceRanges().front().parameters() );
 }
 
 RP::SpecialCase specialCase(){

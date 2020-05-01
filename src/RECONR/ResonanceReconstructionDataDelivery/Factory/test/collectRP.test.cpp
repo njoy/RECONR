@@ -7,7 +7,7 @@
 SCENARIO( "Testing the collection of resonance parameter data" ){
 
   GIVEN( "ENDF Material with SLBW" ){
-    auto material = ENDFMaterial( "SLBW" );
+    auto material = details::ENDFMaterial( "SLBW", true );
 
     WHEN( "the resonance parameters are extracted" ){
       auto isos = std::get< 0 >(
