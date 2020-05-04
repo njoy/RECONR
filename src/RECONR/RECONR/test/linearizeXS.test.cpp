@@ -3,12 +3,8 @@
 #include "RECONR.hpp"
 
 #include "RECONR/details/simpleENDFTestString.hpp"
-
-template< typename G >
-void printV( std::string name, G&& grid ){
-  njoy::Log::info( "{}, {}", name, ranges::distance( grid ) );
-  njoy::Log::info( "{}", grid | ranges::view::all );
-}
+#include "RECONR/details/printV.hpp"
+#include "RECONR/details/nextMin.hpp"
 
 SCENARIO( "Testing the linearization of collected cross sections" ){
   GIVEN( "an ResonanceReconstructionDataDelivery object" ){
@@ -17,8 +13,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
 
     WHEN( "the cross sections are linearized" ){
       double absTolerance{ 1E-6 };
-      // This tolerance is large by design
-      double relTolerance{ 1E-1 };
+      double relTolerance{ 1E-1 }; // This tolerance is large by design
       njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
 
       auto rXSs = r2d2.crossSections();
@@ -27,17 +22,15 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       auto keys = ranges::view::keys( rXSs );
       CHECK( ranges::equal( keys, ranges::view::keys( lXSs ) ) );
       
-      auto nextMin = [](double value ){ 
-        return std::nextafter( value, std::numeric_limits< double >::min() ); };
       THEN( "we can check MT=1" ){
         auto lxs1 = lXSs.at( 1 );
         std::vector< double > refE{
           1.0E-5, 
-          nextMin( 2.0E-5 ), 2.0E-5,
-          nextMin( 7.5E+5 ), 7.5E+5,
-          nextMin( 1.9E+7 ), 1.9E+7,
-          nextMin( 1.95E+7 ),1.95E+7,
-          nextMin( 2.0E+7 ), 2.0E+7 };
+          details::nextMin( 2.0E-5 ), 2.0E-5,
+          details::nextMin( 7.5E+5 ), 7.5E+5,
+          details::nextMin( 1.9E+7 ), 1.9E+7,
+          details::nextMin( 1.95E+7 ),1.95E+7,
+          details::nextMin( 2.0E+7 ), 2.0E+7 };
         std::vector< double > refB{
           1.0         , 1.0         , 
           1.182897E1  , 1.182897E1  , 
@@ -51,10 +44,10 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).scale( 1E-7 ) );
+          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
         }
         for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).scale( 1E-7 ) );
+          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
         }
       }
       THEN( "we can check MT=16" ){
@@ -87,20 +80,19 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).scale( 1E-7 ) );
+          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
         }
         for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).scale( 1E-7 ) );
+          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
         }
       }
       THEN( "we can check MT=18" ){
         auto lxs18 = lXSs.at( 18 );
         std::vector< double > refE{ 
           1.0E+5,
-          nextMin( 1.5E+5 ), 1.5E+5,
-          nextMin( 7.5E+5 ), 7.5E+5,
+          details::nextMin( 1.5E+5 ), 1.5E+5,
+          details::nextMin( 7.5E+5 ), 7.5E+5,
           1.9E+7, 1.95E+7, 2.0E+7 };
-
         std::vector< double > refB{ 
           1.8E+1      , 1.8E+1      , 
           1.182897E+1 , 1.182897E+1 , 
@@ -111,10 +103,10 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).scale( 1E-7 ) );
+          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
         }
         for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).scale( 1E-7 ) );
+          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
         }
       }
       THEN( "we can check MT=102" ){
@@ -149,10 +141,10 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).scale( 1E-7 ) );
+          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
         }
         for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).scale( 1E-7 ) );
+          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
         }
       }
     } // THEN

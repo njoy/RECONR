@@ -105,7 +105,7 @@ SCENARIO( "Extracting the reference grid" ){
     }
 
     THEN( "the reference grid..." ){
-      double lowerEnergy{ 1E-5 };
+      double lowerEnergy{ 9.8596E-1 };
       double upperEnergy{ 5.5 };
       const auto grid = referenceGrid( rm, lowerEnergy, upperEnergy );
 

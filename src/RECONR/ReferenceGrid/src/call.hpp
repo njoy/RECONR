@@ -50,6 +50,7 @@ auto operator()( const Range& range,
     }
   }
 
+
   energies.push_back( upperEnergy );
 
   if ( not ranges::is_sorted( energies ) ){
