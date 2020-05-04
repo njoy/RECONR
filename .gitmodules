@@ -13,3 +13,9 @@
 [submodule "dependencies/json-adapter"]
 	path = dependencies/json-adapter
 	url = https://github.com/njoy/json-adapter.git
+[submodule "dependencies/resonanceReconstruction"]
+	path = dependencies/resonanceReconstruction
+	url = https://github.com/njoy/resonanceReconstruction.git
+[submodule "dependencies/interpolation"]
+	path = dependencies/interpolation
+	url = https://github.com/njoy/interpolation.git
