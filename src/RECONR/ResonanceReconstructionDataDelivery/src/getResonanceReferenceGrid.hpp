@@ -16,8 +16,7 @@ std::vector< double > getResonanceReferenceGrid(
   std::vector< double > grid{};
   for( const auto& iso : parameters ){
     auto rg = referenceGrid( iso );
-    // Log::info( "rg: {}", rg | ranges::view::all );
-    // grid |= ranges::action::push_back( rg );
+    grid |= ranges::action::push_back( rg );
   }
   
   return grid;

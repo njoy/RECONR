@@ -31,8 +31,6 @@ SCENARIO( "Extracting the reference grid" ){
 
     auto trial = referenceGrid( iso );
 
-    njoy::Log::info( "trial: {}", trial | ranges::view::all );
-
     CHECK( ranges::distance( resonanceEnergies ) == ranges::distance( trial ) );
     for(const auto& [ref, tri]: ranges::view::zip( resonanceEnergies, trial ) ){
       CHECK( ref == Approx( tri ) );
@@ -107,7 +105,7 @@ SCENARIO( "Extracting the reference grid" ){
     }
 
     THEN( "the reference grid..." ){
-      double lowerEnergy{ 9.8596E-1 };
+      double lowerEnergy{ 1E-5 };
       double upperEnergy{ 5.5 };
       const auto grid = referenceGrid( rm, lowerEnergy, upperEnergy );
 
@@ -218,9 +216,6 @@ SCENARIO( "Extracting the reference grid" ){
   }
 }
 
-std::string breitWignerString();
-std::string reichMooreString();
-std::string rmlString();
 std::string specialCaseString();
 std::string caseAString();
 std::string caseBString();
