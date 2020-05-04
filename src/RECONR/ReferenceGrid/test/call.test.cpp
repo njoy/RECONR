@@ -33,7 +33,10 @@ SCENARIO( "Extracting the reference grid" ){
 
     njoy::Log::info( "trial: {}", trial | ranges::view::all );
 
-    CHECK( resonanceEnergies == trial );
+    CHECK( ranges::distance( resonanceEnergies ) == ranges::distance( trial ) );
+    for(const auto& [ref, tri]: ranges::view::zip( resonanceEnergies, trial ) ){
+      CHECK( ref == Approx( tri ) );
+    }
     
   } // GIVEN
 
