@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/njoy/RECONR.svg?branch=master)](https://travis-ci.org/njoy/RECONR)
+![Continuous Integration](https://github.com/njoy/RECONR/workflows/Continuous%20Integration/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/njoy/RECONR/badge.svg?branch=master)](https://coveralls.io/github/njoy/RECONR?branch=master)
 
 # RECONR---Resonance Reconstruction
