@@ -13,8 +13,8 @@ ${${PREFIX}_RELEASE_flags}
 $<$<BOOL:${link_time_optimization}>:${${PREFIX}_link_time_optimization_flags}>
 $<$<BOOL:${nonportable_optimization}>:${${PREFIX}_nonportable_optimization_flags}>>
 
-${CXX_appended_flags} ${reconr_appended_flags} )
-target_link_libraries( RECONR.RECONR.test PUBLIC reconr ) 
+${CXX_appended_flags} ${RECONR_appended_flags} )
+target_link_libraries( RECONR.RECONR.test PUBLIC RECONR ) 
 file( GLOB resources "resources/*" )
 foreach( resource ${resources})
     file( COPY "${resource}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}" )
