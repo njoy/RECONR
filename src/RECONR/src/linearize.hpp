@@ -77,3 +77,47 @@ linearize( interp::LogarithmicLogarithmic loglog, double r, double a ){
 
   return linearize2( loglog, r, a );
 }
+
+template< typename Range >
+auto
+linearize( const Range& grid, double relTol, double absTol ){
+
+  auto midpoint = []( auto&& x, auto&& ){
+    return 0.5 * ( std::get<0>(x) + std::get<1>(x) );
+  };
+    
+  auto criterion = [ & ]( auto&& trial, auto&& ref,
+          auto&& xLeft, auto&& xRight,
+          auto&&, auto&&  ){
+
+    constexpr double infinity = std::numeric_limits<double>::infinity();
+
+    if ( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
+    auto eDiff = std::abs( trial.elastic.value - ref.elastic.value );
+    auto fDiff = std::abs( trial.fission.value - ref.fission.value );
+    auto cDiff = std::abs( trial.capture.value - ref.capture.value );
+    auto eRelDiff = eDiff/ref.elastic.value;
+    auto fRelDiff = fDiff/ref.fission.value;
+    auto cRelDiff = cDiff/ref.capture.value;
+
+    auto diff = std::max( eDiff, std::max( fDiff, cDiff ) );
+    auto reldiff = std::max( eRelDiff, std::max( fRelDiff, cRelDiff ) );
+
+    return ( diff < absTol ) or ( reldiff < relTol );
+  };
+
+  return [&]( auto&& xs ){
+
+    Log::info( "grid: " );
+    for( auto& g : grid ){
+      Log::info( "\t{}", g );
+    }
+    auto first = grid.begin();
+    auto end = grid.end();
+    std::vector< double > x, y;
+    auto linearization = twig::linearize::callable( x, y );
+    linearization( first, end, xs, criterion, midpoint );
+
+    return interp::LinearLinear{ std::move( x ), std::move( y ) };
+  };
+}

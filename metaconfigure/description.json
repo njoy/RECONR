@@ -611,6 +611,7 @@
     "src/RECONR/details/printV.hpp",
     "src/RECONR/RECONR/src/linearizeXS.hpp",
     "src/RECONR/RECONR/src/findR2D2.hpp",
+    "src/RECONR/RECONR/src/reconstructResonances.hpp",
     "src/RECONR/RECONR/src/call.hpp",
     "src/RECONR/RECONR/src/unionizeEnergyGrid.hpp",
     "src/RECONR/RECONR/src/getEvaluated.hpp",
@@ -634,6 +635,7 @@
   "test pattern": "test$",
   "tests": {
     "RECONR.RECONR": [
+      "src/RECONR/RECONR/test/reconstructResonances.test.cpp",
       "src/RECONR/RECONR/test/getEvaluated.test.cpp",
       "src/RECONR/RECONR/test/unionizeEnergyGrid.test.cpp",
       "src/RECONR/RECONR/test/linearizeXS.test.cpp",

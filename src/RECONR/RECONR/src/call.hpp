@@ -8,6 +8,7 @@ void operator()( const nlohmann::json& njoyArgs, const nlohmann::json& ){
     // Get unionized energy grid
     auto grid = this->unionizeEnergyGrid( data );
     // Reconstruct resonances
+    this->reconstructResonances( grid, data );
     // Recalculate linearized cross sections
     // Sum reactions
         // Add resonances to appropriate cross sections

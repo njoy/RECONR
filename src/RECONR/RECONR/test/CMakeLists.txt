@@ -1,5 +1,6 @@
 
 add_executable( RECONR.RECONR.test
+                reconstructResonances.test.cpp
                 getEvaluated.test.cpp
                 unionizeEnergyGrid.test.cpp
                 linearizeXS.test.cpp

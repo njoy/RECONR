@@ -1,7 +1,9 @@
 class ResonanceReconstructionDataDelivery {
 public:
-  using XSmap_t = std::map< int, std::vector< interp::Variant > >;
-  using LinMap_t = std::map< int, interp::LinearTable >;
+  using Key_t = int;
+  using XSmap_t = std::map< Key_t, std::vector< interp::Variant > >;
+  using LinMap_t = std::map< Key_t, interp::LinearTable >;
+  using LinMMap_t = std::multimap< Key_t, interp::LinearTable >;
 
   using RPVariant = std::variant< 
     std::vector< ENDFtk::resonanceParameters::Isotope >
@@ -10,6 +12,7 @@ public:
 private:
   XSmap_t crossSections_;
   LinMap_t linearCrossSections_;
+  LinMMap_t reconstructedCrossSections_;
 
   RPVariant resonanceParameters_;
   std::vector< double > resonanceReferenceGrid_;
@@ -29,7 +32,12 @@ public:
 
   auto linearCrossSections() const { return this->linearCrossSections_; }
   void linearCrossSections( LinMap_t&& lXS ){ 
-    this-> linearCrossSections_ = lXS; }
+    this->linearCrossSections_ = lXS; }
+
+  auto reconstructedCrossSections() const { 
+    return this->reconstructedCrossSections_; }
+  void reconstructedCrossSections( LinMMap_t&& rXS ) { 
+    this->reconstructedCrossSections_ = rXS; }
 
   auto resonanceParameters() const { return this->resonanceParameters_; }
 
