@@ -5,6 +5,10 @@ public:
   using Tape_t = ENDFtk::syntaxTree::Tape< buffer_t >;
   using Material_t = ENDFtk::syntaxTree::Material< std::string::iterator >;
 
+  static constexpr double absoluteTolerance{ 1E-10 };
+
+  #include "RECONR/RECONR/src/storeBWReconstruction.hpp"
+
 protected:
   using Format_t = std::variant< Tape_t >;
   using Map_t = std::map< int, R2D2 >;

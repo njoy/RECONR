@@ -11,6 +11,7 @@ std::vector< double> XSEnergies();
 
 SCENARIO( "Testing the unionization of the energy Grid" ){
   // These are the same regardless of the resonance formalism
+  std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
   auto energies = XSEnergies();
 
   GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
@@ -26,11 +27,13 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
       };
       refGrid |= ranges::action::push_back( energies );
+      refGrid |= ranges::action::push_back( userSupplied );
       std::sort( refGrid.begin(), refGrid.end() );
 
       refGrid = ranges::view::unique( refGrid );
 
-      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( r2d2 );
+      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+          r2d2, userSupplied );
 
       details::checkRanges( refGrid, trial );
     } // THEN
@@ -50,11 +53,13 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         3.6208, 3.64049, 4.8336, 4.8508, 4.868, 5.24932, 5.4497, 5.5
       };
       refGrid |= ranges::action::push_back( energies );
+      refGrid |= ranges::action::push_back( userSupplied );
       std::sort( refGrid.begin(), refGrid.end() );
 
       refGrid = ranges::view::unique( refGrid );
 
-      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( r2d2 );
+      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+          r2d2, userSupplied );
 
       details::checkRanges( refGrid, trial );
     } // THEN
@@ -72,11 +77,13 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         -1.9E+6, -1.223300e+6, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5 
       };
       refGrid |= ranges::action::push_back( energies );
+      refGrid |= ranges::action::push_back( userSupplied );
       std::sort( refGrid.begin(), refGrid.end() );
 
       refGrid = ranges::view::unique( refGrid );
 
-      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( r2d2 );
+      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+        r2d2, userSupplied );
 
       details::checkRanges( refGrid, trial );
     } // THEN

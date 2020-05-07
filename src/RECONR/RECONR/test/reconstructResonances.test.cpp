@@ -13,7 +13,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
     };
 
     WHEN( "the resonances are reconstructed" ){
-      njoy::RECONR::RECONR::reconstructResonances( refGrid, r2d2 );
+      njoy::RECONR::RECONR::reconstructResonances( refGrid, r2d2, 1E-1, 1E-3 );
       
     } // WHEN
     

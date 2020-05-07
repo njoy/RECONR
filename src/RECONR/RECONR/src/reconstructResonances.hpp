@@ -1,9 +1,10 @@
 template< typename Range, typename P >
 static
 void reconstructResonances( Range& , 
-                            R2D2::LinMMap_t& , 
+                            R2D2::ReconMap_t& , 
                             const ResonanceRange&,
-                            const P& params ){ 
+                            const P& params,
+                            double, double ){ 
   auto name = typeid( params ).name();
 
   Log::error( "I don't know how to reconstruct {} parameters", name );
@@ -14,28 +15,31 @@ template< typename Range >
 static
 void reconstructResonances( 
     Range& grid, 
-    R2D2::LinMMap_t& ,
+    R2D2::ReconMap_t& reconstructed,
     const ResonanceRange& rRange,
-    const resolved::SingleLevelBreitWigner&
-    ){
-  Log::info( "reconstructing SLBW" );
+    const resolved::SingleLevelBreitWigner&,
+    double relTol, double absTol){
 
-  resonanceReconstruction::breitWigner::singleLevel::Apply{}(
-      rRange, linearize( grid, 1E-3, 1E-7 ) );
+  auto bw = resonanceReconstruction::breitWigner::singleLevel::Apply{}(
+      rRange, linearize( grid, relTol, absTol ) );
+
+  storeBWReconstruction( bw, reconstructed );
+
 }
 
 template< typename Range >
 static
-R2D2::LinMMap_t reconstructResonances( Range& grid, 
-    std::vector< ENDFtk::resonanceParameters::Isotope >& Isotopes ){
+R2D2::ReconMap_t reconstructResonances( Range& grid, 
+    std::vector< ENDFtk::resonanceParameters::Isotope >& Isotopes,
+    double relTol, double absTol ){
 
-  R2D2::LinMMap_t reconstructed{};
+  R2D2::ReconMap_t reconstructed{};
 
   for( const auto& iso : Isotopes ){
     for( const auto& range : iso.resonanceRanges() ){
       std::visit(
-        [&]( auto&& param ){ 
-          return reconstructResonances( grid, reconstructed, range, param ); },
+        [&]( auto&& param ){ return reconstructResonances( 
+              grid, reconstructed, range, param, relTol, absTol ); },
         range.parameters()
       );
     }
@@ -46,13 +50,17 @@ R2D2::LinMMap_t reconstructResonances( Range& grid,
 template< typename Range >
 static
 void reconstructResonances( Range& grid, 
-                            ResonanceReconstructionDataDelivery& r2d2){
+                            ResonanceReconstructionDataDelivery& r2d2,
+                            double relTol, double absTol ){
   auto g = grid | ranges::view::transform(
-    []( auto&& arg ){ return arg*dimwits::Quantity< ElectronVolt >(); }
+    []( auto&& v )->dimwits::Quantity< dimwits::ElectronVolt >
+      { return v*dimwits::electronVolt; }
   );
-  r2d2.reconstructedCrossSections( 
+
+  r2d2.reconstructedResonances( 
     std::visit( 
-      [&]( auto&& arg ){ return reconstructResonances( grid, arg ); },
+      [&]( auto&& arg ){ 
+        return reconstructResonances( g, arg, relTol, absTol ); },
       r2d2.resonanceParameters()
     )
   );

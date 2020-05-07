@@ -81,43 +81,42 @@ linearize( interp::LogarithmicLogarithmic loglog, double r, double a ){
 template< typename Range >
 auto
 linearize( const Range& grid, double relTol, double absTol ){
+  using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 
   auto midpoint = []( auto&& x, auto&& ){
     return 0.5 * ( std::get<0>(x) + std::get<1>(x) );
   };
     
-  auto criterion = [ & ]( auto&& trial, auto&& ref,
-          auto&& xLeft, auto&& xRight,
-          auto&&, auto&&  ){
 
-    constexpr double infinity = std::numeric_limits<double>::infinity();
+  return [=]( auto&& xs ){
+    auto criterion = [ & ]( auto&& trial, auto&& ref,
+            auto&& xLeft, auto&& xRight,
+            auto&&, auto&&  ){
 
-    if ( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
-    auto eDiff = std::abs( trial.elastic.value - ref.elastic.value );
-    auto fDiff = std::abs( trial.fission.value - ref.fission.value );
-    auto cDiff = std::abs( trial.capture.value - ref.capture.value );
-    auto eRelDiff = eDiff/ref.elastic.value;
-    auto fRelDiff = fDiff/ref.fission.value;
-    auto cRelDiff = cDiff/ref.capture.value;
+      constexpr double infinity = std::numeric_limits< double >::infinity();
 
-    auto diff = std::max( eDiff, std::max( fDiff, cDiff ) );
-    auto reldiff = std::max( eRelDiff, std::max( fRelDiff, cRelDiff ) );
+      if ( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
+        return true; }
+      auto eDiff = std::abs( trial.elastic.value - ref.elastic.value );
+      auto fDiff = std::abs( trial.fission.value - ref.fission.value );
+      auto cDiff = std::abs( trial.capture.value - ref.capture.value );
+      auto eRelDiff = eDiff/ref.elastic.value;
+      auto fRelDiff = fDiff/ref.fission.value;
+      auto cRelDiff = cDiff/ref.capture.value;
 
-    return ( diff < absTol ) or ( reldiff < relTol );
-  };
+      auto diff = std::max( eDiff, std::max( fDiff, cDiff ) );
+      auto reldiff = std::max( eRelDiff, std::max( fRelDiff, cRelDiff ) );
 
-  return [&]( auto&& xs ){
+      return ( diff < absTol ) or ( reldiff < relTol );
+    };
 
-    Log::info( "grid: " );
-    for( auto& g : grid ){
-      Log::info( "\t{}", g );
-    }
     auto first = grid.begin();
     auto end = grid.end();
-    std::vector< double > x, y;
+    std::vector< EV > x;
+    std::vector< njoy::resonanceReconstruction::breitWigner::CrossSection > y;
     auto linearization = twig::linearize::callable( x, y );
     linearization( first, end, xs, criterion, midpoint );
 
-    return interp::LinearLinear{ std::move( x ), std::move( y ) };
+    return std::make_pair( std::move( x ), std::move( y ) );
   };
 }
