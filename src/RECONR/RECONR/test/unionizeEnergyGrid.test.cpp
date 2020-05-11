@@ -13,81 +13,145 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
   // These are the same regardless of the resonance formalism
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
   auto energies = XSEnergies();
-
-  GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
-    auto material = details::ENDFMaterial( "SLBW" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
-
-    double absTolerance{ 1E-6 };
-    double relTolerance{ 1E-1 }; // This tolerance is large by design
-    njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
-
-    THEN( "the energygrid can be unionized" ){
-      std::vector< double > refGrid{
-        0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
-      };
-      refGrid |= ranges::action::push_back( energies );
-      refGrid |= ranges::action::push_back( userSupplied );
-      std::sort( refGrid.begin(), refGrid.end() );
-
-      refGrid = ranges::view::unique( refGrid );
-
-      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+  WHEN( "resonances have not been reconstructed" ){
+    
+    GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
+      auto material = details::ENDFMaterial( "SLBW" );
+      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    
+      double absTolerance{ 1E-6 };
+      double relTolerance{ 1E-1 }; // This tolerance is large by design
+      njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
+    
+      THEN( "the energygrid can be unionized" ){
+        std::vector< double > refGrid{
+          0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
+        };
+        refGrid |= ranges::action::push_back( energies );
+        refGrid |= ranges::action::push_back( userSupplied );
+        ranges::sort( refGrid );
+    
+        refGrid = ranges::view::unique( refGrid );
+    
+        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+            r2d2, userSupplied );
+    
+        details::checkRanges( refGrid, trial );
+      } // THEN
+    } // GIVEN
+    GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
+      auto material = details::ENDFMaterial( "RM" );
+      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    
+      double absTolerance{ 1E-6 };
+      double relTolerance{ 1E-1 }; // This tolerance is large by design
+      njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
+    
+      THEN( "the energygrid can be unionized" ){
+        std::vector< double > refGrid { 
+          0.98596, 1.06389, 1.1389, 1.21391, 2.02109, 2.0361, 2.05111, 
+          2.74827, 2.7767, 2.80513, 3.14517, 3.1566, 3.16803, 3.60111, 
+          3.6208, 3.64049, 4.8336, 4.8508, 4.868, 5.24932, 5.4497, 5.5
+        };
+        refGrid |= ranges::action::push_back( energies );
+        refGrid |= ranges::action::push_back( userSupplied );
+        ranges::sort( refGrid );
+    
+        refGrid = ranges::view::unique( refGrid );
+    
+        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+            r2d2, userSupplied );
+    
+        details::checkRanges( refGrid, trial );
+      } // THEN
+    } // GIVEN
+    GIVEN( "a linearized ResonanceReconstructionDataDelivery (RML) object" ){
+      auto material = details::ENDFMaterial( "RML" );
+      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    
+      double absTolerance{ 1E-6 };
+      double relTolerance{ 1E-1 }; // This tolerance is large by design
+      njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
+    
+      THEN( "the energygrid can be unionized" ){
+        std::vector< double > refGrid { 
+          -1.9E+6, -1.223300e+6, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5 
+        };
+        refGrid |= ranges::action::push_back( energies );
+        refGrid |= ranges::action::push_back( userSupplied );
+        ranges::sort( refGrid );
+    
+        refGrid = ranges::view::unique( refGrid );
+    
+        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           r2d2, userSupplied );
+    
+        details::checkRanges( refGrid, trial );
+      } // THEN
+    } // GIVEN
+  } // WHEN
 
-      details::checkRanges( refGrid, trial );
-    } // THEN
-  } // GIVEN
-  GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
-    auto material = details::ENDFMaterial( "RM" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
-
-    double absTolerance{ 1E-6 };
-    double relTolerance{ 1E-1 }; // This tolerance is large by design
-    njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
-
-    THEN( "the energygrid can be unionized" ){
-      std::vector< double > refGrid { 
-        0.98596, 1.06389, 1.1389, 1.21391, 2.02109, 2.0361, 2.05111, 
-        2.74827, 2.7767, 2.80513, 3.14517, 3.1566, 3.16803, 3.60111, 
-        3.6208, 3.64049, 4.8336, 4.8508, 4.868, 5.24932, 5.4497, 5.5
-      };
-      refGrid |= ranges::action::push_back( energies );
-      refGrid |= ranges::action::push_back( userSupplied );
-      std::sort( refGrid.begin(), refGrid.end() );
-
-      refGrid = ranges::view::unique( refGrid );
-
-      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+  WHEN( "resonance have been reconstructed" ){
+    GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
+      auto material = details::ENDFMaterial( "SLBW" );
+      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    
+      double absTolerance{ 1E-6 };
+      double relTolerance{ 1E-1 }; // This tolerance is large by design
+      njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
+      auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           r2d2, userSupplied );
+      njoy::RECONR::RECONR::reconstructResonances( refGrid, r2d2, 1E-1, 1E-3 );
+    
+      THEN( "the reconstructed energygrid can be unionized" ){
 
-      details::checkRanges( refGrid, trial );
-    } // THEN
-  } // GIVEN
-  GIVEN( "a linearized ResonanceReconstructionDataDelivery (RML) object" ){
-    auto material = details::ENDFMaterial( "RML" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+        /* refGrid is already verified above. Just need to add the
+         * reconstructed/linearized cross sections
+         */
+        for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
+          for( const auto& XS : V ){
+            refGrid |= ranges::action::push_back( XS.x() );
+          }
+        }
+        ranges::sort( refGrid );
+        refGrid = ranges::view::unique( refGrid );
 
-    double absTolerance{ 1E-6 };
-    double relTolerance{ 1E-1 }; // This tolerance is large by design
-    njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
+        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( r2d2 );
 
-    THEN( "the energygrid can be unionized" ){
-      std::vector< double > refGrid { 
-        -1.9E+6, -1.223300e+6, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5 
-      };
-      refGrid |= ranges::action::push_back( energies );
-      refGrid |= ranges::action::push_back( userSupplied );
-      std::sort( refGrid.begin(), refGrid.end() );
+        details::checkRanges( refGrid, trial );
+      } // THEN
+    } // GIVEN
+    GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
+      auto material = details::ENDFMaterial( "RM" );
+      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    
+      double absTolerance{ 1E-6 };
+      double relTolerance{ 1E-1 }; // This tolerance is large by design
+      njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
+      auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+          r2d2, userSupplied );
+      njoy::RECONR::RECONR::reconstructResonances( refGrid, r2d2, 1E-1, 1E-3 );
+    
+      THEN( "the reconstructed energygrid can be unionized" ){
 
-      refGrid = ranges::view::unique( refGrid );
+        /* refGrid is already verified above. Just need to add the
+         * reconstructed/linearized cross sections
+         */
+        for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
+          for( const auto& XS : V ){
+            refGrid |= ranges::action::push_back( XS.x() );
+          }
+        }
+        ranges::sort( refGrid );
+        refGrid = ranges::view::unique( refGrid );
 
-      auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-        r2d2, userSupplied );
+        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( r2d2 );
 
-      details::checkRanges( refGrid, trial );
-    } // THEN
-  } // GIVEN
+        details::checkRanges( refGrid, trial );
+      } // THEN
+    } // GIVEN
+    
+  } // WHEN
 } // SCENARIO
 
 std::vector< double> XSEnergies(){
