@@ -29,6 +29,38 @@ void reconstructResonances(
 
 template< typename Range >
 static
+void reconstructResonances( 
+    Range& grid, 
+    R2D2::ReconMap_t& reconstructed,
+    const ResonanceRange& rRange,
+    const resolved::MultiLevelBreitWigner&,
+    double relTol, double absTol){
+
+  auto bw = resonanceReconstruction::breitWigner::multiLevel::Apply{}(
+      rRange, linearize( grid, relTol, absTol ) );
+
+  storeBWReconstruction( bw, reconstructed );
+
+}
+
+template< typename Range >
+static
+void reconstructResonances( 
+    Range& grid, 
+    R2D2::ReconMap_t& reconstructed,
+    const ResonanceRange& rRange,
+    const resolved::ReichMoore&,
+    double relTol, double absTol){
+
+  auto bw = resonanceReconstruction::reichMoore::Apply{}(
+      rRange, linearize( grid, relTol, absTol ) );
+
+  storeBWReconstruction( bw, reconstructed );
+
+}
+
+template< typename Range >
+static
 R2D2::ReconMap_t reconstructResonances( Range& grid, 
     std::vector< ENDFtk::resonanceParameters::Isotope >& Isotopes,
     double relTol, double absTol ){

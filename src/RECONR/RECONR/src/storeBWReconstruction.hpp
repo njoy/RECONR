@@ -16,34 +16,10 @@ void storeBWReconstruction( BW& bw, R2D2::ReconMap_t& reconstructed ){
     | ranges::view::transform( []( auto&&  xs ){ return xs.capture.value; } )
     | ranges::to_vector;
 
-  auto table = interp::LinearLinear{ 
-    x | ranges::to_vector, std::move( elastic ) };
-  // reconstructed.emplace( std::make_pair( 2,
-  //   interp::LinearLinear{ x | ranges::to_vector, std::move( elastic ) } ) );
-  // reconstructed.emplace( std::make_pair( 18,
-  //   interp::LinearLinear{ x | ranges::to_vector, std::move( fission ) } ) );
-  // reconstructed.emplace( std::make_pair( 102,
-  //   interp::LinearLinear{ x | ranges::to_vector, std::move( capture ) } ) );
+  reconstructed[ 2 ].push_back(
+    interp::LinearLinear{ x | ranges::to_vector, std::move( elastic ) } );
+  reconstructed[ 18 ].push_back(
+    interp::LinearLinear{ x | ranges::to_vector, std::move( fission ) } );
+  reconstructed[ 102 ].push_back(
+    interp::LinearLinear{ x | ranges::to_vector, std::move( capture ) } );
 }
-
-/*
-      from
-'njoy::interpolation::Table<
-  njoy::interpolation::table::Type<
-    njoy::interpolation::LinearLinear, 
-    njoy::interpolation::table::Search< njoy::interpolation::Binary >,
-    njoy::interpolation::table::Discontinuity< njoy::interpolation::TakeLeft >,
-    std::__1::vector< double, std::__1::allocator<double> >, 
-    std::__1::vector< double, std::__1::allocator<double> > 
-  > 
->' 
-      to 'const
-'njoy::interpolation::table::Vector<
-  njoy::interpolation::Table<
-    njoy::interpolation::table::Type< njoy::interpolation::LinearLinear,
-njoy::interpolation::table::Search<njoy::interpolation::Binary>,
-njoy::interpolation::table::Discontinuity<njoy::interpolation::TakeLeft>,
-std::__1::vector<double, std::__1::allocator<double> >, std::__1::vector<double,
-std::__1::allocator<double> > > >, njoy::interpolation::Adjoining>' for 1st argument
-
- */

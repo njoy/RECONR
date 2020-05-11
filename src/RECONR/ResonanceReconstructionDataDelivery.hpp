@@ -3,7 +3,7 @@ public:
   using Key_t = int;
   using XSmap_t = std::map< Key_t, std::vector< interp::Variant > >;
   using LinMap_t = std::map< Key_t, interp::LinearTable >;
-  using ReconMap_t = std::multimap< Key_t, interp::LinearTable >;
+  using ReconMap_t = std::map< Key_t, std::vector< interp::LinearLinear > >;
 
   using RPVariant = std::variant< 
     std::vector< ENDFtk::resonanceParameters::Isotope >
