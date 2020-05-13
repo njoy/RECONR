@@ -15,7 +15,7 @@ void operator()( const nlohmann::json& njoyArgs, const nlohmann::json& ){
     // Recalculate linearized cross sections
     auto energies = this->unionizeEnergyGrid( data );
     // Sum reactions
-        // Add resonances to appropriate cross sections
+    auto reactions = this->summateReactions( data, energies );
     materialMap.emplace( sequence[ "mat" ], std::move( data ) );
   }
 }

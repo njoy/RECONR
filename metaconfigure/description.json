@@ -610,8 +610,10 @@
     "src/RECONR/details/simpleENDFTestString.hpp",
     "src/RECONR/details/printV.hpp",
     "src/RECONR/RECONR/src/linearizeXS.hpp",
+    "src/RECONR/RECONR/src/storeBWReconstruction.hpp",
     "src/RECONR/RECONR/src/findR2D2.hpp",
     "src/RECONR/RECONR/src/reconstructResonances.hpp",
+    "src/RECONR/RECONR/src/summateReactions.hpp",
     "src/RECONR/RECONR/src/call.hpp",
     "src/RECONR/RECONR/src/unionizeEnergyGrid.hpp",
     "src/RECONR/RECONR/src/getEvaluated.hpp",
@@ -639,7 +641,8 @@
       "src/RECONR/RECONR/test/getEvaluated.test.cpp",
       "src/RECONR/RECONR/test/unionizeEnergyGrid.test.cpp",
       "src/RECONR/RECONR/test/linearizeXS.test.cpp",
-      "src/RECONR/RECONR/test/RECONR.test.cpp"
+      "src/RECONR/RECONR/test/RECONR.test.cpp",
+      "src/RECONR/RECONR/test/summateReactions.test.cpp"
     ],
     "RECONR.ReferenceGrid": [
       "src/RECONR/ReferenceGrid/test/call.test.cpp",
