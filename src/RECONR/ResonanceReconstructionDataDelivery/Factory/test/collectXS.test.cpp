@@ -15,7 +15,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
     WHEN( "the resonance reconstruction data can be extracted" ){
       auto XSs = njoy::RECONR::R2D2::Factory::collectXS( material );
 
-      std::vector< int > MTs{ 1, 16, 18, 102 };
+      std::vector< int > MTs{ 1, 16, 18, 51, 52, 102, 875, 876, 877 };
       CHECK( ranges::equal( MTs, ranges::view::keys( XSs ) ) );
 
       THEN( "MT=1 can be checked" ){
@@ -117,28 +117,28 @@ SCENARIO( "Testing the the collection of cross sections" ){
       }
       THEN( "MT=102 can be checked" ){ 
         {
-          auto xs3 = std::get< njoy::RECONR::interp::LinearLogarithmic >( 
+          auto xs102 = std::get< njoy::RECONR::interp::LinearLogarithmic >( 
               XSs.at( 102 )[ 0 ] );
           std::vector< double > refE{ 1.0E-5, 2.0E-5, 7.5E+5 };
           std::vector< double > refB{ 1.02E+2, 1.182897E+1, 3.347392E-5 };
 
-          auto energies = xs3.x() | ranges::to_vector;
-          auto barns = xs3.y() | ranges::to_vector;
+          auto energies = xs102.x() | ranges::to_vector;
+          auto barns = xs102.y() | ranges::to_vector;
 
           checkReferenceRange( refE, energies );
           checkReferenceRange( refB, barns );
 
           double refY = linlogInterpolation( 
             1.5E-5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
-          CHECK( refY == Approx( xs3( 1.5E-5 ) ).margin( 1E-7 ) );
+          CHECK( refY == Approx( xs102( 1.5E-5 ) ).margin( 1E-7 ) );
 
           refY = linlogInterpolation( 
             1, refE[ 1 ], refE[ 2 ], refB[ 1 ], refB[ 2 ] );
-          CHECK( refY == Approx( xs3( 1 ) ).margin( 1E-7 ) );
+          CHECK( refY == Approx( xs102( 1 ) ).margin( 1E-7 ) );
 
           refY = linlogInterpolation( 
             8E5, refE[ 2 ], refE[ 3 ], refB[ 2 ], refB[ 3 ] );
-          CHECK( refY == Approx( xs3( 8E5 ) ).margin( 1E-7 ) );
+          CHECK( refY == Approx( xs102( 8E5 ) ).margin( 1E-7 ) );
         }
         {
           auto xs4 = std::get< njoy::RECONR::interp::LogarithmicLinear >( 
