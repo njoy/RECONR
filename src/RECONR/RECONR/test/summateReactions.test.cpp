@@ -2,6 +2,7 @@
 
 #include "RECONR.hpp"
 #include "RECONR/details/simpleENDFTestString.hpp"
+#include "RECONR/details/printV.hpp"
 
 /* Linearize and reconstruct resonances
  */
@@ -30,7 +31,10 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         auto reactions = njoy::RECONR::RECONR::summateReactions( 
             r2d2, energies );
-        
+        auto keys = ranges::view::keys( reactions );
+        njoy::Log::info( "reaction keys: {}", keys | ranges::view::all );
+
+
       } // THEN
     } // WHEN
   } // GIVEN

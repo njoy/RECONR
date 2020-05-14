@@ -10,17 +10,53 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   auto keys = ranges::view::keys( linear );
   auto recKeys = ranges::view::keys( reconstructed );
 
-  for( const auto& MT : ranges::view::reverse( keys ) ){
-  // for( const auto& [ MT, XS ] : linear ){
-    const auto& XS = linear.at( MT );
+  for( const auto& [ MT, XS ] : ranges::view::reverse( linear ) ){
+    Log::info( "MT: {}", MT );
 
     if( ENDFtk::isRedundant( MT ) ){
-      
+      auto redundancies = ENDFtk::redundantReactions.at( MT );
+
+      Log::info( "redundancies: {}", redundancies | ranges::view::all );
+      auto redundants = redundancies 
+        | ranges::view::filter(
+          [&]( auto&& mt ){ return linear.count( mt ); }
+          );
+        
+      if( ranges::distance( redundants ) != 0 ){
+
+        std::vector< std::vector< double > > partials;
+        for( const auto& p : redundants ){
+          auto part = linear.at( p );
+          auto party = part.x() 
+            | ranges::view::transform( part ) 
+            | ranges::to_vector;
+
+          Log::info( "\t\tparty: {}", party | ranges::view::all  );
+          partials |= ranges::action::push_back( party );
+        }
+
+        auto sumTuple = []( auto&& tuple ){ 
+          Log::info( "\t\t\ttuple:" );
+          return std::apply(
+            [](auto... v) { return (v + ...); },
+            tuple 
+          );
+        };
+        auto y = ranges::view::zip( partials )
+          | ranges::view::transform( sumTuple )
+          | ranges::to_vector;
+        // Log::info( "y: {}", y | ranges::view::all );
+        // reactions[ MT ] = std::move( y );
+      }
+    } else { // Not a redundant reaction
+      auto y = energies 
+        | ranges::view::transform( XS )
+        | ranges::to_vector;
+      // Log::info( "y: {}", y | ranges::view::all );
+
+      reactions[ MT ] = std::move( y );
     }
-    Log::info( "MT: {}", MT );
-    auto y = energies 
-      | ranges::view::transform( XS )
-      | ranges::to_vector;
+
   }
 
   return reactions;
