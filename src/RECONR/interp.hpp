@@ -1,9 +1,16 @@
 namespace interp{
 
-// These are taken from interpolation/src/test/Example8.cpp
+struct Zero {
+  static constexpr double value = 0.0;
+};
+
+// These are taken from interpolation examples 6 and 8
 template< typename I >
 using LAW = decltype( 
-  interpolation::table::make< I >( 
+  interpolation::table::make< I,
+  interpolation::table::left::interval::IsCompiletimeConstant<Zero>,
+  interpolation::table::right::interval::IsCompiletimeConstant<Zero>
+  >( 
     std::vector< double >(), std::vector< double >() ) );
 
 using Histogram              = LAW< interpolation::Histogram >;

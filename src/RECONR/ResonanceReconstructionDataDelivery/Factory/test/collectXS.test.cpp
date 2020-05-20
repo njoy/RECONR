@@ -40,6 +40,27 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.751761E-5 == Approx( xs( 1.925E7 ) ) );
         CHECK( 2.731301E-5 == Approx( xs( 1.975E7 ) ) );
       } // THEN
+      THEN( "MT=2 can be checked" ){ 
+        auto xs = std::get< njoy::RECONR::interp::LogarithmicLogarithmic >( 
+            XSs.at( 2 )[ 0 ] );
+        std::vector< double > refE{
+          1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
+        std::vector< double > refB( refE.size(), 2.0 );
+
+        auto energies = xs.x() | ranges::to_vector;
+        auto barns = xs.y() | ranges::to_vector;
+
+        checkReferenceRange( refE, energies );
+        checkReferenceRange( refB, barns );
+
+        CHECK( 2.0 == Approx( xs( 1.5E-5 ) ) );
+        CHECK( 2.0 == Approx( xs( 1.999999999E-5 ) ) );
+        CHECK( 2.0 == Approx( xs( 2.0E-5 ) ) );
+        CHECK( 2.0 == Approx( xs( 1 ) ) );
+        CHECK( 2.0 == Approx( xs( 8E5 ) ) );
+        CHECK( 2.0 == Approx( xs( 1.925E7 ) ) );
+        CHECK( 2.0 == Approx( xs( 1.975E7 ) ) );
+      }
       THEN( "MT=16 can be checked" ){ 
         auto xs = std::get< njoy::RECONR::interp::LogarithmicLogarithmic >( 
             XSs.at( 16 )[ 0 ] );
@@ -93,7 +114,6 @@ SCENARIO( "Testing the the collection of cross sections" ){
           CHECK( 3.347392E-5 == Approx( xs1( 8E5 ) ) );
         }
         {
-          // auto xs2 = njoy::RECONR::interp::visitor( XSs.at( 18 )[ 3 ] );
           auto xs2 = std::get< njoy::RECONR::interp::LinearLinear >(
               XSs.at( 18 )[ 1 ] );
           std::vector< double > refE{ 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
