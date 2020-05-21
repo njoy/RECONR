@@ -1,3 +1,4 @@
+/*
 #include "catch.hpp"
 
 #include "RECONR.hpp"
@@ -105,9 +106,8 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       THEN( "the reconstructed energygrid can be unionized" ){
 
-        /* refGrid is already verified above. Just need to add the
-         * reconstructed/linearized cross sections
-         */
+        // refGrid is already verified above. Just need to add the
+        // reconstructed/linearized cross sections
         for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
           for( const auto& XS : V ){
             refGrid |= ranges::action::push_back( XS.x() );
@@ -134,9 +134,8 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       THEN( "the reconstructed energygrid can be unionized" ){
 
-        /* refGrid is already verified above. Just need to add the
-         * reconstructed/linearized cross sections
-         */
+        // refGrid is already verified above. Just need to add the
+        // reconstructed/linearized cross sections
         for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
           for( const auto& XS : V ){
             refGrid |= ranges::action::push_back( XS.x() );
@@ -195,3 +194,4 @@ std::vector< double> XSEnergies(){
   return ranges::view::concat( MT1, MT16, MT18, MT102 ) | ranges::to_vector;
 
 }
+*/

@@ -14,6 +14,17 @@ void reconstructResonances( Range& ,
 template< typename Range >
 static
 void reconstructResonances( 
+    Range&,
+    R2D2::ReconMap_t&,
+    const ResonanceRange&,
+    const SpecialCase&,
+    double, double ){
+  // Nothing to do for SpecialCase
+}
+
+template< typename Range >
+static
+void reconstructResonances( 
     Range& grid, 
     R2D2::ReconMap_t& reconstructed,
     const ResonanceRange& rRange,

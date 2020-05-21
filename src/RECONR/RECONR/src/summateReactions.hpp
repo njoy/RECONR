@@ -1,29 +1,8 @@
 template< typename Range >
 static
-std::vector< double > sumPartials( const Range& partials ){
-
-  auto sumTuple = []( auto&& tuple ){ 
-    return std::apply(
-      [](auto... v) { return (v + ...); },
-      tuple 
-    );
-  };
-
-  return ranges::accumulate( partials,
-    std::vector< double >( partials[0].size() ),
-    [&]( const auto& acc, const auto& next ){
-      return ranges::view::zip( acc, next )
-        | ranges::view::transform( sumTuple )
-        | ranges::to_vector;
-    }
-  );
-}
-
-template< typename Range >
-static
 auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
                        Range& energies ){
-  std::map< int, std::vector< double > > reactions;
+  Reaction_t reactions;
   
   const auto linear = r2d2.linearCrossSections();
   const auto reconstructed = r2d2.reconstructedResonances();
@@ -31,17 +10,12 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   auto keys = ranges::view::keys( linear );
   auto recKeys = ranges::view::keys( reconstructed );
 
-  auto sumTuple = []( auto&& tuple ){ 
-    return std::apply(
-      [](auto... v) { return (v + ...); },
-      tuple 
-    );
-  };
-
+  Log::info( "Calculating cross sections on unionized energy grid for MTs: " );
   // Reconstruct everything
   // Perhaps this could be more efficient by only reconstructing those things
   // that are used, but I doubt that is the limiting factor here
   for( const auto& [ MT, XS ] : linear ){
+    Log::info( "\t{}", MT );
     
     reactions[ MT ] =  energies 
       | ranges::view::transform( XS )
@@ -49,22 +23,32 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   }
 
   // Add reconstructed resonances
+  Log::info( "Adding reconstructed cross sections to background for MTs: " );
   for( const auto& MT : ranges::view::keys( reconstructed ) ){
+    std::vector< std::vector< double >  > partials;
+
     using PType = decltype( reconstructed )::mapped_type;
     std::unique_ptr< PType > recon = nullptr;
 
     // Add resonance data to MT=19 if there are partials
     if( MT == 18 ){
       if( reactions.find( 19 ) != reactions.end() ){
+        Log::info( "\t{}", 19 );
         recon = std::make_unique< PType >( reconstructed.at( 19 ) );
+        partials |= ranges::action::push_back( reactions.at( 19 ) );
       }
     }
     if( recon == nullptr ){
-      recon = std::make_unique< PType >( reconstructed.at( MT ) );
+      if( reactions.find( MT ) != reactions.end() ){
+        Log::info( "\t{}", MT );
+        recon = std::make_unique< PType >( reconstructed.at( MT ) );
+        partials |= ranges::action::push_back( reactions.at( MT ) );
+      }
     }
 
-
-    std::vector< std::vector< double >  > partials{ reactions.at( MT ) };
+    // There isn't a background cross section to which we can add the 
+    // reconstructed cross sections
+    if( recon == nullptr ) continue;
 
     // Get cross sections from reconstructed reactions
     for( const auto& XS : *recon ){
@@ -75,6 +59,7 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   } // Reconstructed resonances
 
   // Sum redundant cross sections
+  Log::info( "Summing redundant cross sections for MTs: " );
   for( const auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
 
@@ -85,13 +70,14 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
         [&]( auto&& mt ){ return reactions.count( mt ); } );
 
     if( ranges::distance( redundants ) != 0 ){
+      Log::info( "\t{}, redundant MTs:", MT );
       
       std::vector< std::vector< double > > partials;
       for( const auto& p : redundants ){
-
-        auto found = reactions.find( p );
+        Log::info( "\t\t{}", p );
 
         // Look for already reconstructed reactions
+        auto found = reactions.find( p );
         if( found != reactions.end() ){
           partials |= ranges::action::push_back( found->second );
         } else{

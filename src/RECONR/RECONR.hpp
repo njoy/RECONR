@@ -8,10 +8,12 @@ public:
   static constexpr double absoluteTolerance{ 1E-10 };
 
   #include "RECONR/RECONR/src/storeBWReconstruction.hpp"
+  #include "RECONR/RECONR/src/sumPartials.hpp"
 
 protected:
   using Format_t = std::variant< Tape_t >;
-  using Map_t = std::map< int, R2D2 >;
+  using Reaction_t = std::map< int, std::vector< double > >;
+  using Map_t = std::map< int, Reaction_t >;
 
 public:
   #include "RECONR/RECONR/src/findR2D2.hpp"
