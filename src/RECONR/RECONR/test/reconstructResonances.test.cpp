@@ -1,4 +1,3 @@
-/*
 #include "catch.hpp"
 
 #include "RECONR.hpp"
@@ -155,4 +154,3 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   
 } // SCENARIO
-*/

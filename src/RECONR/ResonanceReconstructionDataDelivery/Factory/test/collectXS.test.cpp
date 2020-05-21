@@ -15,7 +15,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
     WHEN( "the resonance reconstruction data can be extracted" ){
       auto XSs = njoy::RECONR::R2D2::Factory::collectXS( material );
 
-      std::vector< int > MTs{ 1, 16, 18, 51, 52, 102, 875, 876, 877 };
+      std::vector< int > MTs{ 1, 2, 16, 18, 51, 52, 102, 875, 876, 877 };
       CHECK( ranges::equal( MTs, ranges::view::keys( XSs ) ) );
 
       THEN( "MT=1 can be checked" ){
@@ -41,7 +41,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.731301E-5 == Approx( xs( 1.975E7 ) ) );
       } // THEN
       THEN( "MT=2 can be checked" ){ 
-        auto xs = std::get< njoy::RECONR::interp::LogarithmicLogarithmic >( 
+        auto xs = std::get< njoy::RECONR::interp::Histogram >( 
             XSs.at( 2 )[ 0 ] );
         std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
@@ -111,7 +111,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
 
           CHECK( 18.0 == Approx( xs1( 1.25E+5 ) ) );
           CHECK( 1.182897E1 == Approx( xs1( 2E+5 ) ) );
-          CHECK( 3.347392E-5 == Approx( xs1( 8E5 ) ) );
+          CHECK( 3.347392E-5 == Approx( xs1( 7.5E5 ) ).margin( 1E-7 ) );
         }
         {
           auto xs2 = std::get< njoy::RECONR::interp::LinearLinear >(
@@ -155,10 +155,6 @@ SCENARIO( "Testing the the collection of cross sections" ){
           refY = linlogInterpolation( 
             1, refE[ 1 ], refE[ 2 ], refB[ 1 ], refB[ 2 ] );
           CHECK( refY == Approx( xs102( 1 ) ).margin( 1E-7 ) );
-
-          refY = linlogInterpolation( 
-            8E5, refE[ 2 ], refE[ 3 ], refB[ 2 ], refB[ 3 ] );
-          CHECK( refY == Approx( xs102( 8E5 ) ).margin( 1E-7 ) );
         }
         {
           auto xs4 = std::get< njoy::RECONR::interp::LogarithmicLinear >( 
@@ -174,11 +170,15 @@ SCENARIO( "Testing the the collection of cross sections" ){
           checkReferenceRange( refB, barns );
 
           auto refY = loglinInterpolation( 
-            1.925E7, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
+            8E5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
+          CHECK( refY == Approx( xs4( 8E5 ) ).margin( 1E-7 ) );
+
+          refY = loglinInterpolation( 
+            1.925E7, refE[ 1 ], refE[ 2 ], refB[ 1 ], refB[ 2 ] );
           CHECK( refY == Approx( xs4( 1.925E7 ) ).margin( 1E-7 ) );
 
           refY = loglinInterpolation( 
-            1.975E7, refE[ 1 ], refE[ 2 ], refB[ 1 ], refB[ 2 ] );
+            1.975E7, refE[ 2 ], refE[ 3 ], refB[ 2 ], refB[ 3 ] );
           CHECK( refY == Approx( xs4( 1.975E7 ) ).margin( 1E-7 ) );
         }
       }
