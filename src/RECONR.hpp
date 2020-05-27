@@ -1,6 +1,8 @@
 #ifndef RECONR_HPP
 #define RECONR_HPP
 
+#include <fstream>
+
 #include "json.hpp"
 
 #include "ENDFtk.hpp"

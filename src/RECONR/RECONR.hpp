@@ -13,7 +13,6 @@ public:
 protected:
   using Format_t = std::variant< Tape_t >;
   using Reaction_t = std::map< int, std::vector< double > >;
-  using Map_t = std::map< int, Reaction_t >;
 
 public:
   #include "RECONR/RECONR/src/findR2D2.hpp"

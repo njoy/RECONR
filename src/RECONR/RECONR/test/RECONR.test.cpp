@@ -16,7 +16,7 @@ nlohmann::json input = R"({
     },
     {
       "mat": 2631, "ncards": 2, "ngrid": 0,
-      "err": 0.1, "tempr": 3.0, "errmax": 2.1, "errint": 8E-7,
+      "err": 0.1, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
       "cards": [ "Material 2631 processed with modern RECONR",
                   "For testing purposes only." ],
       "enode": [ ]
@@ -26,7 +26,7 @@ nlohmann::json input = R"({
 /*
     {
       "mat": 9228, "ncards": 1, "ngrid": 0,
-      "err": 0.1, "tempr": 3.0, "errmax": 2.1, "errint": 8E-7,
+      "err": 0.1, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
       "cards": [ "Material 9228 processed with modern RECONR" ],
       "enode": [ ]
     }
@@ -38,7 +38,7 @@ SCENARIO( "Testing creation of RECONR class" ){
     auto args = nlohmann::json::object();
 
     WHEN( "a RECONR object is called" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, args ) );
+      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, std::cout, args ) );
 
     } // THEN
   } // GIVEN

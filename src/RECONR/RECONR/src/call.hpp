@@ -1,5 +1,15 @@
-void operator()( const nlohmann::json& njoyArgs, const nlohmann::json& ){
-  Map_t materialMap{};
+void operator()( const nlohmann::json& njoyArgs, 
+                 std::ostream& output,
+                 const nlohmann::json& ){
+
+  output << "Input arguments:\n" << njoyArgs.dump( 2 ) << std::endl;
+
+  std::string filename = "tape" + std::to_string( njoyArgs[ "npend" ].get< int >() );
+  std::ofstream pendf( filename );
+  std::ostreambuf_iterator< char > ipendf( pendf );
+
+  auto tpid = ENDFtk::TPID( njoyArgs[ "tlabel" ].get< std::string >(), 1 );
+  tpid.print( ipendf, 0, 0, 0 );
 
   auto evaluatedData = getEvaluated( njoyArgs[ "nendf" ] );
   for( auto& sequence : njoyArgs[ "sequence" ] ){
@@ -19,6 +29,28 @@ void operator()( const nlohmann::json& njoyArgs, const nlohmann::json& ){
     auto energies = this->unionizeEnergyGrid( data );
     // Sum reactions
     auto reactions = this->summateReactions( data, energies );
-    materialMap.emplace( MAT, std::move( reactions ) );
+
+    long size = energies.size();
+    std::vector< ENDFtk::section::Type< 3 > > sections;
+    for( auto& [ MT, XS ] : reactions ){
+      double QM = 1.0;
+      double QI = 2.0;
+      int LR = 2;
+      int ZA = 100;
+      double awr{ 3.14 };
+      std::vector< long > boundaries{ size };
+      std::vector< long > interpolants{ 2 };
+
+      sections.emplace_back( MT, ZA, awr, QM, QI, LR,
+                             std::move( boundaries ), std::move( interpolants ),
+                             utility::copy( energies ), std::move( XS ) );
+    }
+    ENDFtk::file::Type< 3 > mf3{ std::move( sections ) };
+    mf3.print( ipendf, MAT );
+
+    ENDFtk::MEND().print( ipendf );
   }
+
+  ENDFtk::TEND().print( ipendf );
+  pendf.close();
 }
