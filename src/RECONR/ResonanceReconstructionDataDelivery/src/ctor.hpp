@@ -1,9 +1,9 @@
 ResonanceReconstructionDataDelivery( 
-    XSmap_t&& crossSections,
+    XSmap_t&& reactions,
     RPVariant&& resonanceParameters )
   try:
-    crossSections_( std::move( crossSections ) ),
-    linearCrossSections_(),
+    reactions_( std::move( reactions ) ),
+    linearReactions_(),
     resonanceParameters_( std::move( resonanceParameters ) ),
     resonanceReferenceGrid_( 
       getResonanceReferenceGrid( this->resonanceParameters_ ) )

@@ -4,10 +4,10 @@ void linearizeXS( ResonanceReconstructionDataDelivery& r2d2,
 
   R2D2::LinMap_t linearMap{};
 
-  for( const auto& [ MT, table ] : r2d2.crossSections() ){
+  for( const auto& [ MT, reaction ] : r2d2.reactions() ){
     std::vector< interp::LinearLinear > linearized{};
 
-    for( const auto& law : table ){
+    for( const auto& law : reaction.crossSections() ){
       auto l = std::visit( 
           [&]( auto&& arg ){ 
             return njoy::RECONR::linearize( arg, relTol, absTol ); }, 
@@ -15,7 +15,14 @@ void linearizeXS( ResonanceReconstructionDataDelivery& r2d2,
       linearized.emplace_back( l );
     }
 
-    linearMap.emplace( MT, interp::LinearTable( std::move( linearized ) ) );
+    Reaction< interp::LinearTable > lReaction(
+      reaction.ZA(),
+      reaction.AWR(),
+      reaction.QM(),
+      reaction.QI(),
+      reaction.LR(),
+      interp::LinearTable( std::move( linearized ) ) );
+    linearMap.emplace( MT, std::move( lReaction ) );
   }
-  r2d2.linearCrossSections( std::move( linearMap ) );
+  r2d2.linearReactions( std::move( linearMap ) );
 }

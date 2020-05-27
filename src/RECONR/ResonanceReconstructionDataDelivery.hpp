@@ -1,8 +1,8 @@
 class ResonanceReconstructionDataDelivery {
 public:
   using Key_t = int;
-  using XSmap_t = std::map< Key_t, std::vector< interp::Variant > >;
-  using LinMap_t = std::map< Key_t, interp::LinearTable >;
+  using XSmap_t = std::map< Key_t, Reaction< std::vector< interp::Variant > > >;
+  using LinMap_t = std::map< Key_t, Reaction< interp::LinearTable > >;
   using ReconMap_t = std::map< Key_t, std::vector< interp::LinearLinear > >;
 
   using RPVariant = std::variant< 
@@ -10,8 +10,8 @@ public:
   >;
 
 private:
-  XSmap_t crossSections_;
-  LinMap_t linearCrossSections_;
+  XSmap_t reactions_;
+  LinMap_t linearReactions_;
   ReconMap_t reconstructedResonances_;
 
   RPVariant resonanceParameters_;
@@ -27,12 +27,11 @@ public:
   #include "RECONR/ResonanceReconstructionDataDelivery/src/getResonanceReferenceGrid.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
 
-  auto crossSections() const { return this->crossSections_; }
-  auto at( int i ){ return crossSections_.at( i ); }
+  auto reactions() const { return this->reactions_; }
+  auto at( int i ){ return reactions_.at( i ); }
 
-  auto linearCrossSections() const { return this->linearCrossSections_; }
-  void linearCrossSections( LinMap_t&& lXS ){ 
-    this->linearCrossSections_ = lXS; }
+  auto linearReactions() const { return this->linearReactions_; }
+  void linearReactions( LinMap_t&& lXS ){ this->linearReactions_ = lXS; }
 
   auto reconstructedResonances() const { 
     return this->reconstructedResonances_; }

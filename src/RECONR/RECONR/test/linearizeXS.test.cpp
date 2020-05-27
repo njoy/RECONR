@@ -1,4 +1,3 @@
-/*
 #include "catch.hpp"
 
 #include "RECONR.hpp"
@@ -17,14 +16,16 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       double relTolerance{ 1E-1 }; // This tolerance is large by design
       njoy::RECONR::RECONR::linearizeXS( r2d2, absTolerance, relTolerance );
 
-      auto rXSs = r2d2.crossSections();
-      auto lXSs = r2d2.linearCrossSections();
+      auto rXSs = r2d2.reactions();
+      auto lReactions = r2d2.linearReactions();
 
       auto keys = ranges::view::keys( rXSs );
-      CHECK( ranges::equal( keys, ranges::view::keys( lXSs ) ) );
+      CHECK( ranges::equal( keys, ranges::view::keys( lReactions ) ) );
       
+      int MT;
       THEN( "we can check MT=1" ){
-        auto lxs1 = lXSs.at( 1 );
+        MT = 1;
+        auto reaction = lReactions.at( MT );
         std::vector< double > refE{
           1.0E-5, 
           details::nextMin( 2.0E-5 ), 2.0E-5,
@@ -40,8 +41,9 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
           2.731301E-5 , 2.731301E-5 , 
           2.710792E-5 };
 
-        auto energies = lxs1.x() | ranges::to_vector;
-        auto barns = lxs1.y() | ranges::to_vector;
+        auto lXS = reaction.crossSections();
+        auto energies = lXS.x() | ranges::to_vector;
+        auto barns = lXS.y() | ranges::to_vector;
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
@@ -52,7 +54,8 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         }
       }
       THEN( "we can check MT=16" ){
-        auto lxs16 = lXSs.at( 16 );
+        MT = 16;
+        auto reaction = lReactions.at( MT );
 				std::vector< double > refE{
 					1e-05,       1.25e-05,    1.5e-05,     2e-05,       
 					2.5457e-05,  3.09139e-05, 4.18279e-05, 5.27418e-05, 6.36557e-05,  
@@ -76,8 +79,9 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
 					0.000296768, 0.000206284, 0.000143388,    9.96694e-05, 6.92804e-05,  
 					4.81569e-05, 3.34739e-05, 2.75176e-05,    2.7313e-05,  2.71079e-05 };
 
-        auto energies = lxs16.x() | ranges::to_vector;
-        auto barns = lxs16.y() | ranges::to_vector;
+        auto lXS = reaction.crossSections();
+        auto energies = lXS.x() | ranges::to_vector;
+        auto barns = lXS.y() | ranges::to_vector;
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
@@ -88,7 +92,8 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         }
       }
       THEN( "we can check MT=18" ){
-        auto lxs18 = lXSs.at( 18 );
+        MT = 18;
+        auto reaction = lReactions.at( MT );
         std::vector< double > refE{ 
           1.0E+5,
           details::nextMin( 1.5E+5 ), 1.5E+5,
@@ -99,8 +104,9 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
           1.182897E+1 , 1.182897E+1 , 
           3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
 
-        auto energies = lxs18.x() | ranges::to_vector;
-        auto barns = lxs18.y() | ranges::to_vector;
+        auto lXS = reaction.crossSections();
+        auto energies = lXS.x() | ranges::to_vector;
+        auto barns = lXS.y() | ranges::to_vector;
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
@@ -111,7 +117,8 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         }
       }
       THEN( "we can check MT=102" ){
-        auto lxs102 = lXSs.at( 102 );
+        MT = 102;
+        auto reaction = lReactions.at( MT );
 				std::vector< double > refE{
 					1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
 					1.3125e-05,   1.375e-05,    1.4375e-05,   1.5e-05,      1.5625e-05,   
@@ -137,8 +144,9 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
 					1.34706,      1.0103,       0.673545,    0.336789,    3.34739e-05,     
 					2.75176e-05,  2.7313e-05,  2.71079e-05 };
 
-        auto energies = lxs102.x() | ranges::to_vector;
-        auto barns = lxs102.y() | ranges::to_vector;
+        auto lXS = reaction.crossSections();
+        auto energies = lXS.x() | ranges::to_vector;
+        auto barns = lXS.y() | ranges::to_vector;
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
@@ -151,4 +159,3 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
-*/

@@ -8,8 +8,8 @@ auto unionizeEnergyGrid( ResonanceReconstructionDataDelivery& r2d2,
   std::vector< double > grid = r2d2.resonanceReferenceGrid();
   grid |= ranges::action::push_back( user );
 
-  for( const auto& [MT, XS] : r2d2.linearCrossSections() ){
-    grid |= ranges::action::push_back( XS.x() );
+  for( const auto& [MT, reaction] : r2d2.linearReactions() ){
+    grid |= ranges::action::push_back( reaction.crossSections().x() );
   }
 
   ranges::sort( grid );
@@ -26,8 +26,8 @@ static
 auto unionizeEnergyGrid( ResonanceReconstructionDataDelivery& r2d2 ){
   std::vector< double > grid;
 
-  for( const auto& [MT, XS] : r2d2.linearCrossSections() ){
-    grid |= ranges::action::push_back( XS.x() );
+  for( const auto& [MT, reaction] : r2d2.linearReactions() ){
+    grid |= ranges::action::push_back( reaction.crossSections().x() );
   }
   for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
     for( const auto& XS : V ){

@@ -13,14 +13,22 @@ SCENARIO( "Testing the the collection of cross sections" ){
     auto material = details::ENDFMaterial( "SLBW", false );
 
     WHEN( "the resonance reconstruction data can be extracted" ){
-      auto XSs = njoy::RECONR::R2D2::Factory::collectXS( material );
+      auto reactions = njoy::RECONR::R2D2::Factory::collectXS( material );
 
       std::vector< int > MTs{ 1, 2, 16, 18, 51, 52, 102, 875, 876, 877 };
-      CHECK( ranges::equal( MTs, ranges::view::keys( XSs ) ) );
+      CHECK( ranges::equal( MTs, ranges::view::keys( reactions ) ) );
 
       THEN( "MT=1 can be checked" ){
+        auto reaction = reactions.at( 1 );
+
+        CHECK( 1001 == reaction.ZA() );
+        CHECK( 0.9991673 == reaction.AWR() );
+        CHECK( 2.224648E6 == reaction.QM() );
+        CHECK( 3.224648E6 == reaction.QI() );
+        CHECK( 0 == reaction.LR() );
+
         auto xs = std::get< njoy::RECONR::interp::Histogram >( 
-            XSs.at( 1 )[ 0 ] );
+            reaction.crossSections()[ 0 ] );
         std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
         std::vector< double > refB{
@@ -41,8 +49,16 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.731301E-5 == Approx( xs( 1.975E7 ) ) );
       } // THEN
       THEN( "MT=2 can be checked" ){ 
+        auto reaction = reactions.at( 2 );
+
+        CHECK( 1002 == reaction.ZA() );
+        CHECK( 0.9991673 == reaction.AWR() );
+        CHECK( 2.224648E2 == reaction.QM() );
+        CHECK( 3.224648E2 == reaction.QI() );
+        CHECK( 0 == reaction.LR() );
+
         auto xs = std::get< njoy::RECONR::interp::Histogram >( 
-            XSs.at( 2 )[ 0 ] );
+            reaction.crossSections()[ 0 ] );
         std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
         std::vector< double > refB( refE.size(), 2.0 );
@@ -62,8 +78,16 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.0 == Approx( xs( 1.975E7 ) ) );
       }
       THEN( "MT=16 can be checked" ){ 
+        auto reaction = reactions.at( 16 );
+
+        CHECK( 1016 == reaction.ZA() );
+        CHECK( 0.9991673 == reaction.AWR() );
+        CHECK( 2.22464E16 == reaction.QM() );
+        CHECK( 3.22464E16 == reaction.QI() );
+        CHECK( 0 == reaction.LR() );
+
         auto xs = std::get< njoy::RECONR::interp::LogarithmicLogarithmic >( 
-            XSs.at( 16 )[ 0 ] );
+            reaction.crossSections()[ 0 ] );
         std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
         std::vector< double > refB{
@@ -97,9 +121,17 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( refY == Approx( xs( 1.975E7 ) ) );
       }
       THEN( "MT=18 can be checked" ){ 
+        auto reaction = reactions.at( 18 );
+
+        CHECK( 1018 == reaction.ZA() );
+        CHECK( 0.9991673 == reaction.AWR() );
+        CHECK( 2.22464E18 == reaction.QM() );
+        CHECK( 3.22464E18 == reaction.QI() );
+        CHECK( 0 == reaction.LR() );
+
         {
           auto xs1 = std::get< njoy::RECONR::interp::Histogram >(
-              XSs.at( 18 )[ 0 ] );
+              reaction.crossSections()[ 0 ] );
           std::vector< double > refE{ 1.0E+5, 1.5E+5, 7.5E+5 };
           std::vector< double > refB{ 1.8E+1, 1.182897E+1, 3.347392E-5 };
 
@@ -115,7 +147,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
         {
           auto xs2 = std::get< njoy::RECONR::interp::LinearLinear >(
-              XSs.at( 18 )[ 1 ] );
+              reaction.crossSections()[ 1 ] );
           std::vector< double > refE{ 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
           std::vector< double > refB{ 
             3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
@@ -136,9 +168,17 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
       }
       THEN( "MT=102 can be checked" ){ 
+        auto reaction = reactions.at( 102 );
+
+        CHECK( 1102 == reaction.ZA() );
+        CHECK( 0.9991673 == reaction.AWR() );
+        CHECK( 2.224648E6 == reaction.QM() );
+        CHECK( 3.224648E6 == reaction.QI() );
+        CHECK( 0 == reaction.LR() );
+
         {
           auto xs102 = std::get< njoy::RECONR::interp::LinearLogarithmic >( 
-              XSs.at( 102 )[ 0 ] );
+              reaction.crossSections()[ 0 ] );
           std::vector< double > refE{ 1.0E-5, 2.0E-5, 7.5E+5 };
           std::vector< double > refB{ 1.02E+2, 1.182897E+1, 3.347392E-5 };
 
@@ -158,7 +198,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
         {
           auto xs4 = std::get< njoy::RECONR::interp::LogarithmicLinear >( 
-              XSs.at( 102 )[ 1 ] );
+              reaction.crossSections()[ 1 ] );
           std::vector< double > refE{ 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
           std::vector< double > refB{
              3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };

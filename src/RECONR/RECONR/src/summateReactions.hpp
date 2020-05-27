@@ -4,7 +4,7 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
                        Range& energies ){
   Reaction_t reactions;
   
-  const auto linear = r2d2.linearCrossSections();
+  const auto linear = r2d2.linearReactions();
   const auto reconstructed = r2d2.reconstructedResonances();
 
   auto keys = ranges::view::keys( linear );
@@ -14,11 +14,11 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   // Reconstruct everything
   // Perhaps this could be more efficient by only reconstructing those things
   // that are used, but I doubt that is the limiting factor here
-  for( const auto& [ MT, XS ] : linear ){
+  for( const auto& [ MT, reaction ] : linear ){
     Log::info( "\t{}", MT );
     
     reactions[ MT ] =  energies 
-      | ranges::view::transform( XS )
+      | ranges::view::transform( reaction.crossSections() )
       | ranges::to_vector;
   }
 
@@ -84,7 +84,7 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
           // Calculate the summed reaction since it doesn't already exist
           auto foundReaction = linear.find( p );
           if( foundReaction != linear.end() ){
-            auto part = foundReaction->second;
+            auto part = foundReaction->second.crossSections();
             auto party = part.x() 
               | ranges::view::transform( part ) 
               | ranges::to_vector;

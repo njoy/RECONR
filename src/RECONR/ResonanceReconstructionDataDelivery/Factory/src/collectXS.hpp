@@ -78,7 +78,14 @@ XSmap_t collectXS( const ENDFMaterial_t& material ){
       }
       makeInterpTable( drop, take, std::get< 0 >( params ) );
     }
-    xs.insert( std::make_pair( section.MT(), std::move( cs ) ) );
+    Reaction< decltype( cs ) > reaction( 
+      section.ZA(),
+      section.AWR(),
+      section.QM(),
+      section.QI(),
+      section.LR(),
+      std::move( cs ) );
+    xs.insert( std::make_pair( section.MT(), std::move( reaction ) ) );
   }
 
   return xs;
