@@ -12,4 +12,18 @@ try:
   throw;
 }
 
+template< typename R >
+Reaction( const R& reaction, XS&& xs )
+try:
+  ZA_( reaction.ZA() ),
+  atomicWeightRatio_( reaction.AWR() ),
+  massDifferenceQ_( reaction.QM() ),
+  reactionQ_( reaction.QI() ),
+  complexBreakUp_( reaction.LR() ),
+  crossSection_( std::forward< XS >( xs ) )
+{ } catch( ... ){
+  Log::info( "Trouble creating Reaction object from another Reaction." );
+  throw;
+}
+
 Reaction() = delete;

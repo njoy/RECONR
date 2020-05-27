@@ -15,12 +15,7 @@ void linearizeXS( ResonanceReconstructionDataDelivery& r2d2,
       linearized.emplace_back( l );
     }
 
-    Reaction< interp::LinearTable > lReaction(
-      reaction.ZA(),
-      reaction.AWR(),
-      reaction.QM(),
-      reaction.QI(),
-      reaction.LR(),
+    Reaction< interp::LinearTable > lReaction( reaction,
       interp::LinearTable( std::move( linearized ) ) );
     linearMap.emplace( MT, std::move( lReaction ) );
   }

@@ -2,7 +2,8 @@ template< typename Range >
 static
 auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
                        Range& energies ){
-  Reaction_t reactions;
+  using Reaction_t = Reaction< std::vector< double > >;
+  std::map< int, Reaction_t > reactions;
   
   const auto linear = r2d2.linearReactions();
   const auto reconstructed = r2d2.reconstructedResonances();
@@ -17,9 +18,10 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   for( const auto& [ MT, reaction ] : linear ){
     Log::info( "\t{}", MT );
     
-    reactions[ MT ] =  energies 
+    auto barns =  energies 
       | ranges::view::transform( reaction.crossSections() )
       | ranges::to_vector;
+    reactions.emplace( MT, Reaction_t{ reaction, std::move( barns ) } );
   }
 
   // Add reconstructed resonances
@@ -27,6 +29,8 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   for( const auto& MT : ranges::view::keys( reconstructed ) ){
     std::vector< std::vector< double >  > partials;
 
+    using RType = decltype( reactions )::mapped_type;
+    std::unique_ptr< RType > reaction = nullptr;
     using PType = decltype( reconstructed )::mapped_type;
     std::unique_ptr< PType > recon = nullptr;
 
@@ -35,14 +39,16 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
       if( reactions.find( 19 ) != reactions.end() ){
         Log::info( "\t{}", 19 );
         recon = std::make_unique< PType >( reconstructed.at( 19 ) );
-        partials |= ranges::action::push_back( reactions.at( 19 ) );
+        reaction = std::make_unique< RType >( reactions.at( 19 ) );
+        partials |= ranges::action::push_back( reaction->crossSections() );
       }
     }
     if( recon == nullptr ){
       if( reactions.find( MT ) != reactions.end() ){
         Log::info( "\t{}", MT );
         recon = std::make_unique< PType >( reconstructed.at( MT ) );
-        partials |= ranges::action::push_back( reactions.at( MT ) );
+        reaction = std::make_unique< RType >( reactions.at( MT ) );
+        partials |= ranges::action::push_back( reaction->crossSections() );
       }
     }
 
@@ -55,7 +61,8 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
       auto partial = energies | ranges::view::transform( XS );
       partials |= ranges::action::push_back( partial );
     }
-    reactions[ MT ] = sumPartials( partials );
+    Reaction_t rReaction{ *reaction, sumPartials( partials ) };
+    reactions.insert_or_assign( MT, std::move( rReaction ) );
   } // Reconstructed resonances
 
   // Sum redundant cross sections
@@ -67,7 +74,7 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
 
     auto redundants = redundantMTs
       | ranges::view::filter( 
-        [&]( auto&& mt ){ return reactions.count( mt ); } );
+        [&]( auto&& mt ){ return reactions.count( mt ) > 0; } );
 
     if( ranges::distance( redundants ) != 0 ){
       Log::info( "\t{}, redundant MTs:", MT );
@@ -79,7 +86,8 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
         // Look for already reconstructed reactions
         auto found = reactions.find( p );
         if( found != reactions.end() ){
-          partials |= ranges::action::push_back( found->second );
+          partials 
+            |= ranges::action::push_back( found->second.crossSections() );
         } else{
           // Calculate the summed reaction since it doesn't already exist
           auto foundReaction = linear.find( p );
@@ -91,8 +99,10 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
             partials |= ranges::action::push_back( party );
           }
         }
-        reactions[ MT ] = sumPartials( partials );
-      }
+
+        Reaction_t sReaction{ reactions.at( p ), sumPartials( partials ) };
+        reactions.insert_or_assign( MT, std::move( sReaction ) );
+      } // redundants
     }
   } // Redundant cross sections
   return reactions;

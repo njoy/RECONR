@@ -32,18 +32,14 @@ void operator()( const nlohmann::json& njoyArgs,
 
     long size = energies.size();
     std::vector< ENDFtk::section::Type< 3 > > sections;
-    for( auto& [ MT, XS ] : reactions ){
-      double QM = 1.0;
-      double QI = 2.0;
-      int LR = 2;
-      int ZA = 100;
-      double awr{ 3.14 };
+    for( auto& [ MT, rx ] : reactions ){
       std::vector< long > boundaries{ size };
       std::vector< long > interpolants{ 2 };
 
-      sections.emplace_back( MT, ZA, awr, QM, QI, LR,
+      sections.emplace_back( MT, rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
                              std::move( boundaries ), std::move( interpolants ),
-                             utility::copy( energies ), std::move( XS ) );
+                             utility::copy( energies ), 
+                             utility::copy( rx.crossSections() ) );
     }
     ENDFtk::file::Type< 3 > mf3{ std::move( sections ) };
     mf3.print( ipendf, MAT );
