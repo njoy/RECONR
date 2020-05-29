@@ -1,3 +1,4 @@
+/*
 #include "catch.hpp"
 
 #include "RECONR.hpp"
@@ -159,3 +160,4 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
+*/

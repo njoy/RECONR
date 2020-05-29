@@ -7,7 +7,7 @@ SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
     auto evaluatedData = njoy::RECONR::RECONR::getEvaluated( input[ "nendf" ] );
 
-    auto tape = evaluatedData;
+    auto tape = std::get< 0 >( evaluatedData );
 
     GIVEN( "MAT numbers in the tape" ){
       const std::vector< int > validMATs{ 125, 2631, 9228 };

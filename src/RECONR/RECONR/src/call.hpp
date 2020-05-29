@@ -3,18 +3,17 @@ void operator()( const nlohmann::json& njoyArgs,
                  const nlohmann::json& ){
 
   output << "Input arguments:\n" << njoyArgs.dump( 2 ) << std::endl;
-
-  std::string filename = "tape" + std::to_string( njoyArgs[ "npend" ].get< int >() );
-  std::ofstream pendf( filename );
-  std::ostreambuf_iterator< char > ipendf( pendf );
-
-  auto tpid = ENDFtk::TPID( njoyArgs[ "tlabel" ].get< std::string >(), 1 );
-  tpid.print( ipendf, 0, 0, 0 );
+  auto filename = "tape" + std::to_string( njoyArgs[ "npend" ].get< int >() );
 
   auto evaluatedData = getEvaluated( njoyArgs[ "nendf" ] );
+
+  ProcessedEvaluation pendf( evaluatedData, filename );
+  pendf.header( njoyArgs[ "tlabel" ].get< std::string >() );
+
   for( auto& sequence : njoyArgs[ "sequence" ] ){
-    auto MAT = sequence[ "mat" ];
-    Log::info( "Processing ENDF Material: {}", MAT );
+    int MAT = sequence[ "mat" ];
+    output << "\n------------------------------------------------------\n";
+    output <<  fmt::format("Processing ENDF Material: {}\n", MAT );
 
     auto err = sequence[ "err" ];
 
@@ -28,25 +27,11 @@ void operator()( const nlohmann::json& njoyArgs,
     // Recalculate linearized cross sections
     auto energies = this->unionizeEnergyGrid( data );
     // Sum reactions
-    auto reactions = this->summateReactions( data, energies );
+    auto reactions = this->summateReactions( output, data, energies );
 
-    long size = energies.size();
-    std::vector< ENDFtk::section::Type< 3 > > sections;
-    for( auto& [ MT, rx ] : reactions ){
-      std::vector< long > boundaries{ size };
-      std::vector< long > interpolants{ 2 };
+    pendf.material( MAT, reactions, energies );
 
-      sections.emplace_back( MT, rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
-                             std::move( boundaries ), std::move( interpolants ),
-                             utility::copy( energies ), 
-                             utility::copy( rx.crossSections() ) );
-    }
-    ENDFtk::file::Type< 3 > mf3{ std::move( sections ) };
-    mf3.print( ipendf, MAT );
-
-    ENDFtk::MEND().print( ipendf );
   }
 
-  ENDFtk::TEND().print( ipendf );
-  pendf.close();
+  pendf.footer();
 }

@@ -183,11 +183,12 @@ std::string MF3(){
  0.000000+0 0.000000+0          0          0          0          0 125 0  0     )";
 }
 
-// njoy::ENDFtk::syntaxTree::Material< std::string::iterator > 
-inline njoy::RECONR::R2D2::ENDFMaterial_t
+inline 
+njoy::ENDFtk::syntaxTree::Material< std::string > 
+// njoy::RECONR::R2D2::ENDFMaterial_t
 ENDFMaterial( std::string formalism = "SLBW", bool print = false ){
 
-  const std::string endf = MF1() + MF2( formalism ) + MF3() + MEND();
+  std::string endf = MF1() + MF2( formalism ) + MF3() + MEND();
 
   if( print ){
     njoy::Log::info( "material: \n{}", endf );
@@ -199,8 +200,8 @@ ENDFMaterial( std::string formalism = "SLBW", bool print = false ){
   long lineNumber = 0;
   njoy::ENDFtk::HeadRecord head( begin, end, lineNumber );
 
-  // return njoy::ENDFtk::syntaxTree::Material< std::string::iterator >( 
-  return njoy::RECONR::R2D2::ENDFMaterial_t(
+  return njoy::ENDFtk::syntaxTree::Material< std::string >( 
+  // return njoy::RECONR::R2D2::ENDFMaterial_t(
     head, start, begin, end, lineNumber );
 }
 } // namespace details

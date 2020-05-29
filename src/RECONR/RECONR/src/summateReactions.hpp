@@ -1,6 +1,7 @@
 template< typename Range >
 static
-auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
+auto summateReactions( std::ostream& output,
+                       ResonanceReconstructionDataDelivery& r2d2,
                        Range& energies ){
   using Reaction_t = Reaction< std::vector< double > >;
   std::map< int, Reaction_t > reactions;
@@ -11,12 +12,13 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   auto keys = ranges::view::keys( linear );
   auto recKeys = ranges::view::keys( reconstructed );
 
-  Log::info( "Calculating cross sections on unionized energy grid for MTs: " );
+  output << 
+    "\nCalculating cross sections on unionized energy grid for MTs:\n";
   // Reconstruct everything
   // Perhaps this could be more efficient by only reconstructing those things
   // that are used, but I doubt that is the limiting factor here
   for( const auto& [ MT, reaction ] : linear ){
-    Log::info( "\t{}", MT );
+    output << fmt::format( "{} ", MT );
     
     auto barns =  energies 
       | ranges::view::transform( reaction.crossSections() )
@@ -25,7 +27,7 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
   }
 
   // Add reconstructed resonances
-  Log::info( "Adding reconstructed cross sections to background for MTs: " );
+  output << "\nAdding reconstructed cross sections to background for MTs:\n";
   for( const auto& MT : ranges::view::keys( reconstructed ) ){
     std::vector< std::vector< double >  > partials;
 
@@ -37,7 +39,7 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
     // Add resonance data to MT=19 if there are partials
     if( MT == 18 ){
       if( reactions.find( 19 ) != reactions.end() ){
-        Log::info( "\t{}", 19 );
+        output << fmt::format( "{:4d} ", 19 );
         recon = std::make_unique< PType >( reconstructed.at( 19 ) );
         reaction = std::make_unique< RType >( reactions.at( 19 ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
@@ -45,7 +47,7 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
     }
     if( recon == nullptr ){
       if( reactions.find( MT ) != reactions.end() ){
-        Log::info( "\t{}", MT );
+        output << fmt::format( "{:4d} ", MT );
         recon = std::make_unique< PType >( reconstructed.at( MT ) );
         reaction = std::make_unique< RType >( reactions.at( MT ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
@@ -61,12 +63,13 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
       auto partial = energies | ranges::view::transform( XS );
       partials |= ranges::action::push_back( partial );
     }
+
     Reaction_t rReaction{ *reaction, sumPartials( partials ) };
     reactions.insert_or_assign( MT, std::move( rReaction ) );
   } // Reconstructed resonances
 
   // Sum redundant cross sections
-  Log::info( "Summing redundant cross sections for MTs: " );
+  output << "\nSumming redundant cross sections for MTs:\n";
   for( const auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
 
@@ -77,11 +80,11 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
         [&]( auto&& mt ){ return reactions.count( mt ) > 0; } );
 
     if( ranges::distance( redundants ) != 0 ){
-      Log::info( "\t{}, redundant MTs:", MT );
+      output << fmt::format( "{:4d}, redundant MTs: ", MT );
       
       std::vector< std::vector< double > > partials;
       for( const auto& p : redundants ){
-        Log::info( "\t\t{}", p );
+        output << fmt::format( "{:4d} ", p );
 
         // Look for already reconstructed reactions
         auto found = reactions.find( p );
@@ -103,7 +106,9 @@ auto summateReactions( ResonanceReconstructionDataDelivery& r2d2,
         Reaction_t sReaction{ reactions.at( p ), sumPartials( partials ) };
         reactions.insert_or_assign( MT, std::move( sReaction ) );
       } // redundants
+      output << std::endl;
     }
+
   } // Redundant cross sections
   return reactions;
 }

@@ -1,9 +1,8 @@
 class RECONR{
 
 public:
-  using buffer_t = std::string;
-  using Tape_t = ENDFtk::syntaxTree::Tape< buffer_t >;
-  using Material_t = ENDFtk::syntaxTree::Material< std::string::iterator >;
+  using Buffer_t = std::string;
+  using Tape_t = ENDFtk::syntaxTree::Tape< Buffer_t >;
 
   static constexpr double absoluteTolerance{ 1E-10 };
 
@@ -12,6 +11,7 @@ public:
 
 protected:
   using Format_t = std::variant< Tape_t >;
+  #include "RECONR/RECONR/ProcessedEvaluation.hpp"
 
 public:
   #include "RECONR/RECONR/src/findR2D2.hpp"

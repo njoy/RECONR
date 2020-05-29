@@ -55,7 +55,8 @@ SCENARIO( "Testing the summation of cross sections" ){
       auto [energies, r2d2] = lin_recon( "SLBW", absTol, relTol );
       auto sizeEnergies = ranges::distance( energies );
 
-      auto reactions = njoy::RECONR::RECONR::summateReactions( r2d2, energies );
+      auto reactions = njoy::RECONR::RECONR::summateReactions( 
+          std::cout, r2d2, energies );
       int MT;
       THEN( "the reactions can be summed up and checked" ){
         std::vector< int > reference{ 
@@ -187,7 +188,8 @@ SCENARIO( "Testing the summation of cross sections" ){
       auto sizeEnergies = ranges::distance( energies );
 
       int MT;
-      auto reactions = njoy::RECONR::RECONR::summateReactions( r2d2, energies );
+      auto reactions = njoy::RECONR::RECONR::summateReactions( 
+          std::cout, r2d2, energies );
 
       THEN( "the reactions can be summed up and checked" ){
         std::vector< int > reference{ 

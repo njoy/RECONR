@@ -1,16 +1,15 @@
 static
-auto getEvaluated( int nendf ){
+Format_t getEvaluated( int nendf ){
 
   std::string filename = "tape" + std::to_string( nendf );
-  buffer_t ENDF;
+  std::string evaluated;
   try {
-    ENDF = njoy::utility::slurpFileToMemory( filename );
+    evaluated = njoy::utility::slurpFileToMemory( filename );
   } catch( ... ){
     Log::info( "Error ocurred when trying to open evaluated data file: {}.",
                filename);
     throw;
   }
-  // return njoy::ENDFtk::syntaxTree::Tape< buffer_t >( std::move( ENDF ) );
-  auto tape = njoy::ENDFtk::syntaxTree::makeTape( std::move( ENDF ) );
+  Tape_t tape = njoy::ENDFtk::syntaxTree::makeTape( std::move( evaluated ) );
   return tape;
 }
