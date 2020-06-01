@@ -591,6 +591,7 @@
     "src/RECONR.hpp",
     "src/RECONR/details.hpp",
     "src/RECONR/ResonanceReconstructionDataDelivery.hpp",
+    "src/RECONR/Reaction.hpp",
     "src/RECONR/ReferenceGrid.hpp",
     "src/RECONR/RECONR.hpp",
     "src/RECONR/interp.hpp",
@@ -609,6 +610,13 @@
     "src/RECONR/details/checkRanges.hpp",
     "src/RECONR/details/simpleENDFTestString.hpp",
     "src/RECONR/details/printV.hpp",
+    "src/RECONR/Reaction/src/ctor.hpp",
+    "src/RECONR/RECONR/ProcessedEvaluation.hpp",
+    "src/RECONR/RECONR/ProcessedEvaluation/src/material.hpp",
+    "src/RECONR/RECONR/ProcessedEvaluation/src/ctor.hpp",
+    "src/RECONR/RECONR/ProcessedEvaluation/src/header.hpp",
+    "src/RECONR/RECONR/ProcessedEvaluation/src/footer.hpp",
+    "src/RECONR/RECONR/src/sumPartials.hpp",
     "src/RECONR/RECONR/src/linearizeXS.hpp",
     "src/RECONR/RECONR/src/storeBWReconstruction.hpp",
     "src/RECONR/RECONR/src/findR2D2.hpp",
@@ -637,12 +645,7 @@
   "test pattern": "test$",
   "tests": {
     "RECONR.RECONR": [
-      "src/RECONR/RECONR/test/reconstructResonances.test.cpp",
-      "src/RECONR/RECONR/test/getEvaluated.test.cpp",
-      "src/RECONR/RECONR/test/unionizeEnergyGrid.test.cpp",
-      "src/RECONR/RECONR/test/linearizeXS.test.cpp",
-      "src/RECONR/RECONR/test/RECONR.test.cpp",
-      "src/RECONR/RECONR/test/summateReactions.test.cpp"
+      "src/RECONR/RECONR/test/RECONR.test.cpp"
     ],
     "RECONR.ReferenceGrid": [
       "src/RECONR/ReferenceGrid/test/call.test.cpp",

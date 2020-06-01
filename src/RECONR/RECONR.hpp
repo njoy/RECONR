@@ -1,8 +1,7 @@
 class RECONR{
 
 public:
-  using Buffer_t = std::string;
-  using Tape_t = ENDFtk::syntaxTree::Tape< Buffer_t >;
+  using Tape_t = ENDFtk::syntaxTree::Tape< std::string >;
 
   static constexpr double absoluteTolerance{ 1E-10 };
 
