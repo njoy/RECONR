@@ -3,8 +3,13 @@
  */
 template< typename Range >
 static
-auto unionizeEnergyGrid( ResonanceReconstructionDataDelivery& r2d2,
+auto unionizeEnergyGrid( std::ostream& output,
+                         ResonanceReconstructionDataDelivery& r2d2,
                          const Range& user ){
+
+  output << 
+    "\nGenerating unionized energy grid prior to reconstructing resonances"
+         << std::endl;
   std::vector< double > grid = r2d2.resonanceReferenceGrid();
   grid |= ranges::action::push_back( user );
 
@@ -23,7 +28,11 @@ auto unionizeEnergyGrid( ResonanceReconstructionDataDelivery& r2d2,
  * This method is used *after* resonances are reconstructed
  */
 static
-auto unionizeEnergyGrid( ResonanceReconstructionDataDelivery& r2d2 ){
+auto unionizeEnergyGrid( std::ostream& output, 
+                         ResonanceReconstructionDataDelivery& r2d2 ){
+  output << 
+    "\nGenerating unionized energy grid after reconstructing resonances"
+         << std::endl;
   std::vector< double > grid;
 
   for( const auto& [MT, reaction] : r2d2.linearReactions() ){

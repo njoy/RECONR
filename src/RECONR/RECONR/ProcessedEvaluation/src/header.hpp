@@ -4,7 +4,6 @@ void header( Tape_t&, std::string&& text ){
 }
 
 void header( std::string&& text ){
-  Log::info( "eval type: {}", typeid( this->evaluated ).name() );
   std::visit(
     [&]( auto&& eval ){ 
       return this->header( eval, std::move( text ) ); },

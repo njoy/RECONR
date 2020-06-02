@@ -1,6 +1,10 @@
 static
-void linearizeXS( ResonanceReconstructionDataDelivery& r2d2, 
-                double relTol, double absTol ){
+void linearizeXS( std::ostream& output,
+                  ResonanceReconstructionDataDelivery& r2d2, 
+                  double relTol, double absTol ){
+
+  output << "\nLinearizing cross sections." 
+         << std::endl;
 
   R2D2::LinMap_t linearMap{};
 

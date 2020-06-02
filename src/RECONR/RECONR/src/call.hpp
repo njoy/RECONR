@@ -5,7 +5,7 @@ void operator()( const nlohmann::json& njoyArgs,
   output << "Input arguments:\n" << njoyArgs.dump( 2 ) << std::endl;
   auto filename = "tape" + std::to_string( njoyArgs[ "npend" ].get< int >() );
 
-  auto evaluatedData = getEvaluated( njoyArgs[ "nendf" ] );
+  auto evaluatedData = getEvaluated( output, njoyArgs[ "nendf" ] );
 
   ProcessedEvaluation pendf( evaluatedData, filename );
   pendf.header( njoyArgs[ "tlabel" ].get< std::string >() );
@@ -17,15 +17,16 @@ void operator()( const nlohmann::json& njoyArgs,
 
     auto err = sequence[ "err" ];
 
-    auto data = this->findR2D2( sequence, evaluatedData );
-    this->linearizeXS( data, err, this->absoluteTolerance );
+    auto data = this->findR2D2( output, sequence, evaluatedData );
+    this->linearizeXS( output, data, err, this->absoluteTolerance );
     // Get unionized energy grid
     std::vector< double > enode = sequence.at( "enode" );
-    auto grid = this->unionizeEnergyGrid( data, enode );
+    auto grid = this->unionizeEnergyGrid( output, data, enode );
     // Reconstruct resonances
-    this->reconstructResonances( grid, data, err, this->absoluteTolerance );
+    this->reconstructResonances( 
+      output, grid, data, err, this->absoluteTolerance );
     // Recalculate linearized cross sections
-    auto energies = this->unionizeEnergyGrid( data );
+    auto energies = this->unionizeEnergyGrid( output, data );
     // Sum reactions
     auto reactions = this->summateReactions( output, data, energies );
 
