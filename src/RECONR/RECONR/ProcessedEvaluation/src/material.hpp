@@ -2,31 +2,23 @@ template< typename Reaction_t, typename Energies_t >
 void material( const Tape_t&, 
                const int& MAT,
                const Reaction_t& reactions, 
-               const Energies_t& energies ){
+               const Energies_t& energies,
+               const nlohmann::json& sequence ){
 
-  long size = energies.size();
-  std::vector< ENDFtk::section::Type< 3 > > sections;
-  for( auto& [ MT, rx ] : reactions ){
-    std::vector< long > boundaries{ size };
-    std::vector< long > interpolants{ 2 };
+  this->mf1( MAT, sequence );
+  this->mf3( MAT, reactions, energies );
 
-    sections.emplace_back( MT, rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
-                            std::move( boundaries ), std::move( interpolants ),
-                            utility::copy( energies ), 
-                            utility::copy( rx.crossSections() ) );
-  }
-  ENDFtk::file::Type< 3 > mf3{ std::move( sections ) };
-  mf3.print( this->ipendf, MAT );
   ENDFtk::MEND().print( this->ipendf );
 }
 
 template< typename Reaction_t, typename Energies_t >
 void material( int& MAT, 
                const Reaction_t& reactions, 
-               const Energies_t& energies ){
+               const Energies_t& energies,
+               const nlohmann::json& sequence){
   std::visit(
     [&]( auto&& eval ){ 
-      return this->material( eval, MAT, reactions, energies ); 
+      return this->material( eval, MAT, reactions, energies, sequence ); 
     },
     this->evaluated
   );
