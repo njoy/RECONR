@@ -11,10 +11,10 @@ std::vector< double > getResonanceReferenceGrid( const RPVariant& parameters ){
 
 static
 std::vector< double > getResonanceReferenceGrid( 
-    const std::vector< ENDFtk::resonanceParameters::Isotope >& parameters ){
+    const ENDFtk::section::Type< 2, 151 >& parameters ){
 
   std::vector< double > grid{};
-  for( const auto& iso : parameters ){
+  for( const auto& iso : parameters.isotopes() ){
     auto rg = referenceGrid( iso );
     grid |= ranges::action::push_back( rg );
   }

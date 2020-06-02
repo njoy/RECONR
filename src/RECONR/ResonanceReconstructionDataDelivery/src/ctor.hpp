@@ -2,9 +2,9 @@ ResonanceReconstructionDataDelivery(
     XSmap_t&& reactions,
     RPVariant&& resonanceParameters )
   try:
-    reactions_( std::move( reactions ) ),
+    reactions_( std::forward< XSmap_t >( reactions ) ),
     linearReactions_(),
-    resonanceParameters_( std::move( resonanceParameters ) ),
+    resonanceParameters_( std::forward< RPVariant >( resonanceParameters ) ),
     resonanceReferenceGrid_( 
       getResonanceReferenceGrid( this->resonanceParameters_ ) )
   { } catch( ... ){
