@@ -4,6 +4,7 @@ class ProcessedEvaluation{
   std::ostreambuf_iterator< char > ipendf;
 
   #include "RECONR/RECONR/ProcessedEvaluation/src/mf1.hpp"
+  #include "RECONR/RECONR/ProcessedEvaluation/src/mf2.hpp"
   #include "RECONR/RECONR/ProcessedEvaluation/src/mf3.hpp"
 
 public:

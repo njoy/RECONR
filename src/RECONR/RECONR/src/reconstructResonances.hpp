@@ -88,12 +88,12 @@ static
 R2D2::ReconMap_t reconstructResonances( 
     std::ostream& output,
     Range& grid, 
-    std::vector< ENDFtk::resonanceParameters::Isotope >& Isotopes,
+    std::vector< ENDFtk::resonanceParameters::Isotope >& isotopes,
     double relTol, double absTol ){
 
   R2D2::ReconMap_t reconstructed{};
 
-  for( const auto& iso : Isotopes ){
+  for( const auto& iso : isotopes ){
     for( const auto& range : iso.resonanceRanges() ){
       std::visit(
         [&]( auto&& param ){ return reconstructResonances( 
@@ -104,6 +104,18 @@ R2D2::ReconMap_t reconstructResonances(
   }
   return reconstructed;
 }
+template< typename Range >
+static
+R2D2::ReconMap_t reconstructResonances( 
+    std::ostream& output,
+    Range& grid, 
+    ENDFtk::section::Type< 2, 151 >& parameters,
+    double relTol, double absTol ){
+
+  auto isotopes = parameters.isotopes() | ranges::to_vector;
+  return reconstructResonances( output, grid, isotopes , relTol, absTol );
+}
+
 
 template< typename Range >
 static

@@ -30,7 +30,7 @@ void operator()( const nlohmann::json& njoyArgs,
     // Sum reactions
     auto reactions = this->summateReactions( output, data, energies );
 
-    pendf.material( MAT, reactions, energies, sequence );
+    pendf.material( MAT, data, reactions, energies, sequence );
 
   }
 

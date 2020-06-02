@@ -10,10 +10,15 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
     auto material = details::ENDFMaterial( "SLBW" );
 
     WHEN( "the resonance parameters are extracted" ){
-      auto isos = std::get< 0 >(
+      auto resParams = std::get< 0 >(
         njoy::RECONR::R2D2::Factory::collectRP( material ) );
 
       THEN( "we can verify a few things" ){
+
+        CHECK( 4.5105E4 == resParams.ZA() );
+        CHECK( 104.0 == resParams.atomicWeightRatio() );
+
+        auto isos = resParams.isotopes();
         // Note, I'm not testing everything because I trust ENDFtk to do it's
         // job
         CHECK( 1 == ranges::distance( isos ) );

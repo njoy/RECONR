@@ -5,9 +5,7 @@ public:
   using LinMap_t = std::map< Key_t, Reaction< interp::LinearTable > >;
   using ReconMap_t = std::map< Key_t, std::vector< interp::LinearLinear > >;
 
-  using RPVariant = std::variant< 
-    std::vector< ENDFtk::resonanceParameters::Isotope >
-  >;
+  using RPVariant = std::variant< ENDFtk::section::Type< 2, 151 > >;
 
 private:
   XSmap_t reactions_;
