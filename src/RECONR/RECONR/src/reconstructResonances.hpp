@@ -17,24 +17,41 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range&,
-     R2D2::ReconMap_t&,
-     const ResonanceRange&,
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& resonanceRange,
      const SpecialCase&,
      double, double ){
-  output << "No resonance reconstruction needed for a SpecialCase." 
+  output << "Reconstructing scattering cross section for a SpecialCase."
          << std::endl;
-  // Nothing to do for SpecialCase
+
+  auto eL = resonanceRange.EL();
+  auto eH = resonanceRange.EH();
+  auto specialCase = std::get< ENDFtk::resonanceParameters::SpecialCase >( 
+      resonanceRange.parameters() );
+
+  auto AP = specialCase.scatteringRadius();
+
+  // NJOY2016 uses the formula 4*pi*Ap*Ap in the csnorp subroutine
+  double sigma = 2*constants::twopi*AP*AP;
+
+  std::vector< double > E{ eL, eH };
+  std::vector< double > barns( 2, sigma );
+
+  reconstructed[ 2 ].push_back(
+    interp::LinearLinear{ std::move( E ), std::move( barns ) }
+  );
+
 }
 
 template< typename Range >
 static
 void reconstructResonances( 
      std::ostream& output,
-     Range& grid, 
-     R2D2::ReconMap_t& reconstructed,
-     const ResonanceRange& rRange,
+     Range&,
+     R2D2::ReconMap_t&,
+     const ResonanceRange&,
      const unresolved::EnergyIndependent&,
-     double relTol, double absTol){
+     double, double){
 
   output << "Reconstructing unresolved EnergyIndependent parameters." 
          << std::endl;
@@ -44,11 +61,11 @@ template< typename Range >
 static
 void reconstructResonances( 
      std::ostream& output,
-     Range& grid, 
-     R2D2::ReconMap_t& reconstructed,
-     const ResonanceRange& rRange,
+     Range&,
+     R2D2::ReconMap_t&,
+     const ResonanceRange&,
      const unresolved::EnergyDependentFissionWidths&,
-     double relTol, double absTol){
+     double, double ){
 
   output << "Reconstructing unresolved EnergyDependentFissionWidths parameters." 
          << std::endl;
@@ -58,11 +75,12 @@ template< typename Range >
 static
 void reconstructResonances( 
      std::ostream& output,
-     Range& grid, 
-     R2D2::ReconMap_t& reconstructed,
-     const ResonanceRange& rRange,
+     Range&,
+     R2D2::ReconMap_t&,
+     const ResonanceRange&,
      const unresolved::EnergyDependent&,
-     double relTol, double absTol){
+     double, double ){
+
 
   output << "Reconstructing unresolved EnergyDependent parameters." 
          << std::endl;
@@ -146,6 +164,7 @@ R2D2::ReconMap_t reconstructResonances(
   }
   return reconstructed;
 }
+
 template< typename Range >
 static
 R2D2::ReconMap_t reconstructResonances( 

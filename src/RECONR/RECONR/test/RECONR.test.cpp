@@ -311,6 +311,33 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
   } // GIVEN
 } // SCENARIO
 SCENARIO( "Testing the resonance reconstruction" ){
+  GIVEN( "a SpecialCase R2D2 object and reference grid" ){
+    auto material = details::ENDFMaterial( "SpecialCase" );
+    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    const std::vector< double > refGrid{
+      0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
+    };
+
+    WHEN( "resonances are reconstructed" ){
+      njoy::RECONR::RECONR::reconstructResonances(
+        std::cout, refGrid, r2d2, 1E-1, 1E-3
+      );
+
+      THEN( "the linearized reconstruction can be verified" ){
+        auto reconstructed = r2d2.reconstructedResonances();
+
+        auto elastic = reconstructed[ 2 ].front();
+
+        std::vector< double > refEnergies{ 1E-5, 1E5 };
+        // 4*pi*2*2---2 is the scattering radius
+        double sigma{ 50.265482456 };
+        std::vector< double > refElastic( 2, sigma );
+        details::checkRanges( refEnergies,  elastic.x() );
+        details::checkRanges( refElastic,  elastic.y() );
+      
+      } // THEN
+    } // WHEN
+  } // GIVEN
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
     auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
@@ -358,11 +385,11 @@ SCENARIO( "Testing the resonance reconstruction" ){
         auto elastic = reconstructed[ 2 ].front();
         auto capture = reconstructed[ 102 ].front();
         auto fission = reconstructed[ 18 ].front();
-        details::checkRanges( refEnergies, elastic.x( ) );
+        details::checkRanges( refEnergies, elastic.x() );
         details::checkRanges( refElastic, elastic.y() );
-        details::checkRanges( refEnergies, capture.x( ) );
+        details::checkRanges( refEnergies, capture.x() );
         details::checkRanges( refCapture, capture.y() );
-        details::checkRanges( refEnergies, fission.x( ) );
+        details::checkRanges( refEnergies, fission.x() );
         details::checkRanges( refFission, fission.y() );
         
       } // THEN

@@ -30,6 +30,14 @@ std::string MEND(){
 }
 
 inline
+std::string SpecialCase(){
+  return
+    " 1.000000-5 1.000000+5          0          0          0          0 125 2151    \n"
+    " 5.000000-1 2.000000+0          0          0          0          0 125 2151    \n"
+    " 0.000000+0 0.000000+0          0          0          0          0 125 2  0     ";
+}
+
+inline
 std::string SLBW(){
   return
     //        EL         EH        LRU        LRF        NRO       NAPS
@@ -109,6 +117,7 @@ std::string MF2( std::string formalism = "SLBW" ){
     //       ZAI        ABN                   LFW        NER
     " 4.510500+4 1.000000+0          0          0          1          0 125 2151     \n";// CONT (isotope)
 
+  if( formalism == "SpecialCase" ) endf += SpecialCase();
   if( formalism == "SLBW" ) endf += SLBW();
   if( formalism == "MLBW" ) endf += MLBW();
   if( formalism == "RM" )   endf += RM();

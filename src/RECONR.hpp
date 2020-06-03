@@ -9,6 +9,7 @@
 #include "resonanceReconstruction.hpp"
 #include "interpolation.hpp"
 #include "twig.hpp"
+#include "constants.hpp"
 
 namespace njoy   {
 namespace RECONR {

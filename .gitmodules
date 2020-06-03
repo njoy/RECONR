@@ -19,3 +19,6 @@
 [submodule "dependencies/catch-adapter"]
 	path = dependencies/catch-adapter
 	url = https://github.com/njoy/catch-adapter.git
+[submodule "dependencies/constants"]
+	path = dependencies/constants
+	url = https://github.com/njoy/constants.git
