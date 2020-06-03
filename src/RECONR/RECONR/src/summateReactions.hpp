@@ -74,6 +74,7 @@ auto summateReactions( std::ostream& output,
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
 
     if( MT == 27 ) continue;
+    if( MT == 101 ) continue;
 
     auto redundants = redundantMTs
       | ranges::view::filter( 

@@ -474,7 +474,7 @@ SCENARIO( "Testing the summation of cross sections" ){
       int MT;
       THEN( "the reactions can be summed up and checked" ){
         std::vector< int > reference{ 
-          1, 2, 3, 4, 16, 18, 51, 52, 101, 102, 875, 876, 877 };
+          1, 2, 3, 4, 16, 18, 51, 52, 102, 875, 876, 877 };
 
         auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
 
@@ -583,16 +583,6 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto reaction = reactions.at( MT );
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
-      THEN( "MT = 101 can be tested" ){ 
-        MT = 101;
-        // We can do this because none of the other partials for 101 are part
-        // of this test
-        std::vector< double > refXS = reactions.at( 102 ).crossSections();
-
-        auto reaction = reactions.at( MT );
-        CHECK( refXS == reaction.crossSections() );
-
-      } // THEN
     } // WHEN
   } // GIVEN
   
@@ -607,7 +597,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
       THEN( "the reactions can be summed up and checked" ){
         std::vector< int > reference{ 
-          1, 2, 3, 4, 16, 18, 51, 52, 101, 102, 875, 876, 877 };
+          1, 2, 3, 4, 16, 18, 51, 52, 102, 875, 876, 877 };
 
         auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
 
@@ -826,16 +816,6 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         auto reaction = reactions.at( MT );
         details::checkRanges( refXS, reaction.crossSections() );
-      } // THEN
-      THEN( "MT = 101 can be tested" ){ 
-        MT = 101;
-        // We can do this because none of the other partials for 101 are part
-        // of this test
-        std::vector< double > refXS = reactions.at( 102 ).crossSections();
-
-        auto reaction = reactions.at( MT );
-        CHECK( refXS == reaction.crossSections() );
-
       } // THEN
       THEN( "MT = 102 can be tested" ){ 
         MT = 102;
