@@ -15,12 +15,12 @@ void reconstructResonances( std::ostream&,
 template< typename Range >
 static
 void reconstructResonances( 
-    std::ostream& output,
+     std::ostream& output,
      Range&,
-    R2D2::ReconMap_t&,
-    const ResonanceRange&,
-    const SpecialCase&,
-    double, double ){
+     R2D2::ReconMap_t&,
+     const ResonanceRange&,
+     const SpecialCase&,
+     double, double ){
   output << "No resonance reconstruction needed for a SpecialCase." 
          << std::endl;
   // Nothing to do for SpecialCase
@@ -29,12 +29,54 @@ void reconstructResonances(
 template< typename Range >
 static
 void reconstructResonances( 
-    std::ostream& output,
+     std::ostream& output,
      Range& grid, 
-    R2D2::ReconMap_t& reconstructed,
-    const ResonanceRange& rRange,
-    const resolved::SingleLevelBreitWigner&,
-    double relTol, double absTol){
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& rRange,
+     const unresolved::EnergyIndependent&,
+     double relTol, double absTol){
+
+  output << "Reconstructing unresolved EnergyIndependent parameters." 
+         << std::endl;
+}
+
+template< typename Range >
+static
+void reconstructResonances( 
+     std::ostream& output,
+     Range& grid, 
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& rRange,
+     const unresolved::EnergyDependentFissionWidths&,
+     double relTol, double absTol){
+
+  output << "Reconstructing unresolved EnergyDependentFissionWidths parameters." 
+         << std::endl;
+}
+
+template< typename Range >
+static
+void reconstructResonances( 
+     std::ostream& output,
+     Range& grid, 
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& rRange,
+     const unresolved::EnergyDependent&,
+     double relTol, double absTol){
+
+  output << "Reconstructing unresolved EnergyDependent parameters." 
+         << std::endl;
+}
+
+template< typename Range >
+static
+void reconstructResonances( 
+     std::ostream& output,
+     Range& grid, 
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& rRange,
+     const resolved::SingleLevelBreitWigner&,
+     double relTol, double absTol){
 
   output << "Reconstructing SLBW resonances." << std::endl;
 
@@ -48,12 +90,12 @@ void reconstructResonances(
 template< typename Range >
 static
 void reconstructResonances( 
-    std::ostream& output,
+     std::ostream& output,
      Range& grid, 
-    R2D2::ReconMap_t& reconstructed,
-    const ResonanceRange& rRange,
-    const resolved::MultiLevelBreitWigner&,
-    double relTol, double absTol){
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& rRange,
+     const resolved::MultiLevelBreitWigner&,
+     double relTol, double absTol){
 
   output << "Reconstructing SLBW resonances." << std::endl;
 
@@ -67,12 +109,12 @@ void reconstructResonances(
 template< typename Range >
 static
 void reconstructResonances( 
-    std::ostream& output,
+     std::ostream& output,
      Range& grid, 
-    R2D2::ReconMap_t& reconstructed,
-    const ResonanceRange& rRange,
-    const resolved::ReichMoore&,
-    double relTol, double absTol){
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& rRange,
+     const resolved::ReichMoore&,
+     double relTol, double absTol){
 
   output << "Reconstructing Reich-Moore resonances." << std::endl;
 

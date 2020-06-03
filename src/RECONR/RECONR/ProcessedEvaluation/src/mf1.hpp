@@ -19,7 +19,7 @@ void mf1( const int& MAT, const nlohmann::json& sequence ){
   std::array< ENDFtk::CONT, 3 > parameters{
     ENDFtk::CONT{ mt.ELIS(), mt.STA(), mt.LIS(), mt.LISO(), 0, mt.NFOR() }, 
     ENDFtk::CONT{ mt.AWI(), mt.EMAX(), mt.LREL(), 0, mt.NSUB(), mt.NVER() }, 
-    ENDFtk::CONT{ mt.TEMP(), 1E-3, mt.LDRV(), 0, NWD, NXC       }
+    ENDFtk::CONT{ mt.TEMP(), sequence[ "err" ], mt.LDRV(), 0, NWD, NXC       }
   };
   ENDFtk::section::Type< 1, 451 > mt451( 
     // --------------------------------------
