@@ -1,7 +1,8 @@
 class ResonanceReconstructionDataDelivery {
 public:
   using Key_t = int;
-  using XSmap_t = std::map< Key_t, Reaction< std::vector< interp::Variant > > >;
+  using RawInterpolation_t = std::vector< interp::Variant >;
+  using XSmap_t = std::map< Key_t, Reaction< RawInterpolation_t > >;
   using LinMap_t = std::map< Key_t, Reaction< interp::LinearTable > >;
   using ReconMap_t = std::map< Key_t, std::vector< interp::LinearLinear > >;
 

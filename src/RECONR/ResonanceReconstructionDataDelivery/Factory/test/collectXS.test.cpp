@@ -4,9 +4,7 @@
 
 #include "RECONR/details/simpleENDFTestString.hpp"
 #include "RECONR/details/interpLambdas.hpp"
-
-template< typename R1, typename R2 >
-void checkReferenceRange( const R1&, const R2& );
+#include "RECONR/details/checkRanges.hpp"
 
 SCENARIO( "Testing the the collection of cross sections" ){
   GIVEN( "an ENDF Material" ){
@@ -37,8 +35,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
       
-        checkReferenceRange( refE, energies );
-        checkReferenceRange( refB, barns );
+        details::checkRanges( refE, energies );
+        details::checkRanges( refB, barns );
 
         CHECK( 1.0 == Approx( xs( 1.5E-5 ) ) );
         CHECK( 1.0 == Approx( xs( 1.999999999E-5 ) ) );
@@ -66,8 +64,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
 
-        checkReferenceRange( refE, energies );
-        checkReferenceRange( refB, barns );
+        details::checkRanges( refE, energies );
+        details::checkRanges( refB, barns );
 
         CHECK( 2.0 == Approx( xs( 1.5E-5 ) ) );
         CHECK( 2.0 == Approx( xs( 1.999999999E-5 ) ) );
@@ -97,8 +95,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
         auto energies = xs.x() | ranges::to_vector;
         auto barns = xs.y() | ranges::to_vector;
 
-        checkReferenceRange( refE, energies );
-        checkReferenceRange( refB, barns );
+        details::checkRanges( refE, energies );
+        details::checkRanges( refB, barns );
 
         double refY = loglogInterpolation( 
           1.5E-5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
@@ -138,8 +136,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
           auto energies = xs1.x() | ranges::to_vector;
           auto barns = xs1.y() | ranges::to_vector;
 
-          checkReferenceRange( refE, energies );
-          checkReferenceRange( refB, barns );
+          details::checkRanges( refE, energies );
+          details::checkRanges( refB, barns );
 
           CHECK( 18.0 == Approx( xs1( 1.25E+5 ) ) );
           CHECK( 1.182897E1 == Approx( xs1( 2E+5 ) ) );
@@ -155,8 +153,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
           auto energies = xs2.x() | ranges::to_vector;
           auto barns = xs2.y() | ranges::to_vector;
 
-          checkReferenceRange( refE, energies );
-          checkReferenceRange( refB, barns );
+          details::checkRanges( refE, energies );
+          details::checkRanges( refB, barns );
 
           auto refY = linlinInterpolation( 
             1.925E7, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
@@ -185,8 +183,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
           auto energies = xs102.x() | ranges::to_vector;
           auto barns = xs102.y() | ranges::to_vector;
 
-          checkReferenceRange( refE, energies );
-          checkReferenceRange( refB, barns );
+          details::checkRanges( refE, energies );
+          details::checkRanges( refB, barns );
 
           double refY = linlogInterpolation( 
             1.5E-5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
@@ -206,8 +204,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
           auto energies = xs4.x() | ranges::to_vector;
           auto barns = xs4.y() | ranges::to_vector;
 
-          checkReferenceRange( refE, energies );
-          checkReferenceRange( refB, barns );
+          details::checkRanges( refE, energies );
+          details::checkRanges( refB, barns );
 
           auto refY = loglinInterpolation( 
             8E5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
@@ -225,11 +223,3 @@ SCENARIO( "Testing the the collection of cross sections" ){
     } // WHEN
   } // GIVEN
 } // SCENARIO
-
-template< typename R1, typename R2 >
-void checkReferenceRange( const R1& ref, const R2& trial){
-  CHECK( ranges::distance( ref ) == ranges::distance( trial ) );
-  for( const auto& [r, t ] : ranges::view::zip( ref, trial ) ){
-    CHECK( r == Approx( t ).scale( 1E-7 ) );
-  }
-}

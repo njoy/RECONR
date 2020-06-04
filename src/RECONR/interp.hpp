@@ -34,4 +34,6 @@ auto partition = []( auto&& range, int drop, int take ){
       | ranges::view::drop_exactly(drop)
       | ranges::view::take_exactly(take);
 };
+
+#include "RECONR/interp/src/MF3toInterpolation.hpp"
 } // namespace interp
