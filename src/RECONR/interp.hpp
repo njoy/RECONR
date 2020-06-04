@@ -19,6 +19,13 @@ using LinearLogarithmic      = LAW< interpolation::LinearLogarithmic >;
 using LogarithmicLinear      = LAW< interpolation::LogarithmicLinear >;
 using LogarithmicLogarithmic = LAW< interpolation::LogarithmicLogarithmic >;
 
+// For convenience
+using Histog = Histogram;
+using LinLin = LinearLinear;
+using LinLog = LinearLogarithmic;
+using LogLin = LogarithmicLinear;
+using LogLog = LogarithmicLogarithmic;
+
 using Variant = std::variant< 
       Histogram, 
       LinearLinear, 
@@ -35,5 +42,6 @@ auto partition = []( auto&& range, int drop, int take ){
       | ranges::view::take_exactly(take);
 };
 
+#include "RECONR/interp/src/makeInterpolationTable.hpp"
 #include "RECONR/interp/src/MF3toInterpolation.hpp"
 } // namespace interp
