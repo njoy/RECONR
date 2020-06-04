@@ -17,32 +17,16 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range&,
-     R2D2::ReconMap_t& reconstructed,
-     const ResonanceRange& resonanceRange,
+     R2D2::ReconMap_t&,
+     const ResonanceRange&,
      const SpecialCase&,
      double, double ){
-  output << "Reconstructing scattering cross section for a SpecialCase."
+  output << "No resonance reconstruction needed for a SpecialCase." 
          << std::endl;
-
-  auto eL = resonanceRange.EL();
-  auto eH = resonanceRange.EH();
-  auto specialCase = std::get< ENDFtk::resonanceParameters::SpecialCase >( 
-      resonanceRange.parameters() );
-
-  auto AP = specialCase.scatteringRadius();
-
-  // NJOY2016 uses the formula 4*pi*Ap*Ap in the csnorp subroutine
-  double sigma = 2*constants::twopi*AP*AP;
-
-  std::vector< double > E{ eL, eH };
-  std::vector< double > barns( 2, sigma );
-
-  reconstructed[ 2 ].push_back(
-    interp::LinearLinear{ std::move( E ), std::move( barns ) }
-  );
-
+  // Nothing to do for SpecialCase
 }
 
+/*
 template< typename Range >
 static
 void reconstructResonances( 
@@ -85,6 +69,7 @@ void reconstructResonances(
   output << "Reconstructing unresolved EnergyDependent parameters." 
          << std::endl;
 }
+*/
 
 template< typename Range >
 static
