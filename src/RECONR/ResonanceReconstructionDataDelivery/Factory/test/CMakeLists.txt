@@ -1,6 +1,7 @@
 
 add_executable( RECONR.ResonanceReconstructionDataDelivery.Factory.test
                 Factory.test.cpp
+                collectPPXS.test.cpp
                 collectXS.test.cpp
                 collectRP.test.cpp )
 target_compile_options( RECONR.ResonanceReconstructionDataDelivery.Factory.test PRIVATE ${${PREFIX}_common_flags}

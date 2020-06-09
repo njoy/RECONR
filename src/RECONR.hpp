@@ -18,6 +18,7 @@ using namespace ENDFtk::resonanceParameters;
 
 #include "RECONR/interp.hpp"
 #include "RECONR/Reaction.hpp"
+#include "RECONR/PhotonProductionReaction.hpp"
 #include "RECONR/ReferenceGrid.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
 #include "RECONR/src/linearize.hpp"

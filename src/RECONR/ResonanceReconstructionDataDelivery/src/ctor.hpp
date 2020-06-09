@@ -1,9 +1,12 @@
 ResonanceReconstructionDataDelivery( 
-    XSmap_t&& reactions,
+    XSMap_t&& reactions,
+    PPMap_t&& pProductions,
     RPVariant&& resonanceParameters )
   try:
-    reactions_( std::forward< XSmap_t >( reactions ) ),
+    reactions_( std::forward< XSMap_t >( reactions ) ),
+    photonProductions_( std::forward< PPMap_t >( pProductions ) ),
     linearReactions_(),
+    linearPhotonProductions_(),
     resonanceParameters_( std::forward< RPVariant >( resonanceParameters ) ),
     resonanceReferenceGrid_( 
       getResonanceReferenceGrid( this->resonanceParameters_ ) )

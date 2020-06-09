@@ -2,15 +2,19 @@ class ResonanceReconstructionDataDelivery {
 public:
   using Key_t = int;
   using RawInterpolation_t = std::vector< interp::Variant >;
-  using XSmap_t = std::map< Key_t, Reaction< RawInterpolation_t > >;
+  using XSMap_t = std::map< Key_t, Reaction< RawInterpolation_t > >;
+  using PPMap_t = std::map< Key_t, PPReaction< RawInterpolation_t > >;
   using LinMap_t = std::map< Key_t, Reaction< interp::LinearTable > >;
+  using PPLinMap_t = std::map< Key_t, PPReaction< interp::LinearTable > >;
   using ReconMap_t = std::map< Key_t, std::vector< interp::LinearLinear > >;
 
   using RPVariant = std::variant< ENDFtk::section::Type< 2, 151 > >;
 
 private:
-  XSmap_t reactions_;
+  XSMap_t reactions_;
+  PPMap_t photonProductions_;
   LinMap_t linearReactions_;
+  PPLinMap_t linearPhotonProductions_;
   ReconMap_t reconstructedResonances_;
 
   RPVariant resonanceParameters_;
