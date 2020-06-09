@@ -664,10 +664,7 @@
       "src/RECONR/ResonanceReconstructionDataDelivery/test/ResonanceReconstructionDataDelivery.test.cpp"
     ],
     "RECONR.ResonanceReconstructionDataDelivery.Factory": [
-      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/Factory.test.cpp",
-      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectPPXS.test.cpp",
-      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.test.cpp",
-      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectRP.test.cpp"
+      "src/RECONR/ResonanceReconstructionDataDelivery/Factory/test/Factory.test.cpp"
     ]
   },
   "update": true

@@ -2,9 +2,9 @@
 /*
  * This function will take an MF3 section and return an interpolation table.
  */
-inline
+template< typename S >
 std::vector< Variant >
-MF3toInterpolation( const ENDFtk::section::Type< 3 >& section ){
+MF3toInterpolation( const S& section ){
 
   std::vector< Variant > cs;
 

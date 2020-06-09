@@ -14,12 +14,13 @@ PPMap_t collectPPXS( const ENDFMaterial_t& material ){
     auto MF13 = material.fileNumber( 13 ).parse< 13 >();
     for( const auto& section : MF13.sections() ){
       PPReaction< RawInterpolation_t > reaction{
-        section.ZA(), section.AWR()
+        section.ZA(), section.AWR(),
+        interp::MF13toInterpolation( section )
       };
-      xw.insert( std::make_pair( section.MT(), std::move( reaction ) ) );
+      xs.insert( std::make_pair( section.MT(), std::move( reaction ) ) );
     }
   } else {
-    Log::info( "MF=13 doesn't exist." );
+    Log::info( "MF=13 doesn't exist. No photon production data to extract." );
   }
   
   return xs;
