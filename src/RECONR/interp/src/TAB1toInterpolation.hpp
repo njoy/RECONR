@@ -4,7 +4,7 @@
  */
 template< typename S >
 std::vector< Variant >
-MF3toInterpolation( const S& section ){
+TAB1toInterpolation( const S& section ){
 
   std::vector< Variant > cs;
 

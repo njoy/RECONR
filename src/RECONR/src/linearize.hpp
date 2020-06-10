@@ -107,6 +107,7 @@ linearize( const Range& grid, double relTol, double absTol ){
       auto diff = std::max( eDiff, std::max( fDiff, cDiff ) );
       auto reldiff = std::max( eRelDiff, std::max( fRelDiff, cRelDiff ) );
 
+      // return ( reldiff < relTol );
       return ( diff < absTol ) or ( reldiff < relTol );
     };
 

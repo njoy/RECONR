@@ -12,13 +12,12 @@ auto summateReactions( std::ostream& output,
   auto keys = ranges::view::keys( linear );
   auto recKeys = ranges::view::keys( reconstructed );
 
-  output << 
-    "\nCalculating cross sections on unionized energy grid for MTs:\n";
+  output << "\nCalculating cross sections on unionized energy grid for MTs:\n";
   // Reconstruct everything
   // Perhaps this could be more efficient by only reconstructing those things
   // that are used, but I doubt that is the limiting factor here
   for( const auto& [ MT, reaction ] : linear ){
-    output << fmt::format( "{} ", MT );
+    output << fmt::format( "{:4d} ", MT );
     
     auto barns =  energies 
       | ranges::view::transform( reaction.crossSections() )
@@ -72,9 +71,6 @@ auto summateReactions( std::ostream& output,
   output << "\nSumming redundant cross sections for MTs:\n";
   for( const auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
-
-    if( MT == 27 ) continue;
-    if( MT == 101 ) continue;
 
     auto redundants = redundantMTs
       | ranges::view::filter( 

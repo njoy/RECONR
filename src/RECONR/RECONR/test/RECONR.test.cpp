@@ -15,13 +15,13 @@ nlohmann::json input = R"({
   "sequence": [
     {
       "mat": 125, "ncards": 1, "ngrid": 3,
-      "err": 0.1, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
+      "err": 0.001, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
       "cards": [ "Material 125 processed with modern RECONR" ],
       "enode": [ 1.0, 2.0, 3.0 ]
     },
     {
       "mat": 2631, "ncards": 2, "ngrid": 0,
-      "err": 0.1, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
+      "err": 0.001, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
       "cards": [ "Material 2631 processed with modern RECONR",
                   "For testing purposes only." ],
       "enode": [ ]
@@ -132,6 +132,7 @@ SCENARIO( "Testing creation of RECONR class" ){
   } // GIVEN
   
 } // SCENARIO
+/*
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
     auto evaluatedData = njoy::RECONR::RECONR::getEvaluated(
@@ -1062,4 +1063,5 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
   } // WHEN
 } // SCENARIO
+*/
 
