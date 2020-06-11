@@ -28,6 +28,18 @@ nlohmann::json input{R"({
     }
   ]
 })"_json};
+nlohmann::json input30{R"({
+  "nendf": 30, "npend": 32,
+  "tlabel": "Modern RECONR Testing",
+  "sequence": [
+    {
+      "mat": 9437, "ncards": 1, "ngrid": 3,
+      "err": 0.1, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
+      "cards": [ "Material 125 processed with modern RECONR" ],
+      "enode": [ 1.0, 2.0, 3.0 ]
+    }
+  ]
+})"_json};
 nlohmann::json input40{R"({
   "nendf": 40, "npend": 42,
   "tlabel": "Modern RECONR Testing",
@@ -142,17 +154,25 @@ SCENARIO( "Testing creation of RECONR class" ){
 
     } // THEN
   } // GIVEN
-  GIVEN( "an ENDF file with just one resonance" ){
+  // GIVEN( "an ENDF file with just one resonance" ){
 
-    auto args = nlohmann::json::object();
+  //   auto args = nlohmann::json::object();
 
-    WHEN( "a RECONR object is called" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( input40, std::cout, args ) );
+  //   WHEN( "a RECONR object is called" ){
+  //     CHECK_NOTHROW( njoy::RECONR::RECONR()( input40, std::cout, args ) );
+  //   } // THEN
+  // } // GIVEN
+  // GIVEN( "an ENDF file with just three resonances" ){
 
-    } // THEN
-  } // GIVEN
+  //   auto args = nlohmann::json::object();
+
+  //   WHEN( "a RECONR object is called" ){
+  //     CHECK_NOTHROW( njoy::RECONR::RECONR()( input30, std::cout, args ) );
+  //   } // THEN
+  // } // GIVEN
 } // SCENARIO
 
+/*
 SCENARIO( "Testing single resonance" ){
   const std::string single{R"(
 Retrieved by E4-Web: 2020/06/10,18:34:17                             1 0  0    0
@@ -229,6 +249,8 @@ Retrieved by E4-Web: 2020/06/10,18:34:17                             1 0  0    0
     std::cout, grid, r2d2, 0.1, 1E-10 );
   
 } // SCENARIO
+*/
+
 /*
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
