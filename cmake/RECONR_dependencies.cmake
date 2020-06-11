@@ -42,7 +42,7 @@ FetchContent_Declare( twig
 
 FetchContent_Declare( json-adapter
     GIT_REPOSITORY  http://github.com/njoy/json-adapter
-    GIT_TAG         origin/build/fetchcontent
+    GIT_TAG         origin/master
     )
 
 FetchContent_Declare( interpolation
