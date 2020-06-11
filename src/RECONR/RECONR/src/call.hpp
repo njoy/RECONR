@@ -22,11 +22,25 @@ void operator()( const nlohmann::json& njoyArgs,
     // Get unionized energy grid
     std::vector< double > enode = sequence.at( "enode" );
     auto grid = this->unionizeEnergyGrid( output, data, enode );
+    auto gridSize = ranges::distance( grid );
+
+    output << fmt::format(
+      std::string{ "number of user nodes               = {:10d}\n" } +
+      std::string{ "number of user and resonance nodes = {:10d}\n" }, 
+      ranges::distance( enode ), gridSize )
+           << std::endl;
+
     // Reconstruct resonances
     this->reconstructResonances( 
       output, grid, data, err, this->absoluteTolerance );
     // Recalculate linearized cross sections
     auto energies = this->unionizeEnergyGrid( output, data );
+    auto eSize = ranges::distance( energies );
+
+    output <<  fmt::format(
+      "number of points in final unionized grid    = {:10d}\n", eSize )
+           << std::endl;
+
     // Sum reactions
     auto reactions = this->summateReactions( output, data, energies );
 
