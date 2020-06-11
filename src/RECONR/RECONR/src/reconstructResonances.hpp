@@ -140,9 +140,17 @@ R2D2::ReconMap_t reconstructResonances(
 
   for( const auto& iso : isotopes ){
     for( const auto& range : iso.resonanceRanges() ){
+      auto eL = range.EL();
+      auto eH = range.EH();
+
+      auto g = grid 
+        | ranges::view::filter( 
+          [&]( auto&& a ){ return ( a.value >= eL ) and ( a.value <= eH ); } )
+        | ranges::to_vector;
+
       std::visit(
         [&]( auto&& param ){ return reconstructResonances( 
-              output, grid, reconstructed, range, param, relTol, absTol ); },
+              output, g, reconstructed, range, param, relTol, absTol ); },
         range.parameters()
       );
     }
