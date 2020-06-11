@@ -9,25 +9,37 @@
 #include "RECONR/details/nextMin.hpp"
 #include "RECONR/details/checkRanges.hpp"
 
-nlohmann::json input = R"({
+nlohmann::json input{R"({
   "nendf": 20, "npend": 22,
   "tlabel": "Modern RECONR Testing",
   "sequence": [
     {
       "mat": 125, "ncards": 1, "ngrid": 3,
-      "err": 0.001, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
+      "err": 0.1, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
       "cards": [ "Material 125 processed with modern RECONR" ],
       "enode": [ 1.0, 2.0, 3.0 ]
     },
     {
       "mat": 2631, "ncards": 2, "ngrid": 0,
-      "err": 0.001, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
+      "err": 0.1, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
       "cards": [ "Material 2631 processed with modern RECONR",
                   "For testing purposes only." ],
       "enode": [ ]
     }
   ]
-})"_json;
+})"_json};
+nlohmann::json input40{R"({
+  "nendf": 40, "npend": 42,
+  "tlabel": "Modern RECONR Testing",
+  "sequence": [
+    {
+      "mat": 9437, "ncards": 1, "ngrid": 3,
+      "err": 0.1, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
+      "cards": [ "Material 125 processed with modern RECONR" ],
+      "enode": [ 1.0, 2.0, 3.0 ]
+    }
+  ]
+})"_json};
 /*
     {
       "mat": 9228, "ncards": 1, "ngrid": 0,
@@ -130,6 +142,91 @@ SCENARIO( "Testing creation of RECONR class" ){
 
     } // THEN
   } // GIVEN
+  GIVEN( "an ENDF file with just one resonance" ){
+
+    auto args = nlohmann::json::object();
+
+    WHEN( "a RECONR object is called" ){
+      CHECK_NOTHROW( njoy::RECONR::RECONR()( input40, std::cout, args ) );
+
+    } // THEN
+  } // GIVEN
+} // SCENARIO
+
+SCENARIO( "Testing single resonance" ){
+  const std::string single{R"(
+Retrieved by E4-Web: 2020/06/10,18:34:17                             1 0  0    0
+ 9.423900+4 2.369986+2          1          1          0          59437 1451    1
+ 0.000000+0 1.000000+0          0          0          0          69437 1451    2
+ 1.000000+0 2.000000+7          0          0         10          89437 1451    3
+ 0.000000+0 0.000000+0          0          0          7          69437 1451    4
+ 94-Pu-239 LANL       EVAL-DEC17             LANL, ORNL, et al.   9437 1451    5
+ NDS 148, 1 (2018)    DIST-FEB18                       20170914   9437 1451    6
+----ENDF/B-VIII.0     MATERIAL 9437                               9437 1451    7
+-----INCIDENT NEUTRON DATA                                        9437 1451    8
+------ENDF-6 FORMAT                                               9437 1451    9
+ ************************ C O N T E N T S *********************** 9437 1451  562
+ **************** Program DICTIN (VERSION 2015-2) ****************9437 1451  563
+                                1        451        569          59437 1451  564
+                                2        151          6          39437 1451  565
+                                3          1          4          19437 1451  566
+                                3          2          4          59437 1451  567
+                                3         18          4          49437 1451  568
+                                3        102          4          19437 1451  569
+                                                                  9437 1  099999
+                                                                  9437 0  0    0
+ 9.423900+4 2.369986+2          0          0          1          09437 2151    1
+ 9.423900+4 1.000000+0          0          1          1          09437 2151    2
+ 1.000000-5 2.500000+3          1          3          0          19437 2151    3
+ 5.000000-1 9.410000-1          1          0          1          49437 2151    4
+ 2.369986+2 9.410000-1          0          0          6          19437 2151    5
+ 1.541700+1 0.000000+0 2.056203-3 4.054259-2-1.093928-6 7.550000-19437 2151    6
+                                                                  9437 2  099999
+                                                                  9437 0  0    0
+ 9.423900+4 2.369986+2          0          0          0          09437 3  1    1
+ 0.000000+0 0.000000+0          0          0          1          29437 3  1    2
+          2          2                                            9437 3  1    3
+ 1.000000-5 0.000000+0 2.000000+7 0.000000+0                      9437 3  1  142
+                                                                  9437 3  099999
+ 9.423900+4 2.369986+2          0          0          0          09437 3  2    1
+ 0.000000+0 0.000000+0          0          0          1          29437 3  2    2
+          2          2                                            9437 3  2    3
+ 1.000000-5 0.000000+0 2.000000+7 0.000000+0                      9437 3  2  142
+                                                                  9437 3  099999
+ 9.423900+4 2.369986+2          0          0          0          09437 3 18    1
+ 1.985785+8 1.985785+8          0          0          1          29437 3 18    2
+          2          2                                            9437 3 18    3
+ 1.000000-5 0.000000+0 2.000000+7 0.000000+0                      9437 3 18   61
+                                                                  9437 3  099999
+ 9.423900+4 2.369986+2          0          2          0          09437 3102    1
+ 6.534314+6 6.534314+6          0          0          1          29437 3102    2
+          2          2                                            9437 3102    3
+ 1.000000-5 0.000000+0 2.000000+7 0.000000+0                      9437 3102    4
+                                                                  9437 3  099999
+                                                                  9437 0  0    0
+                                                                     0 0  0    0
+                                                                    -1 0  0    0
+  )"};
+  auto begin = single.begin();
+  auto start = begin;
+  auto end = single.end();
+  long lineNumber = 0;
+
+  njoy::ENDFtk::HeadRecord head( begin, end, lineNumber );
+  njoy::ENDFtk::syntaxTree::Tape< std::string >::Material_t material(
+    head, start, begin, end, lineNumber );
+  auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+  njoy::RECONR::RECONR::linearizeXS( std::cout, r2d2, 1E-10, 0.1 );
+
+  std::vector< double > user;
+  auto njoyGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+      std::cout, r2d2, user);
+
+  njoy::Log::info( "njoyGrid: {}", njoyGrid | ranges::view::all );
+
+  std::vector< double > grid{ 1E-5, 1.5417E1, 2.5E3, 2E7 };
+  njoy::RECONR::RECONR::reconstructResonances( 
+    std::cout, grid, r2d2, 0.1, 1E-10 );
   
 } // SCENARIO
 /*
@@ -312,6 +409,33 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
   } // GIVEN
 } // SCENARIO
 SCENARIO( "Testing the resonance reconstruction" ){
+  GIVEN( "a SpecialCase R2D2 object and reference grid" ){
+    auto material = details::ENDFMaterial( "SpecialCase" );
+    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    const std::vector< double > refGrid{
+      0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
+    };
+
+    WHEN( "resonances are reconstructed" ){
+      njoy::RECONR::RECONR::reconstructResonances(
+        std::cout, refGrid, r2d2, 1E-1, 1E-3
+      );
+
+      THEN( "the linearized reconstruction can be verified" ){
+        auto reconstructed = r2d2.reconstructedResonances();
+
+        auto elastic = reconstructed[ 2 ].front();
+
+        std::vector< double > refEnergies{ 1E-5, 1E5 };
+        // 4*pi*2*2---2 is the scattering radius
+        double sigma{ 50.265482456 };
+        std::vector< double > refElastic( 2, sigma );
+        details::checkRanges( refEnergies,  elastic.x() );
+        details::checkRanges( refElastic,  elastic.y() );
+      
+      } // THEN
+    } // WHEN
+  } // GIVEN
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
     auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
@@ -1023,8 +1147,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         ranges::sort( refGrid );
         refGrid = ranges::view::unique( refGrid );
 
-        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-          std::cout, r2d2 );
+        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( std::cout, r2d2 );
 
         details::checkRanges( refGrid, trial );
       } // THEN
@@ -1064,4 +1187,3 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
   } // WHEN
 } // SCENARIO
 */
-

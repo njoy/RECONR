@@ -36,3 +36,4 @@ void operator()( const nlohmann::json& njoyArgs,
 
   pendf.footer();
 }
+
