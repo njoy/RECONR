@@ -103,18 +103,25 @@ linearize( const Range& grid, double relTol, double absTol, bool verbose=false )
       if ( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
         Log::info( "x-values don't differ" );
         return true; }
-      auto eDiff = std::abs( trial.elastic.value - reference.elastic.value );
-      auto fDiff = std::abs( trial.fission.value - reference.fission.value );
-      auto cDiff = std::abs( trial.capture.value - reference.capture.value );
-      auto eRelDiff = eDiff/reference.elastic.value;
-      auto fRelDiff = fDiff/reference.fission.value;
-      auto cRelDiff = cDiff/reference.capture.value;
+      auto cDiff = trial - reference;
 
-      auto diff = std::max( eDiff, std::max( fDiff, cDiff ) );
-      auto reldiff = std::max( eRelDiff, std::max( fRelDiff, cRelDiff ) );
+      double eRelDiff = std::abs( cDiff.elastic/reference.elastic );
+      double fRelDiff = std::abs( cDiff.fission/reference.fission );
+      double cRelDiff = std::abs( cDiff.capture/reference.capture );
+
+      double diff = std::max( { std::abs( cDiff.elastic.value ), 
+                                std::abs( cDiff.fission.value ), 
+                                std::abs( cDiff.capture.value ) } );
+      double reldiff = std::max( { eRelDiff, fRelDiff, cRelDiff } );
 
       if( verbose ){
-        Log::info( " eDiff: {:11.4E},  fDiff: {:11.4E},  cDiff: {:11.4E}", eDiff, fDiff, cDiff );
+        Log::info( "trial e: {:11.4E}, f: {:11.4E}, c: {:11.4E}", 
+                   trial.elastic.value, trial.fission.value, trial.capture.value );
+        Log::info( "reference e: {:11.4E}, f: {:11.4E}, c: {:11.4E}", 
+                   reference.elastic.value, reference.fission.value, reference.capture.value );
+        Log::info( "" );
+        Log::info( " eDiff: {:11.4E},  fDiff: {:11.4E},  cDiff: {:11.4E}", 
+                  cDiff.elastic.value, cDiff.fission.value, cDiff.capture.value );
         Log::info( "eRDiff: {:11.4E}, fRDiff: {:11.4E}, cRDiff: {:11.4E}", 
                    eRelDiff, fRelDiff, cRelDiff );
 
