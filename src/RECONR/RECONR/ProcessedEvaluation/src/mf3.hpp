@@ -6,14 +6,14 @@ void mf3( const int& MAT,
   long size = energies.size();
   std::vector< ENDFtk::section::Type< 3 > > sections;
   for( auto& [ MT, rx ] : reactions ){
-    if( MT == 27 ){
-      Log::info( "Intentionally not including MT=27 in ENDF file" );
-      continue;
-    }
-    if( MT == 101 ){
-      Log::info( "Intentionally not including MT=101 in ENDF file" );
-      continue;
-    }
+    // if( MT == 27 ){
+    //   Log::info( "Intentionally not including MT=27 in ENDF file" );
+    //   continue;
+    // }
+    // if( MT == 101 ){
+    //   Log::info( "Intentionally not including MT=101 in ENDF file" );
+    //   continue;
+    // }
 
     std::vector< long > boundaries{ size };
     std::vector< long > interpolants{ 2 };

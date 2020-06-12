@@ -84,7 +84,7 @@ void reconstructResonances(
   output << "Reconstructing SLBW resonances." << std::endl;
 
   auto bw = resonanceReconstruction::breitWigner::singleLevel::Apply{}(
-      rRange, linearize( grid, relTol, absTol, true ) );
+      rRange, linearize( grid, relTol, absTol ) );
 
   storeBWReconstruction( bw, reconstructed );
 
@@ -103,7 +103,7 @@ void reconstructResonances(
   output << "Reconstructing SLBW resonances." << std::endl;
 
   auto bw = resonanceReconstruction::breitWigner::multiLevel::Apply{}(
-      rRange, linearize( grid, relTol, absTol, true ) );
+      rRange, linearize( grid, relTol, absTol ) );
 
   storeBWReconstruction( bw, reconstructed );
 
@@ -122,7 +122,7 @@ void reconstructResonances(
   output << "Reconstructing Reich-Moore resonances." << std::endl;
 
   auto bw = resonanceReconstruction::reichMoore::Apply{}(
-      rRange, linearize( grid, relTol, absTol, true ) );
+      rRange, linearize( grid, relTol, absTol ) );
 
   storeBWReconstruction( bw, reconstructed );
 
