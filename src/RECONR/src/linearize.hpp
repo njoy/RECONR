@@ -14,8 +14,10 @@ linearize2( LAW law, double relTol, double absTol ){
     return ( diff < absTol ) or ( reldiff < relTol );
   };
 
-  auto midpoint = []( auto&& x, auto&& ){
-    return 0.5 * ( std::get<0>(x) + std::get<1>(x) );
+  auto midpoint = []( auto&& x, auto&& y ){
+    auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
+    auto my =  0.5 * ( std::get<0>(y) + std::get<1>(y) );
+    return std::make_pair( mx, my );
   };
     
   auto eGrid = law.x() | ranges::to_vector;
@@ -83,8 +85,13 @@ auto
 linearize( const Range& grid, double relTol, double absTol ){
   using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 
-  auto midpoint = [&]( auto&& x, auto&& ){
-    return 0.5 * ( std::get<0>(x) + std::get<1>(x) );
+  auto midpoint = []( auto&& x, auto&& y ){
+    auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
+    auto my = std::get<0>(y) + std::get<1>(y);
+    my.elastic.value *= 0.5;
+    my.fission.value *= 0.5;
+    my.capture.value *= 0.5;
+    return std::make_pair( mx, my );
   };
 
   return [=]( auto&& xs ){

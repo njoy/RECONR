@@ -2,15 +2,15 @@ reconr
   20 22                                        / Card 1
   "Modern RECONR Testing"                      / Card 2
   125 1 3                                      / Card 3.1
-  0.001 0.0 0.1 5E-7                             / Card 4.1
+  0.1 0.0 0.1 5E-7                             / Card 4.1
   "Material 125 processed with modern RECONR"  / Card 5.1
   1.0  2.0  3.0                                / Card 6.1
   2631 2 0                                     / Card 3.2
-  0.001 0.0 2.1 8E-7                             / Card 4.2
+  0.1 0.0 2.1 8E-7                             / Card 4.2
   "Material 2631 processed with modern RECONR" / Card 5.2.1
   "For testing purposes only."                 / Card 5.2.2
   9228 1 0                                     / Card 3.2
-  0.001 0.0 2.1 8E-7                             / Card 4.2
+  0.1 0.0 2.1 8E-7                             / Card 4.2
   "Material 9228 processed with modern RECONR" / Card 5.2.1
   0                                            / Card 6.0
 stop
