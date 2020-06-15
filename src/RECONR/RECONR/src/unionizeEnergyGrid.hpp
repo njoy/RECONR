@@ -4,23 +4,28 @@
 template< typename Range >
 static
 auto unionizeEnergyGrid( std::ostream& output,
-                         ResonanceReconstructionDataDelivery& r2d2,
-                         const Range& user ){
+                         const R2D2::LinMap_t& reactions,
+                         const R2D2::PPLinMap_t& ppReactions,
+                         const std::vector< double >& grid,
+                         Range& user ){
 
   output << 
     "\nGenerating unionized energy grid prior to reconstructing resonances"
          << std::endl;
-  std::vector< double > grid = r2d2.resonanceReferenceGrid();
-  grid |= ranges::action::push_back( user );
+  user |= ranges::action::push_back( grid );
 
-  for( const auto& [MT, reaction] : r2d2.linearReactions() ){
-    grid |= ranges::action::push_back( reaction.crossSections().x() );
-    grid |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
+  for( const auto& [MT, reaction] : reactions ){
+    user |= ranges::action::push_back( reaction.crossSections().x() );
+    user |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 
-  ranges::sort( grid );
+  for( const auto& [ MT, pProduction ] : ppReactions ){
+    user |= ranges::action::push_back( pProduction.productions().x() );
+  }
 
-  return grid 
+  ranges::sort( user );
+
+  return user 
     | ranges::view::unique 
     | ranges::to_vector;
 }
@@ -30,22 +35,17 @@ auto unionizeEnergyGrid( std::ostream& output,
  */
 static
 auto unionizeEnergyGrid( std::ostream& output, 
-                         ResonanceReconstructionDataDelivery& r2d2 ){
+                         std::vector< double >& grid,
+                         const R2D2::ReconMap_t& resonances ){
   output << 
     "\nGenerating unionized energy grid after reconstructing resonances"
          << std::endl;
-  std::vector< double > grid;
 
-  for( const auto& [MT, reaction] : r2d2.linearReactions() ){
-    grid |= ranges::action::push_back( reaction.crossSections().x() );
-    grid |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
-  }
-  for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
+  for( const auto& [MT, V] : resonances ){
     for( const auto& XS : V ){
       grid |= ranges::action::push_back( XS.x() );
     }
   }
-
   ranges::sort( grid );
 
   return grid 

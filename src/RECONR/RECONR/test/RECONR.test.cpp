@@ -152,11 +152,17 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
 
   njoy::RECONR::RECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
   auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid(
-    std::cout, r2d2, userSupplied );
+    std::cout, 
+    r2d2.linearReactions(), 
+    r2d2.linearPhotonProductions(), 
+    r2d2.resonanceReferenceGrid(),
+    userSupplied );
+
   njoy::RECONR::RECONR::reconstructResonances( 
     std::cout, refGrid, r2d2, relTol, absTol );
+
   auto energies = njoy::RECONR::RECONR::unionizeEnergyGrid(
-    std::cout, r2d2 );
+    std::cout, refGrid, r2d2.reconstructedResonances() );
 
   return std::make_pair( energies, r2d2 );
 }
@@ -837,7 +843,11 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         refGrid = ranges::view::unique( refGrid );
     
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-            std::cout, r2d2, userSupplied );
+          std::cout, 
+          r2d2.linearReactions(), 
+          r2d2.linearPhotonProductions(), 
+          r2d2.resonanceReferenceGrid(),
+          userSupplied );
     
         details::checkRanges( refGrid, trial );
       } // THEN
@@ -864,7 +874,11 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         refGrid = ranges::view::unique( refGrid );
     
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-            std::cout, r2d2, userSupplied );
+          std::cout, 
+          r2d2.linearReactions(), 
+          r2d2.linearPhotonProductions(), 
+          r2d2.resonanceReferenceGrid(),
+          userSupplied );
     
         details::checkRanges( refGrid, trial );
       } // THEN
@@ -889,14 +903,18 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         refGrid = ranges::view::unique( refGrid );
     
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-          std::cout, r2d2, userSupplied );
+          std::cout, 
+          r2d2.linearReactions(), 
+          r2d2.linearPhotonProductions(), 
+          r2d2.resonanceReferenceGrid(),
+          userSupplied );
     
         details::checkRanges( refGrid, trial );
       } // THEN
     } // GIVEN
   } // WHEN
 
-  WHEN( "resonance have been reconstructed" ){
+  WHEN( "resonances have been reconstructed" ){
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
       auto material = details::ENDFMaterial( "SLBW" );
       auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
@@ -906,37 +924,12 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
       njoy::RECONR::RECONR::linearizeXS(
         std::cout, r2d2, absTolerance, relTolerance );
       auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-          std::cout, r2d2, userSupplied );
-      njoy::RECONR::RECONR::reconstructResonances(
-        std::cout, refGrid, r2d2, 1E-1, 1E-3 );
-    
-      THEN( "the reconstructed energygrid can be unionized" ){
-
-        // refGrid is already verified above. Just need to add the
-        // reconstructed/linearized cross sections
-        for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
-          for( const auto& XS : V ){
-            refGrid |= ranges::action::push_back( XS.x() );
-          }
-        }
-        ranges::sort( refGrid );
-        refGrid = ranges::view::unique( refGrid );
-
-        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( std::cout, r2d2 );
-
-        details::checkRanges( refGrid, trial );
-      } // THEN
-    } // GIVEN
-    GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
-      auto material = details::ENDFMaterial( "RM" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
-    
-      double absTolerance{ 1E-6 };
-      double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS( 
-        std::cout, r2d2, absTolerance, relTolerance );
-      auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-          std::cout, r2d2, userSupplied );
+          std::cout, 
+          r2d2.linearReactions(), 
+          r2d2.linearPhotonProductions(), 
+          r2d2.resonanceReferenceGrid(),
+          userSupplied );
+      auto energies = refGrid;
       njoy::RECONR::RECONR::reconstructResonances(
         std::cout, refGrid, r2d2, 1E-1, 1E-3 );
     
@@ -953,7 +946,47 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         refGrid = ranges::view::unique( refGrid );
 
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
-          std::cout, r2d2 );
+          std::cout, 
+          energies,
+          r2d2.reconstructedResonances() );
+
+        details::checkRanges( refGrid, trial );
+      } // THEN
+    } // GIVEN
+    GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
+      auto material = details::ENDFMaterial( "RM" );
+      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    
+      double absTolerance{ 1E-6 };
+      double relTolerance{ 1E-1 }; // This tolerance is large by design
+      njoy::RECONR::RECONR::linearizeXS( 
+        std::cout, r2d2, absTolerance, relTolerance );
+      auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+          std::cout, 
+          r2d2.linearReactions(), 
+          r2d2.linearPhotonProductions(), 
+          r2d2.resonanceReferenceGrid(),
+          userSupplied );
+      auto energies = refGrid;
+      njoy::RECONR::RECONR::reconstructResonances(
+        std::cout, refGrid, r2d2, 1E-1, 1E-3 );
+    
+      THEN( "the reconstructed energygrid can be unionized" ){
+
+        // refGrid is already verified above. Just need to add the
+        // reconstructed/linearized cross sections
+        for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
+          for( const auto& XS : V ){
+            refGrid |= ranges::action::push_back( XS.x() );
+          }
+        }
+        ranges::sort( refGrid );
+        refGrid = ranges::view::unique( refGrid );
+
+        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+          std::cout, 
+          energies,
+          r2d2.reconstructedResonances() );
 
         details::checkRanges( refGrid, trial );
       } // THEN

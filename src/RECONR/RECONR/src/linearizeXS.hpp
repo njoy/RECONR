@@ -24,4 +24,8 @@ void linearizeXS( std::ostream& output,
     linearMap.emplace( MT, std::move( lReaction ) );
   }
   r2d2.linearReactions( std::move( linearMap ) );
+
+  // R2D2::PPLinMap_t prodMap{};
+  // for( const auto & [ MT, productions ] : r2d2.photonProductions() ){
+  // }
 }
