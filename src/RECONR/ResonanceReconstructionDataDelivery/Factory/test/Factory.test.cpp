@@ -107,8 +107,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
 
         CHECK( 1016 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
-        CHECK( 2.22464E16 == reaction.QM() );
-        CHECK( 3.22464E16 == reaction.QI() );
+        CHECK( 2.224648E2 == reaction.QM() );
+        CHECK( 3.224648E2 == reaction.QI() );
         CHECK( 0 == reaction.LR() );
 
         auto xs = std::get< njoy::RECONR::interp::LogarithmicLogarithmic >( 
@@ -150,8 +150,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
 
         CHECK( 1018 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
-        CHECK( 2.22464E18 == reaction.QM() );
-        CHECK( 3.22464E18 == reaction.QI() );
+        CHECK( 2.224648E2 == reaction.QM() );
+        CHECK( 3.224648E2 == reaction.QI() );
         CHECK( 0 == reaction.LR() );
 
         {
