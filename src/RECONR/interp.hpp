@@ -8,8 +8,7 @@ struct Zero {
 template< typename I >
 using LAW = decltype( 
   interpolation::table::make< I,
-  interpolation::table::left::interval::IsCompiletimeConstant<Zero>,
-  interpolation::table::right::interval::IsCompiletimeConstant<Zero>
+  interpolation::table::domain::min::IsCompiletimeConstant<Zero>
   >( 
     std::vector< double >(), std::vector< double >() ) );
 

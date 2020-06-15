@@ -15,6 +15,7 @@ auto unionizeEnergyGrid( std::ostream& output,
 
   for( const auto& [MT, reaction] : r2d2.linearReactions() ){
     grid |= ranges::action::push_back( reaction.crossSections().x() );
+    grid |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 
   ranges::sort( grid );
@@ -37,6 +38,7 @@ auto unionizeEnergyGrid( std::ostream& output,
 
   for( const auto& [MT, reaction] : r2d2.linearReactions() ){
     grid |= ranges::action::push_back( reaction.crossSections().x() );
+    grid |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
   for( const auto& [MT, V] : r2d2.reconstructedResonances() ){
     for( const auto& XS : V ){
