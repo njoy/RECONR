@@ -268,6 +268,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         auto lXS = reaction.crossSections();
         auto energies = lXS.x() | ranges::to_vector;
         auto barns = lXS.y() | ranges::to_vector;
+
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
         CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
         for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){

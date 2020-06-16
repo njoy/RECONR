@@ -6,12 +6,15 @@ struct Zero {
 
 // These are taken from interpolation examples 6 and 8
 template< typename I >
-using LAW = decltype( 
-  interpolation::table::make< I,
+using LAW = interpolation::Table<
+  interpolation::table::Type< I,
+    interpolation::table::search::Binary,
+    interpolation::table::discontinuity::TakeLeft, 
+    std::vector< double >, std::vector< double > 
+  >,
   interpolation::table::left::interval::IsCompiletimeConstant<Zero>,
-  interpolation::table::right::interval::IsCompiletimeConstant<Zero>
-  >( 
-    std::vector< double >(), std::vector< double >() ) );
+  interpolation::table::right::interval::IsCompiletimeConstant<Zero> 
+>;
 
 using Histogram              = LAW< interpolation::Histogram >;
 using LinearLinear           = LAW< interpolation::LinearLinear >;
@@ -34,7 +37,10 @@ using Variant = std::variant<
       LogarithmicLogarithmic >;
 
 using LinearTable = interpolation::Table< 
-  interpolation::table::Vector< LinearLinear > >;
+  interpolation::table::Vector< LinearLinear >,
+  interpolation::table::left::interval::IsCompiletimeConstant<Zero>,
+  interpolation::table::right::interval::IsCompiletimeConstant<Zero>
+>;
 
 auto partition = []( auto&& range, int drop, int take ){
   return range
