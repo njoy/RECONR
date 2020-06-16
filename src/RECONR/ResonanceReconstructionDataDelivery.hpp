@@ -3,8 +3,7 @@ public:
   using Key_t = int;
   using RawInterpolation_t = std::vector< interp::Variant >;
   using XSMap_t = std::map< Key_t, Reaction< RawInterpolation_t > >;
-  using PPMap_t = std::map< Key_t, 
-    PPReaction< std::vector< RawInterpolation_t > > >;
+  using PPMap_t = std::map< Key_t, PPReaction< RawInterpolation_t > >;
   using LinMap_t = std::map< Key_t, Reaction< interp::LinearTable > >;
   using PPLinMap_t = std::map< Key_t, PPReaction< interp::LinearTable > >;
   using ReconMap_t = std::map< Key_t, std::vector< interp::LinearLinear > >;

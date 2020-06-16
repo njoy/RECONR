@@ -1,13 +1,25 @@
 template< typename Range >
 static
 auto summateReactions( std::ostream& output,
-                       ResonanceReconstructionDataDelivery& r2d2,
-                       Range& energies ){
-  using Reaction_t = Reaction< std::vector< double > >;
-  std::map< int, Reaction_t > reactions;
+                       const ResonanceReconstructionDataDelivery& r2d2,
+                       const Range& energies ){
+
+  auto summatedReactions = summateReactions( 
+    output, r2d2.linearReactions(), r2d2.reconstructedResonances(), energies );
+
+  return summatedReactions;
+}
   
-  const auto linear = r2d2.linearReactions();
-  const auto reconstructed = r2d2.reconstructedResonances();
+
+template< typename Range >
+static
+auto summateReactions( std::ostream& output,
+                       const R2D2::LinMap_t& linear,
+                       const R2D2::ReconMap_t& reconstructed,
+                       const Range& energies ){
+  using Reaction_t = Reaction< std::vector< double > >;
+  using RMap_t = std::map< int, Reaction_t >;
+  RMap_t reactions;
 
   auto keys = ranges::view::keys( linear );
   auto recKeys = ranges::view::keys( reconstructed );
@@ -30,9 +42,8 @@ auto summateReactions( std::ostream& output,
   for( const auto& MT : ranges::view::keys( reconstructed ) ){
     std::vector< std::vector< double >  > partials;
 
-    using RType = decltype( reactions )::mapped_type;
-    std::unique_ptr< RType > reaction = nullptr;
-    using PType = decltype( reconstructed )::mapped_type;
+    std::unique_ptr< Reaction_t > reaction = nullptr;
+    using PType = R2D2::ReconMap_t::mapped_type;
     std::unique_ptr< PType > recon = nullptr;
 
     // Add resonance data to MT=19 if there are partials
@@ -40,7 +51,7 @@ auto summateReactions( std::ostream& output,
       if( reactions.find( 19 ) != reactions.end() ){
         output << fmt::format( "{:4d} ", 19 );
         recon = std::make_unique< PType >( reconstructed.at( 19 ) );
-        reaction = std::make_unique< RType >( reactions.at( 19 ) );
+        reaction = std::make_unique< Reaction_t >( reactions.at( 19 ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
       }
     }
@@ -48,7 +59,7 @@ auto summateReactions( std::ostream& output,
       if( reactions.find( MT ) != reactions.end() ){
         output << fmt::format( "{:4d} ", MT );
         recon = std::make_unique< PType >( reconstructed.at( MT ) );
-        reaction = std::make_unique< RType >( reactions.at( MT ) );
+        reaction = std::make_unique< Reaction_t >( reactions.at( MT ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
       }
     }

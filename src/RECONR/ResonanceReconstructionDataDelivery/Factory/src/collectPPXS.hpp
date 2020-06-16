@@ -13,7 +13,7 @@ PPMap_t collectPPXS( const ENDFMaterial_t& material ){
     Log::info( "Extracting from MF=13" );
     auto MF13 = material.fileNumber( 13 ).parse< 13 >();
     for( const auto& section : MF13.sections() ){
-      PPReaction< std::vector< RawInterpolation_t > > reaction{
+      PPReaction< RawInterpolation_t > reaction{
         section.ZA(), section.AWR(),
         interp::MF13toInterpolation( section )
       };
