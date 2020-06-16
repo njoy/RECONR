@@ -24,8 +24,11 @@ linearize2( LAW law, double relTol, double absTol ){
   auto first = eGrid.begin();
   auto last = eGrid.end();
   std::vector< double > x, y;
+
+  auto cached = law.cachedSearch();
+  auto call = [&]( auto&& e ){ return law( e, cached ); };
   auto linearization = twig::linearize::callable( x, y );
-  linearization( first, last, law, criterion, midpoint );
+  linearization( first, last, call, criterion, midpoint );
 
   return interp::LinearLinear{ std::move( x ), std::move( y ) };
 
