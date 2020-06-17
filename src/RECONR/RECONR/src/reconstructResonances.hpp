@@ -26,7 +26,6 @@ void reconstructResonances(
   // Nothing to do for SpecialCase
 }
 
-/*
 template< typename Range >
 static
 void reconstructResonances( 
@@ -69,7 +68,6 @@ void reconstructResonances(
   output << "Reconstructing unresolved EnergyDependent parameters." 
          << std::endl;
 }
-*/
 
 template< typename Range >
 static

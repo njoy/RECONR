@@ -7,12 +7,14 @@ void material( const Tape_t&,
                const Energies_t& energies,
                const nlohmann::json& sequence ){
 
-  auto MF1  = this->mf1( MAT, sequence );
   auto MF2  = this->mf2( MAT, data );
   auto MF3  = this->mf3( MAT, reactions, energies );
   auto MF13 = this->mf13( MAT, productions, energies );
+  auto MF1  = this->mf1( MAT, sequence, MF2, MF3, MF13 );
 
   MF1.print( this->ipendf, MAT, 1 );
+  ENDFtk::FEND( MAT ).print( this->ipendf );
+
   MF2.print( this->ipendf, MAT );
   MF3.print( this->ipendf, MAT );
   MF13.print( this->ipendf, MAT );

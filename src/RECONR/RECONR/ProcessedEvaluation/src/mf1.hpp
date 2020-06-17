@@ -1,4 +1,8 @@
-auto mf1( const int& MAT, const nlohmann::json& sequence ){
+auto mf1( const int& MAT, const nlohmann::json& sequence,
+          const ENDFtk::file::Type< 2 >&  mf2,
+          const ENDFtk::file::Type< 3 >&  mf3,
+          const ENDFtk::file::Type< 13 >& mf13
+         ){
   using namespace njoy::ENDFtk::literals;
 
   auto eval = std::get< 0 >( this->evaluated );
@@ -21,8 +25,8 @@ auto mf1( const int& MAT, const nlohmann::json& sequence ){
     ENDFtk::CONT{ mt.AWI(), mt.EMAX(), mt.LREL(), 0, mt.NSUB(), mt.NVER() }, 
     ENDFtk::CONT{ mt.TEMP(), sequence[ "err" ], mt.LDRV(), 0, NWD, NXC       }
   };
+
   ENDFtk::section::Type< 1, 451 > mt451( 
-    // --------------------------------------
     mt.ZA(), mt.AWR(), mt.LRP(), mt.LFI(), mt.NLIB(), mt.NMOD(),
     std::move( parameters ),
     std::move( description ),
