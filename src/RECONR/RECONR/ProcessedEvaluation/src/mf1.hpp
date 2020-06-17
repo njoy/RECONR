@@ -1,4 +1,4 @@
-void mf1( const int& MAT, const nlohmann::json& sequence ){
+auto mf1( const int& MAT, const nlohmann::json& sequence ){
   using namespace njoy::ENDFtk::literals;
 
   auto eval = std::get< 0 >( this->evaluated );
@@ -29,6 +29,5 @@ void mf1( const int& MAT, const nlohmann::json& sequence ){
     std::move( directory )
   );
 
-  mt451.print( this->ipendf, MAT, 1 );
-  ENDFtk::FEND( MAT ).print( this->ipendf );
+  return mt451;
 }

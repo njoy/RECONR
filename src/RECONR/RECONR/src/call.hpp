@@ -48,9 +48,13 @@ void operator()( const nlohmann::json& njoyArgs,
            << std::endl;
 
     // Sum reactions
-    auto reactions = this->summateReactions( output, data, energies );
+    // auto reactions = this->summateReactions( output, data, energies );
+    auto reactions = this->summateReactions( 
+      output, data.linearReactions(), data.reconstructedResonances(), energies );
+    auto productions = this->summateReactions( 
+      output, data.linearPhotonProductions(), energies );
 
-    pendf.material( MAT, data, reactions, energies, sequence );
+    pendf.material( MAT, data, reactions, productions, energies, sequence );
 
   }
 

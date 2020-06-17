@@ -559,12 +559,16 @@ SCENARIO( "Testing the summation of cross sections" ){
   double relTol{ 1E-1 }; // This tolerance is large by design
 
   GIVEN( "an SLBW object" ){
-    WHEN( "cross sections have been linearized and resonances reconstructed" ){
-      auto [energies, r2d2] = lin_recon( "SLBW", absTol, relTol );
-      auto sizeEnergies = ranges::distance( energies );
+    auto [energies, r2d2] = lin_recon( "SLBW", absTol, relTol );
+    auto sizeEnergies = ranges::distance( energies );
 
+    WHEN( "cross sections have been linearized and resonances reconstructed" ){
       auto reactions = njoy::RECONR::RECONR::summateReactions( 
-          std::cout, r2d2, energies );
+          std::cout, 
+          r2d2.linearReactions(),
+          r2d2.reconstructedResonances(),
+          energies );
+
       int MT;
       THEN( "the reactions can be summed up and checked" ){
         std::vector< int > reference{ 
@@ -691,16 +695,35 @@ SCENARIO( "Testing the summation of cross sections" ){
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
     } // WHEN
+    WHEN( "productions have been linearized" ){
+      
+      auto productions = njoy::RECONR::RECONR::summateReactions( 
+          std::cout, 
+          r2d2.linearPhotonProductions(), 
+          energies );
+
+      int MT;
+      THEN( "the productions can be summed up and checked" ){
+        std::vector< int > reference{ 3, 18 };
+
+        auto keys = ranges::view::keys( productions ) | ranges::to_vector;
+        CHECK( reference == keys );
+      } // THEN
+    } // WHEN
   } // GIVEN
   
   GIVEN( "an RM object" ){
+    auto [energies, r2d2] = lin_recon( "RM", absTol, relTol );
+    auto sizeEnergies = ranges::distance( energies );
+
     WHEN( "cross sections have been linearized and resonances reconstructed" ){
-      auto [energies, r2d2] = lin_recon( "RM", absTol, relTol );
-      auto sizeEnergies = ranges::distance( energies );
 
       int MT;
       auto reactions = njoy::RECONR::RECONR::summateReactions( 
-          std::cout, r2d2, energies );
+          std::cout, 
+          r2d2.linearReactions(),
+          r2d2.reconstructedResonances(),
+          energies );
 
       THEN( "the reactions can be summed up and checked" ){
         std::vector< int > reference{ 

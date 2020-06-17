@@ -1,16 +1,4 @@
-template< typename Range >
-static
-auto summateReactions( std::ostream& output,
-                       const ResonanceReconstructionDataDelivery& r2d2,
-                       const Range& energies ){
-
-  auto summatedReactions = summateReactions( 
-    output, r2d2.linearReactions(), r2d2.reconstructedResonances(), energies );
-
-  return summatedReactions;
-}
-  
-
+// For incident neutrons
 template< typename Range >
 static
 auto summateReactions( std::ostream& output,
@@ -29,7 +17,7 @@ auto summateReactions( std::ostream& output,
   // Perhaps this could be more efficient by only reconstructing those things
   // that are used, but I doubt that is the limiting factor here
   for( const auto& [ MT, reaction ] : linear ){
-    output << fmt::format( "{:4d} ", MT );
+    output << fmt::format( "{:3d} ", MT );
     
     auto barns =  energies 
       | ranges::view::transform( reaction.crossSections() )
@@ -49,7 +37,7 @@ auto summateReactions( std::ostream& output,
     // Add resonance data to MT=19 if there are partials
     if( MT == 18 ){
       if( reactions.find( 19 ) != reactions.end() ){
-        output << fmt::format( "{:4d} ", 19 );
+        output << fmt::format( "{:3d} ", 19 );
         recon = std::make_unique< PType >( reconstructed.at( 19 ) );
         reaction = std::make_unique< Reaction_t >( reactions.at( 19 ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
@@ -57,7 +45,7 @@ auto summateReactions( std::ostream& output,
     }
     if( recon == nullptr ){
       if( reactions.find( MT ) != reactions.end() ){
-        output << fmt::format( "{:4d} ", MT );
+        output << fmt::format( "{:3d} ", MT );
         recon = std::make_unique< PType >( reconstructed.at( MT ) );
         reaction = std::make_unique< Reaction_t >( reactions.at( MT ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
@@ -88,11 +76,11 @@ auto summateReactions( std::ostream& output,
         [&]( auto&& mt ){ return reactions.count( mt ) > 0; } );
 
     if( ranges::distance( redundants ) != 0 ){
-      output << fmt::format( "{:4d}, redundant MTs: ", MT );
+      output << fmt::format( "{:3d}, redundant MTs: ", MT );
       
       std::vector< std::vector< double > > partials;
       for( const auto& p : redundants ){
-        output << fmt::format( "{:4d} ", p );
+        output << fmt::format( "{:3d} ", p );
 
         // Look for already reconstructed reactions
         auto found = reactions.find( p );
@@ -119,4 +107,37 @@ auto summateReactions( std::ostream& output,
 
   } // Redundant cross sections
   return reactions;
+}
+
+// For Photon production reactions
+template< typename Range >
+static
+auto summateReactions( std::ostream& output,
+                       const R2D2::PPLinMap_t& linear,
+                       const Range& energies ){
+
+  using Production_t = PPReaction< double >;
+  using PMap_t = std::map< int, Production_t >;
+  PMap_t productions;
+
+  output << 
+    "\nCalculating photon production cross sections on unionized energy grid"
+    " for MTs: \n";
+  for( const auto& [ MT, reaction ] : linear ){
+    output << fmt::format( "{:3d} ", MT );
+
+    std::vector< std::vector< double > > partials;
+    for( const auto& partial : reaction.productions() ){
+      auto barns =  energies 
+        | ranges::view::transform( partial )
+        | ranges::to_vector;
+
+      partials.emplace_back( barns );
+    }
+    Production_t prod{ reaction, sumPartials( partials ) };
+    productions.emplace( MT, 
+                         Production_t{ reaction, sumPartials( partials ) } );
+  }
+
+  return productions;
 }
