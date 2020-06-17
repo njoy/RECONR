@@ -19,11 +19,11 @@ auto unionizeEnergyGrid( std::ostream& output,
     user |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 
-  // for( const auto& [ MT, reaction ] : ppReactions ){
-  //   for( const auto& discrete : reaction.productions() ){
-  //     user |= ranges::action::push_back( discrete.x() );
-  //   }
-  // }
+  for( const auto& [ MT, reaction ] : ppReactions ){
+    for( const auto& discrete : reaction.productions() ){
+      user |= ranges::action::push_back( discrete.x() );
+    }
+  }
 
   ranges::sort( user );
 
