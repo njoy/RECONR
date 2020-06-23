@@ -182,7 +182,10 @@ SCENARIO( "Testing creation of RECONR class" ){
     auto args = nlohmann::json::object();
 
     WHEN( "a RECONR object is called" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, std::cout, args ) );
+      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
+                                             std::cout, 
+                                             std::err, 
+                                             args ) );
 
     } // THEN
   } // GIVEN
@@ -191,7 +194,10 @@ SCENARIO( "Testing creation of RECONR class" ){
     auto args = nlohmann::json::object();
 
     WHEN( "a RECONR object is called" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( input2631, std::cout, args ) );
+      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
+                                             std::cout, 
+                                             std::err, 
+                                             args ) );
 
     } // THEN
   } // GIVEN
@@ -200,7 +206,10 @@ SCENARIO( "Testing creation of RECONR class" ){
   //   auto args = nlohmann::json::object();
 
   //   WHEN( "a RECONR object is called" ){
-  //     CHECK_NOTHROW( njoy::RECONR::RECONR()( input40, std::cout, args ) );
+  //  CHECK_NOTHROW( njoy::RECONR::RECONR()( input40, 
+  //                                         std::cout, 
+  //                                         std::err, 
+  //                                         args ) );
   //   } // THEN
   // } // GIVEN
   // GIVEN( "an ENDF file with just three resonances" ){
@@ -208,7 +217,10 @@ SCENARIO( "Testing creation of RECONR class" ){
   //   auto args = nlohmann::json::object();
 
   //   WHEN( "a RECONR object is called" ){
-  //     CHECK_NOTHROW( njoy::RECONR::RECONR()( input30, std::cout, args ) );
+  //  CHECK_NOTHROW( njoy::RECONR::RECONR()( input30, 
+  //                                         std::cout, 
+  //                                         std::err, 
+  //                                         args ) );
   //   } // THEN
   // } // GIVEN
 } // SCENARIO

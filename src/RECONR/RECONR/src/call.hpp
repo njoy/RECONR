@@ -1,5 +1,6 @@
 void operator()( const nlohmann::json& njoyArgs, 
                  std::ostream& output,
+                 std::ostream& error,
                  const nlohmann::json& ){
 
   output << "Input arguments:\n" << njoyArgs.dump( 2 ) << std::endl;
