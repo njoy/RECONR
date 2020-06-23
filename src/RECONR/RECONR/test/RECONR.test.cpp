@@ -184,7 +184,7 @@ SCENARIO( "Testing creation of RECONR class" ){
     WHEN( "a RECONR object is called" ){
       CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
                                              std::cout, 
-                                             std::err, 
+                                             std::cerr, 
                                              args ) );
 
     } // THEN
@@ -196,7 +196,7 @@ SCENARIO( "Testing creation of RECONR class" ){
     WHEN( "a RECONR object is called" ){
       CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
                                              std::cout, 
-                                             std::err, 
+                                             std::cerr, 
                                              args ) );
 
     } // THEN
@@ -208,7 +208,7 @@ SCENARIO( "Testing creation of RECONR class" ){
   //   WHEN( "a RECONR object is called" ){
   //  CHECK_NOTHROW( njoy::RECONR::RECONR()( input40, 
   //                                         std::cout, 
-  //                                         std::err, 
+  //                                         std::cerr, 
   //                                         args ) );
   //   } // THEN
   // } // GIVEN
@@ -219,7 +219,7 @@ SCENARIO( "Testing creation of RECONR class" ){
   //   WHEN( "a RECONR object is called" ){
   //  CHECK_NOTHROW( njoy::RECONR::RECONR()( input30, 
   //                                         std::cout, 
-  //                                         std::err, 
+  //                                         std::cerr, 
   //                                         args ) );
   //   } // THEN
   // } // GIVEN
