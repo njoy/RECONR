@@ -128,6 +128,28 @@ void reconstructResonances(
 
 template< typename Range >
 static
+void reconstructResonances( 
+     std::ostream& output,
+     Range& grid, 
+     R2D2::ReconMap_t& reconstructed,
+     const ResonanceRange& rRange,
+     const resolved::RMatrixLimited&,
+     double relTol, double absTol){
+
+  output << "Reconstructing R-Matrix Limited resonances." << std::endl;
+
+  // auto nMass = CODATA[ constants::neutronMass ];
+  // auto eCharge = CODATA[ constants::elementaryCharge ];
+  auto nMass = 1.008664 * dimwits::daltons;
+  auto eCharge = 1.602e-19 * dimwits::coulomb;
+
+  auto rml = resonanceReconstruction::rmatrix::fromENDF( 
+    rRange, nMass, eCharge );
+
+}
+
+template< typename Range >
+static
 R2D2::ReconMap_t reconstructResonances( 
     std::ostream& output,
     Range& grid, 

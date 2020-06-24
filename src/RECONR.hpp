@@ -9,13 +9,18 @@
 #include "resonanceReconstruction.hpp"
 #include "interpolation.hpp"
 #include "twig.hpp"
-#include "constants.hpp"
+// #include "constants.hpp"
+// #include "constants/CODATA2018.hpp"
+
+// auto CODATA = njoy::constants::CODATA2018;
 
 namespace njoy   {
 namespace RECONR {
 
 using namespace ENDFtk::resonanceParameters;
 
+#include "RECONR/src/MT2String.hpp"
+#include "RECONR/src/string2MT.hpp"
 #include "RECONR/interp.hpp"
 #include "RECONR/Reaction.hpp"
 #include "RECONR/PhotonProductionReaction.hpp"
