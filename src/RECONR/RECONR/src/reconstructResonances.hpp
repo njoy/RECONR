@@ -146,6 +146,8 @@ void reconstructResonances(
   auto rml = resonanceReconstruction::rmatrix::fromENDF( 
     rRange, nMass, eCharge );
 
+  auto data = linearize( grid, rml, relTol, absTol );
+
 }
 
 template< typename Range >

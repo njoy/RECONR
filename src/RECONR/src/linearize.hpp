@@ -131,3 +131,37 @@ linearize( const Range& grid, double relTol, double absTol ){
     return std::make_pair( std::move( x ), std::move( y ) );
   };
 }
+
+template< typename Range >
+auto
+linearize( const Range& grid, 
+           resonanceReconstruction::rmatrix::Reconstructor& reconstructor,
+           double relTol, double absTol ){
+  using EV = resonanceReconstruction::Energy;
+  using XS_t = decltype( reconstructor( EV{} ) );
+
+  auto midpoint = []( auto&& x, auto&& y ){
+    Log::info( "midpoint of RML" );
+    auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
+    return std::make_pair( mx, y );
+  };
+
+  auto criterion = [ & ]( auto&& trial, auto&& reference,
+          auto&& xLeft, auto&& xRight,
+          auto&&, auto&&  ){
+
+    Log::info( "criterion of RML" );
+    return true;
+  };
+
+  Log::info( "linearizing resonances using an rmatrix::Reconstructor" );
+
+  auto first = grid.begin();
+  auto end = grid.end();
+  std::vector< EV > x;
+  std::vector< XS_t > y;
+  auto linearization = twig::linearize::callable( x, y );
+  linearization( first, end, reconstructor, criterion, midpoint );
+
+  return 0.0;
+}

@@ -176,6 +176,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   return std::make_pair( energies, r2d2 );
 }
 
+/*
 SCENARIO( "Testing creation of RECONR class" ){
   GIVEN( "a JSON object, and extra arguments" ){
 
@@ -403,6 +404,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
+*/
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
@@ -562,7 +564,6 @@ SCENARIO( "Testing the resonance reconstruction" ){
     } // WHEN
     
   } // GIVEN
-
   GIVEN( "an RML R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RML" );
     auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
@@ -587,6 +588,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   
 } // SCENARIO
+/*
 SCENARIO( "Testing the summation of cross sections" ){
   double absTol{ 1E-6 };
   double relTol{ 1E-1 }; // This tolerance is large by design
@@ -1125,3 +1127,4 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
   } // WHEN
 } // SCENARIO
+*/
