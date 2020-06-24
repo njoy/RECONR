@@ -17,7 +17,8 @@ PPMap_t collectPPXS( const ENDFMaterial_t& material ){
         section.ZA(), section.AWR(),
         interp::MF13toInterpolation( section )
       };
-      xs.insert( std::make_pair( section.MT(), std::move( reaction ) ) );
+      xs.insert( std::make_pair( MT2ReactionID( section.MT() ), 
+                                 std::move( reaction ) ) );
     }
   } else {
     Log::info( "MF=13 doesn't exist. No photon production data to extract." );

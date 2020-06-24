@@ -8,6 +8,8 @@
 #include "RECONR/details/interpLambdas.hpp"
 #include "RECONR/details/checkRanges.hpp"
 
+using namespace njoy;
+
 SCENARIO( "Testing the collection of resonance parameter data" ){
 
   GIVEN( "ENDF Material with SLBW" ){
@@ -80,11 +82,15 @@ SCENARIO( "Testing the the collection of cross sections" ){
     WHEN( "the resonance reconstruction data can be extracted" ){
       auto reactions = njoy::RECONR::R2D2::Factory::collectXS( material );
 
-      std::vector< int > MTs{ 1, 2, 16, 18, 51, 52, 102, 875, 876, 877 };
-      CHECK( ranges::equal( MTs, ranges::view::keys( reactions ) ) );
+      std::vector< njoy::RECONR::ReactionID > MTs{ 
+        "1", "2", "16", "18", "51", "52", "102", "875", "876", "877" };
+      std::sort( MTs.begin(), MTs.end() );
+
+      auto keys = ranges::view::keys( reactions );
+      CHECK( ranges::equal( MTs, keys ) );
 
       THEN( "MT=1 can be checked" ){
-        auto reaction = reactions.at( 1 );
+        auto reaction = reactions.at( "1" );
 
         CHECK( 1001 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -114,7 +120,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.731301E-5 == Approx( xs( 1.975E7 ) ) );
       } // THEN
       THEN( "MT=2 can be checked" ){ 
-        auto reaction = reactions.at( 2 );
+        auto reaction = reactions.at( "2" );
 
         CHECK( 1002 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -143,7 +149,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.0 == Approx( xs( 1.975E7 ) ) );
       }
       THEN( "MT=16 can be checked" ){ 
-        auto reaction = reactions.at( 16 );
+        auto reaction = reactions.at( "16" );
 
         CHECK( 1016 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -186,7 +192,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( refY == Approx( xs( 1.975E7 ) ) );
       }
       THEN( "MT=18 can be checked" ){ 
-        auto reaction = reactions.at( 18 );
+        auto reaction = reactions.at( "18" );
 
         CHECK( 1018 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -233,7 +239,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
       }
       THEN( "MT=102 can be checked" ){ 
-        auto reaction = reactions.at( 102 );
+        auto reaction = reactions.at( "102" );
 
         CHECK( 1102 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -298,14 +304,15 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
     WHEN( "the photon production cross sections have been extracted" ){
       auto reactions = njoy::RECONR::R2D2::Factory::collectPPXS( material );
       
-      std::vector< int > MTs{ 3, 18 };
+      std::vector< njoy::RECONR::ReactionID > MTs{ "3", "18" };
+      std::sort( MTs.begin(), MTs.end() );
+
       auto keys = ranges::view::keys( reactions );
-      njoy::Log::info( "keys: {}", keys | ranges::view::all );
       CHECK( ranges::equal( MTs, keys ) );
 
       THEN( "MT=3 can be checked" ){
 
-        auto reaction = reactions.at( 3 );
+        auto reaction = reactions.at( "3" );
 
         CHECK( 92235 == reaction.ZA() );
         CHECK( 233.0248 == reaction.atomicWeightRatio() );
@@ -329,7 +336,7 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
       } // THEN
       THEN( "MT=18 can be checked" ){
 
-        auto reaction = reactions.at( 18 );
+        auto reaction = reactions.at( "18" );
 
         CHECK( 92238 == reaction.ZA() );
         CHECK( 245.0248 == Approx( reaction.atomicWeightRatio() ) );

@@ -14,12 +14,12 @@ auto unionizeEnergyGrid( std::ostream& output,
          << std::endl;
   user |= ranges::action::push_back( grid );
 
-  for( const auto& [MT, reaction] : reactions ){
+  for( const auto& [ID, reaction] : reactions ){
     user |= ranges::action::push_back( reaction.crossSections().x() );
     user |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 
-  for( const auto& [ MT, reaction ] : ppReactions ){
+  for( const auto& [ ID, reaction ] : ppReactions ){
     for( const auto& discrete : reaction.productions() ){
       user |= ranges::action::push_back( discrete.x() );
     }
@@ -43,7 +43,7 @@ auto unionizeEnergyGrid( std::ostream& output,
     "\nGenerating unionized energy grid after reconstructing resonances"
          << std::endl;
 
-  for( const auto& [MT, V] : resonances ){
+  for( const auto& [ID, V] : resonances ){
     for( const auto& XS : V ){
       grid |= ranges::action::push_back( XS.x() );
     }

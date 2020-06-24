@@ -19,7 +19,8 @@ XSMap_t collectXS( const ENDFMaterial_t& material ){
       section.LR(),
       interp::TAB1toInterpolation( section ) };
 
-    xs.insert( std::make_pair( section.MT(), std::move( reaction ) ) );
+    xs.insert( std::make_pair( MT2ReactionID( section.MT() ), 
+                               std::move( reaction ) ) );
   }
 
   return xs;

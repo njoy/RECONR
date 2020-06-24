@@ -176,7 +176,6 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   return std::make_pair( energies, r2d2 );
 }
 
-/*
 SCENARIO( "Testing creation of RECONR class" ){
   GIVEN( "a JSON object, and extra arguments" ){
 
@@ -266,9 +265,9 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       auto keys = ranges::view::keys( rXSs );
       CHECK( ranges::equal( keys, ranges::view::keys( lReactions ) ) );
       
-      int MT;
+      njoy::RECONR::ReactionID MT;
       THEN( "we can check MT=1" ){
-        MT = 1;
+        MT = "1";
         auto reaction = lReactions.at( MT );
         std::vector< double > refE{
           1.0E-5, 
@@ -299,7 +298,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         }
       }
       THEN( "we can check MT=16" ){
-        MT = 16;
+        MT = "16";
         auto reaction = lReactions.at( MT );
 				std::vector< double > refE{
 					1e-05,       1.25e-05,    1.5e-05,     2e-05,       
@@ -337,7 +336,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         }
       }
       THEN( "we can check MT=18" ){
-        MT = 18;
+        MT = "18";
         auto reaction = lReactions.at( MT );
         std::vector< double > refE{ 
           1.0E+5,
@@ -362,7 +361,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         }
       }
       THEN( "we can check MT=102" ){
-        MT = 102;
+        MT = "102";
         auto reaction = lReactions.at( MT );
 				std::vector< double > refE{
 					1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
@@ -404,7 +403,6 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
-*/
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
@@ -461,9 +459,9 @@ SCENARIO( "Testing the resonance reconstruction" ){
         };
         std::vector< double > refFission( 66, 0.0 );
 
-        auto elastic = reconstructed[ 2 ].front();
-        auto capture = reconstructed[ 102 ].front();
-        auto fission = reconstructed[ 18 ].front();
+        auto elastic = reconstructed.at( "2" ).front();
+        auto capture = reconstructed.at( "102" ).front();
+        auto fission = reconstructed.at( "18" ).front();
         details::checkRanges( refEnergies, elastic.x() );
         details::checkRanges( refElastic, elastic.y() );
         details::checkRanges( refEnergies, capture.x() );
@@ -549,9 +547,9 @@ SCENARIO( "Testing the resonance reconstruction" ){
           11.5986, 9.04432, 7.7853, 6.84385, 6.71141, 7.2079, 8.12153,
           10.8557, 15.0913, 24.6041, 24.191 };
 
-        auto elastic = reconstructed[ 2 ].front();
-        auto capture = reconstructed[ 102 ].front();
-        auto fission = reconstructed[ 18 ].front();
+        auto elastic = reconstructed.at( "2" ).front();
+        auto capture = reconstructed.at( "102" ).front();
+        auto fission = reconstructed.at( "18" ).front();
         details::checkRanges( refEnergies, elastic.x( ) );
         details::checkRanges( refElastic, elastic.y() );
         details::checkRanges( refEnergies, capture.x( ) );
@@ -589,8 +587,6 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   
 } // SCENARIO
-
-/*
 SCENARIO( "Testing the summation of cross sections" ){
   double absTol{ 1E-6 };
   double relTol{ 1E-1 }; // This tolerance is large by design
@@ -606,27 +602,29 @@ SCENARIO( "Testing the summation of cross sections" ){
           r2d2.reconstructedResonances(),
           energies );
 
-      int MT;
+      njoy::RECONR::ReactionID MT;
       THEN( "the reactions can be summed up and checked" ){
-        std::vector< int > reference{ 
-          1, 2, 3, 4, 16, 18, 27, 51, 52, 101, 102, 875, 876, 877 };
+        std::vector< njoy::RECONR::ReactionID > reference{ 
+          "1", "2", "3", "4", "16", "18", "27", 
+          "51", "52", "101", "102", "875", "876", "877" };
+        ranges::sort( reference );
 
         auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
 
         CHECK( reference == keys );
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
-        MT = 1;
+        MT = "1";
         std::vector< double > refXS = sumRanges(
-          reactions.at( 2 ).crossSections(), 
-          reactions.at( 3 ).crossSections()
+          reactions.at( "2" ).crossSections(), 
+          reactions.at( "3" ).crossSections()
         );
 
         auto reaction = reactions.at( MT );
         CHECK( refXS == reaction.crossSections() );
       } // THEN
       THEN( "MT = 2 can be tested" ){ 
-        MT = 2;
+        MT = "2";
         std::vector< double > refXS{
           2.12506,  2.12506,  2.12506,  2.12506,  2.12506,  
           2.12506,  2.12506,  2.12506,  2.12506,  2.12506,  
@@ -661,10 +659,10 @@ SCENARIO( "Testing the summation of cross sections" ){
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
       THEN( "MT = 4 can be tested" ){ 
-        MT = 4;
+        MT = "4";
         std::vector< double > refXS = sumRanges( 
-            reactions.at( 51 ).crossSections(), 
-            reactions.at( 52 ).crossSections() );
+            reactions.at( "51" ).crossSections(), 
+            reactions.at( "52" ).crossSections() );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
         auto reaction = reactions.at( MT );
@@ -672,7 +670,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
       } // THEN
       THEN( "MT = 16 can be tested" ){ 
-        MT = 16;
+        MT = "16";
         std::vector< double > refXS( sizeEnergies, 1.5 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
@@ -680,7 +678,7 @@ SCENARIO( "Testing the summation of cross sections" ){
         CHECK( refXS == reaction.crossSections() );
       } // THEN
       THEN( "MT = 18 can be tested" ){ 
-        MT = 18;
+        MT = "18";
         std::vector< double > refXS{
           0,            0,            0,            0,            0,            
           0,            0,            0,            0,            0,            
@@ -716,7 +714,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
       } // THEN
       THEN( "MT = 51 can be tested" ){ 
-        MT = 51;
+        MT = "51";
         std::vector< double > refXS( sizeEnergies, 51.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
@@ -724,7 +722,7 @@ SCENARIO( "Testing the summation of cross sections" ){
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
       THEN( "MT = 52 can be tested" ){ 
-        MT = 52;
+        MT = "52";
         std::vector< double > refXS( sizeEnergies, 52.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
@@ -739,12 +737,13 @@ SCENARIO( "Testing the summation of cross sections" ){
           r2d2.linearPhotonProductions(), 
           energies );
 
-      int MT;
+      njoy::RECONR::ReactionID MT;
       THEN( "the productions can be summed up and checked" ){
-        std::vector< int > reference{ 3, 18 };
+        std::vector< njoy::RECONR::ReactionID > reference{ "3", "18" };
+        ranges::sort( reference );
 
-        auto keys = ranges::view::keys( productions ) | ranges::to_vector;
-        CHECK( reference == keys );
+        auto keys = ranges::view::keys( productions );
+        CHECK( ranges::equal( reference, keys ) );
       } // THEN
     } // WHEN
   } // GIVEN
@@ -755,7 +754,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
     WHEN( "cross sections have been linearized and resonances reconstructed" ){
 
-      int MT;
+      njoy::RECONR::ReactionID MT;
       auto reactions = njoy::RECONR::RECONR::summateReactions( 
           std::cout, 
           r2d2.linearReactions(),
@@ -763,8 +762,10 @@ SCENARIO( "Testing the summation of cross sections" ){
           energies );
 
       THEN( "the reactions can be summed up and checked" ){
-        std::vector< int > reference{ 
-          1, 2, 3, 4, 16, 18, 27, 51, 52, 101, 102, 875, 876, 877 };
+        std::vector< njoy::RECONR::ReactionID > reference{ 
+          "1", "2", "3", "4", "16", "18", "27", 
+          "51", "52", "101", "102", "875", "876", "877" };
+        ranges::sort( reference );
 
         auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
 
@@ -772,17 +773,17 @@ SCENARIO( "Testing the summation of cross sections" ){
       
       } // THEN
       THEN( "MT=1 can be checked" ){
-        MT = 1;
+        MT = "1";
         std::vector< double > refXS = sumRanges(
-          reactions.at( 2 ).crossSections(), 
-          reactions.at( 3 ).crossSections()
+          reactions.at( "2" ).crossSections(), 
+          reactions.at( "3" ).crossSections()
         );
       
         auto reaction = reactions.at( MT );
         CHECK( refXS == reaction.crossSections() );
       } // THEN
       THEN( "MT = 2 can be tested" ){
-        MT = 2;
+        MT = "2";
         std::vector< double > refXS{
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
@@ -824,10 +825,10 @@ SCENARIO( "Testing the summation of cross sections" ){
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
       THEN( "MT = 4 can be tested" ){
-        MT = 4;
+        MT = "4";
         std::vector< double > refXS = sumRanges( 
-            reactions.at( 51 ).crossSections(), 
-            reactions.at( 52 ).crossSections() );
+            reactions.at( "51" ).crossSections(), 
+            reactions.at( "52" ).crossSections() );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
         auto reaction = reactions.at( MT );
@@ -835,17 +836,17 @@ SCENARIO( "Testing the summation of cross sections" ){
 
       } // THEN
       THEN( "MT = 16 can be tested" ){ 
-        MT = 16;
+        MT = "16";
         std::vector< double > refXS = sumRanges(
-          reactions.at( 875 ).crossSections(),
-          reactions.at( 876 ).crossSections(),
-          reactions.at( 877 ).crossSections() );
+          reactions.at( "875" ).crossSections(),
+          reactions.at( "876" ).crossSections(),
+          reactions.at( "877" ).crossSections() );
 
         auto reaction = reactions.at( MT );
         CHECK( refXS == reaction.crossSections() );
       } // THEN
       THEN( "MT = 18 can be tested" ){ 
-        MT = 18;
+        MT = "18";
         std::vector< double > refXS{
           0,            0,            0,            0,            0,            
           0,            0,            0,            0,            0,            
@@ -887,7 +888,7 @@ SCENARIO( "Testing the summation of cross sections" ){
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
       THEN( "MT = 51 can be tested" ){ 
-        MT = 51;
+        MT = "51";
         std::vector< double > refXS( sizeEnergies, 51.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
@@ -895,7 +896,7 @@ SCENARIO( "Testing the summation of cross sections" ){
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
       THEN( "MT = 52 can be tested" ){ 
-        MT = 52;
+        MT = "52";
         std::vector< double > refXS( sizeEnergies, 52.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
@@ -903,7 +904,7 @@ SCENARIO( "Testing the summation of cross sections" ){
         details::checkRanges( refXS, reaction.crossSections() );
       } // THEN
       THEN( "MT = 102 can be tested" ){ 
-        MT = 102;
+        MT = "102";
         std::vector< double > refXS{
           102,          94.1134,      86.6777,      79.6441,      72.9714,      
           66.6243,      60.5726,      54.7899,      49.2533,      43.9428,      
@@ -1124,4 +1125,3 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
   } // WHEN
 } // SCENARIO
-*/

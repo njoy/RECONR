@@ -7,11 +7,11 @@ mf3( const int& MAT,
   long size = energies.size();
   std::vector< ENDFtk::section::Type< 3 > > sections;
   for( auto& [ MT, rx ] : reactions ){
-    // if( MT == 27 ){
+    // if( MT == "27" ){
     //   Log::info( "Intentionally not including MT=27 in ENDF file" );
     //   continue;
     // }
-    // if( MT == 101 ){
+    // if( MT == "101" ){
     //   Log::info( "Intentionally not including MT=101 in ENDF file" );
     //   continue;
     // }
@@ -19,10 +19,11 @@ mf3( const int& MAT,
     std::vector< long > boundaries{ size };
     std::vector< long > interpolants{ 2 };
 
-    sections.emplace_back( MT, rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
-                            std::move( boundaries ), std::move( interpolants ),
-                            utility::copy( energies ), 
-                            utility::copy( rx.crossSections() ) );
+    sections.emplace_back( reactionID2MT( MT ), 
+                           rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
+                           std::move( boundaries ), std::move( interpolants ),
+                           utility::copy( energies ), 
+                           utility::copy( rx.crossSections() ) );
   }
   return ENDFtk::file::Type< 3 >{ std::move( sections ) };
 }

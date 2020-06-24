@@ -16,10 +16,10 @@ void storeBWReconstruction( BW& bw, R2D2::ReconMap_t& reconstructed ){
     | ranges::view::transform( []( auto&&  xs ){ return xs.capture.value; } )
     | ranges::to_vector;
 
-  reconstructed[ 2 ].push_back(
+  reconstructed[ "2" ].push_back(
     interp::LinearLinear{ x | ranges::to_vector, std::move( elastic ) } );
-  reconstructed[ 18 ].push_back(
+  reconstructed[ "18" ].push_back(
     interp::LinearLinear{ x | ranges::to_vector, std::move( fission ) } );
-  reconstructed[ 102 ].push_back(
+  reconstructed[ "102" ].push_back(
     interp::LinearLinear{ x | ranges::to_vector, std::move( capture ) } );
 }

@@ -20,7 +20,7 @@ R2D2::LinMap_t linearizeXS( std::ostream& output,
 
   R2D2::LinMap_t linearMap{};
 
-  for( const auto& [ MT, reaction ] : reactions ){
+  for( const auto& [ id, reaction ] : reactions ){
     std::vector< interp::LinearLinear > linearized{};
 
     for( const auto& law : reaction.crossSections() ){
@@ -33,7 +33,7 @@ R2D2::LinMap_t linearizeXS( std::ostream& output,
 
     Reaction< interp::LinearTable > lReaction( reaction,
       interp::LinearTable( std::move( linearized ) ) );
-    linearMap.emplace( MT, std::move( lReaction ) );
+    linearMap.emplace( id, std::move( lReaction ) );
   }
 
   return linearMap;
@@ -45,7 +45,7 @@ R2D2::PPLinMap_t linearizeXS( std::ostream& output,
                   double relTol, double absTol ){
 
   R2D2::PPLinMap_t prodMap{};
-  for( const auto & [ MT, reaction ] : reactions ){
+  for( const auto & [ id, reaction ] : reactions ){
     std::vector< interp::LinearTable > linearized{};
 
     for( const auto& production : reaction.productions() ){
@@ -63,7 +63,7 @@ R2D2::PPLinMap_t linearizeXS( std::ostream& output,
     PPReaction< interp::LinearTable > lppReaction( 
       reaction, std::move( linearized ) );
 
-    prodMap.emplace( MT, std::move( lppReaction ) );
+    prodMap.emplace( id, std::move( lppReaction ) );
 
   }
 

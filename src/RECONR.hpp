@@ -19,8 +19,12 @@ namespace RECONR {
 
 using namespace ENDFtk::resonanceParameters;
 
-#include "RECONR/src/MT2String.hpp"
-#include "RECONR/src/string2MT.hpp"
+using ReactionID = std::string; // Attribution to @whaeck
+
+// #include "RECONR/src/MT2String.hpp"
+#include "RECONR/src/MT2ReactionID.hpp"
+// #include "RECONR/src/string2MT.hpp"
+#include "RECONR/src/reactionID2MT.hpp"
 #include "RECONR/interp.hpp"
 #include "RECONR/Reaction.hpp"
 #include "RECONR/PhotonProductionReaction.hpp"
