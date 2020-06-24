@@ -77,7 +77,7 @@ auto summateReactions( std::ostream& output,
       | ranges::view::transform( []( auto&& mt ){ return MT2ReactionID( mt ); } );
 
     if( ranges::distance( redundants ) != 0 ){
-      output << fmt::format( "{:3s}, redundant IDs: ", ID );
+      output << fmt::format( "{:3d}, redundant IDs: ", ID );
       
       std::vector< std::vector< double > > partials;
       for( const auto& p : redundants ){
