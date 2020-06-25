@@ -176,7 +176,6 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   return std::make_pair( energies, r2d2 );
 }
 
-/*
 SCENARIO( "Testing creation of RECONR class" ){
   GIVEN( "a JSON object, and extra arguments" ){
 
@@ -404,7 +403,6 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
-*/
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
@@ -576,19 +574,44 @@ SCENARIO( "Testing the resonance reconstruction" ){
       r2d2.resonanceReferenceGrid(),
       user );
 
+    Log::info( "RML grid: {}", grid | ranges::view::all );
     WHEN( "the resonances are reconstructed" ){
       njoy::RECONR::RECONR::reconstructResonances( 
           std::cout, grid, r2d2, 1E-1, 1E-3 );
 
-      THEN( "the linearized reconstruction can be verified" ){
-        auto reconstructed = r2d2.reconstructedResonances();
-        
-      } // THEN
+      auto reconstructed = r2d2.reconstructedResonances();
+
+      std::vector< std::string > refIDs{ 
+        "n,Fe54_e0->capture", "n,Fe54_e0->n,Fe54_e0" };
+      ranges::sort( refIDs );
+
+      const auto IDs = ranges::view::keys( reconstructed );
+      Log::info( "IDs: {}", IDs | ranges::view::all );
+      REQUIRE( ranges::equal( refIDs, IDs ) );
+
+      std::vector< double > refE{ 1e-05,7788,51520,53590,550000 };
+      std::map< njoy::RECONR::ReactionID, std::vector< double > > refXS{
+        { "n,Fe54_e0->capture", 
+          { 69.0745,0.424143,1.12865,3.75695,3.04552e-07 } },
+        { "n,Fe54_e0->n,Fe54_e0",
+          { 1.19111,342.429,57.3075,49.6444,3.8478 } }
+      };
+
+      for( const auto& id : IDs ){
+        THEN( "the reconstructed cross section can be verified" +
+              " for reaction: " + id ){
+          auto reaction = reconstructed.at( id ).front();
+
+          details::checkRanges( refE, reaction.x() );
+          details::checkRanges( refXS.at( id ), reaction.y() );
+
+          
+        } // THEN
+      }
     } // WHEN
   } // GIVEN
   
 } // SCENARIO
-/*
 SCENARIO( "Testing the summation of cross sections" ){
   double absTol{ 1E-6 };
   double relTol{ 1E-1 }; // This tolerance is large by design
@@ -1027,14 +1050,14 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid { 
-          -1.9E+6, -1.223300e+6, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5 
+          1.0E-5, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5 
         };
         refGrid |= ranges::action::push_back( energies );
         refGrid |= ranges::action::push_back( userSupplied );
         ranges::sort( refGrid );
     
         refGrid = ranges::view::unique( refGrid );
-    
+
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.linearReactions(), 
@@ -1127,4 +1150,3 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
   } // WHEN
 } // SCENARIO
-*/

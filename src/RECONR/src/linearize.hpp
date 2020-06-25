@@ -88,13 +88,13 @@ auto
 linearize( const Range& grid, double relTol, double absTol ){
   using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 
-  auto midpoint = []( auto&& x, auto&& y ){
-    auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
-    auto my = std::get<0>(y) + std::get<1>(y);
-    my.elastic.value *= 0.5;
-    my.fission.value *= 0.5;
-    my.capture.value *= 0.5;
-    return std::make_pair( mx, my );
+  auto midpoint = []( auto&& energy, auto&& xs ){
+    auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
+    auto midXS = std::get<0>( xs ) + std::get<1>( xs );
+    midXS.elastic.value *= 0.5;
+    midXS.fission.value *= 0.5;
+    midXS.capture.value *= 0.5;
+    return std::make_pair( midEnergy, midXS );
   };
 
   return [=]( auto&& xs ){
@@ -123,12 +123,12 @@ linearize( const Range& grid, double relTol, double absTol ){
 
     auto first = grid.begin();
     auto end = grid.end();
-    std::vector< EV > x;
-    std::vector< njoy::resonanceReconstruction::breitWigner::CrossSection > y;
-    auto linearization = twig::linearize::callable( x, y );
+    std::vector< EV > energies;
+    std::vector< njoy::resonanceReconstruction::breitWigner::CrossSection > XS;
+    auto linearization = twig::linearize::callable( energies, XS );
     linearization( first, end, xs, criterion, midpoint );
 
-    return std::make_pair( std::move( x ), std::move( y ) );
+    return std::make_pair( std::move( energies ), std::move( XS ) );
   };
 }
 
@@ -140,17 +140,38 @@ linearize( const Range& grid,
   using EV = resonanceReconstruction::Energy;
   using XS_t = decltype( reconstructor( EV{} ) );
 
-  auto midpoint = []( auto&& x, auto&& y ){
-    Log::info( "midpoint of RML" );
-    auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
-    return std::make_pair( mx, y );
+  auto midpoint = []( auto&& energy, auto&& XS ){
+    auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
+
+    auto& [ lXS, rXS ] = XS;
+    auto IDs = ranges::view::keys( lXS );
+
+    decltype( lXS ) midXS;
+    for( const auto& id : IDs ){
+      auto y = 0.5*( lXS.at( id ) + rXS.at( id ) );
+      midXS.emplace( id, std::move( y ) );
+    }
+    return std::make_pair( midEnergy, lXS );
   };
 
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-    Log::info( "criterion of RML" );
+    constexpr double infinity = std::numeric_limits< double >::infinity();
+
+    if ( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
+      return true; }
+
+    auto IDs = ranges::view::keys( reference );
+    for( const auto& id : IDs ){
+      auto t = trial.at( id );
+      auto r = trial.at( id );
+
+      auto diff = std::abs( t - r );
+      if( diff.value > absTol ){ return false; }
+      if( diff/r > relTol ){ return false; }
+    }
     return true;
   };
 
@@ -158,10 +179,10 @@ linearize( const Range& grid,
 
   auto first = grid.begin();
   auto end = grid.end();
-  std::vector< EV > x;
-  std::vector< XS_t > y;
-  auto linearization = twig::linearize::callable( x, y );
+  std::vector< EV > energies;
+  std::vector< XS_t > crossSections;
+  auto linearization = twig::linearize::callable( energies, crossSections );
   linearization( first, end, reconstructor, criterion, midpoint );
 
-  return 0.0;
+  return std::make_pair( std::move( energies ), std::move( crossSections ) );
 }

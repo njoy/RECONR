@@ -43,7 +43,7 @@ SCENARIO( "Testing R2D2" ){
     THEN( "the pieces can be verified" ){
       
       const std::vector< double > resonanceEnergies { 
-        -1.9E+6, -1.223300e+6, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5 
+        1.0E-5, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5 
       };
       auto trial = r2d2.resonanceReferenceGrid();
       details::checkRanges( resonanceEnergies,  trial );

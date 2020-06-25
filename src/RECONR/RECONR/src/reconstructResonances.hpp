@@ -146,7 +146,21 @@ void reconstructResonances(
   auto rml = resonanceReconstruction::rmatrix::fromENDF( 
     rRange, nMass, eCharge );
 
-  auto data = linearize( grid, rml, relTol, absTol );
+  auto [ energies, crossSections ] = linearize( grid, rml, relTol, absTol );
+  // Remove units from x
+  auto x = energies 
+    | ranges::view::transform( []( auto&& energy ){ return energy.value; } );
+
+  auto IDs = ranges::view::keys( crossSections.front() );
+  for( auto& id : IDs ){
+
+    auto xs = crossSections
+      | ranges::view::transform( [&]( auto&& m ){ return m.at( id ).value; } )
+      | ranges::to_vector;
+
+    reconstructed[ id ].push_back(
+      interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) } );
+  }
 
 }
 
