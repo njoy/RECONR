@@ -74,7 +74,8 @@ auto summateReactions( std::ostream& output,
     auto redundants = redundantIDs
       | ranges::view::filter( 
         [&]( auto&& mt ){ return reactions.count( MT2ReactionID( mt ) ) > 0; } )
-      | ranges::view::transform( []( auto&& mt ){ return MT2ReactionID( mt ); } );
+      | ranges::view::transform( 
+        []( auto&& mt ){ return MT2ReactionID( mt ); } );
 
     if( ranges::distance( redundants ) != 0 ){
       output << fmt::format( "{:3d}, redundant IDs: ", ID );
@@ -101,7 +102,8 @@ auto summateReactions( std::ostream& output,
         }
 
         Reaction_t sReaction{ reactions.at( p ), sumPartials( partials ) };
-        reactions.insert_or_assign( MT2ReactionID( ID ), std::move( sReaction ) );
+        reactions.insert_or_assign( MT2ReactionID( ID ), 
+                                    std::move( sReaction ) );
       } // redundants
       output << std::endl;
     }

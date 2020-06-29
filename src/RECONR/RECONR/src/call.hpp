@@ -50,12 +50,20 @@ void operator()( const nlohmann::json& njoyArgs,
 
     // Sum reactions
     // auto reactions = this->summateReactions( output, data, energies );
-    auto reactions = this->summateReactions( 
-      output, data.linearReactions(), data.reconstructedResonances(), energies );
-    auto productions = this->summateReactions( 
+    auto summedReactions = this->summateReactions( 
+      output, data.linearReactions(), 
+      data.reconstructedResonances(), energies );
+    auto summedProductions = this->summateReactions( 
       output, data.linearPhotonProductions(), energies );
 
-    pendf.material( MAT, data, reactions, productions, energies, sequence );
+    // Remove leading/trailing zeros
+    auto truncReactions = this->truncateReactions( output, energies, 
+                                                  summedReactions );
+    auto truncProductions = this->truncateReactions( output, energies, 
+                                                    summedProductions );
+    pendf.material( MAT, data, 
+                    truncReactions, 
+                    truncProductions, energies, sequence );
 
   }
 

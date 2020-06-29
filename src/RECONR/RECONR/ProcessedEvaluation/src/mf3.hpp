@@ -19,11 +19,11 @@ mf3( const int& MAT,
     std::vector< long > boundaries{ size };
     std::vector< long > interpolants{ 2 };
 
-    sections.emplace_back( reactionID2MT( MT ), 
-                           rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
-                           std::move( boundaries ), std::move( interpolants ),
-                           utility::copy( energies ), 
-                           utility::copy( rx.crossSections() ) );
+    // sections.emplace_back( reactionID2MT( MT ), 
+    //                        rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
+    //                        std::move( boundaries ), std::move( interpolants ),
+    //                        utility::copy( energies ), 
+    //                        utility::copy( rx.crossSections() ) );
   }
   return ENDFtk::file::Type< 3 >{ std::move( sections ) };
 }

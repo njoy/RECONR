@@ -12,13 +12,13 @@ mf13( const int& MAT,
     std::vector< long > boundaries{ size };
     std::vector< long > interpolants{ 2 };
 
-    ENDFtk::section::Type< 13 >::PartialCrossSection partial{
-      0.0, 0.0, 0, 1,
-      std::move( boundaries ),
-      std::move( interpolants ),
-      utility::copy( energies ),
-      utility::copy( production.productions() )
-    };
+    // ENDFtk::section::Type< 13 >::PartialCrossSection partial{
+    //   0.0, 0.0, 0, 1,
+    //   std::move( boundaries ),
+    //   std::move( interpolants ),
+    //   utility::copy( energies ),
+    //   utility::copy( production.productions() )
+    // };
     
   }
 
