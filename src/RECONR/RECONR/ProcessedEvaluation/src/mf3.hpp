@@ -1,10 +1,8 @@
-template< typename Reaction_t, typename Energies_t >
+template< typename Reaction_t >
 ENDFtk::file::Type< 3 >
 mf3( const int& MAT,
-     const Reaction_t& reactions, 
-     const Energies_t& energies ){
+     const Reaction_t& reactions ){
 
-  long size = energies.size();
   std::vector< ENDFtk::section::Type< 3 > > sections;
   for( auto& [ MT, rx ] : reactions ){
     // if( MT == "27" ){
@@ -16,14 +14,18 @@ mf3( const int& MAT,
     //   continue;
     // }
 
-    std::vector< long > boundaries{ size };
+    auto [ energies, crossSections ] = rx.crossSections();
+
+    std::vector< long > boundaries{ ranges::distance( energies ) };
     std::vector< long > interpolants{ 2 };
 
-    // sections.emplace_back( reactionID2MT( MT ), 
-    //                        rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
-    //                        std::move( boundaries ), std::move( interpolants ),
-    //                        utility::copy( energies ), 
-    //                        utility::copy( rx.crossSections() ) );
+    sections.emplace_back( reactionID2MT( MT ), 
+                           rx.ZA(), rx.AWR(), rx.QM(), rx.QI(), rx.LR(),
+                           std::move( boundaries ), std::move( interpolants ),
+                           std::move( energies ),
+                           std::move( crossSections )
+                          );
   }
+
   return ENDFtk::file::Type< 3 >{ std::move( sections ) };
 }

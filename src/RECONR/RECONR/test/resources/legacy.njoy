@@ -30,7 +30,6 @@ reconr
   0.01 0.0 2.1 8E-7                             / Card 4.2
   "Material 9228 processed with modern RECONR" / Card 5.2.1
   0                                            / Card 6.0
-stop
 -- .1% reconstruction tolerance
 reconr
   20 23                                        / Card 1

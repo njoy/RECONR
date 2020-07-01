@@ -59,11 +59,13 @@ void operator()( const nlohmann::json& njoyArgs,
     // Remove leading/trailing zeros
     auto truncReactions = this->truncateReactions( output, energies, 
                                                   summedReactions );
+    Log::info( "calling truncate for photon productions" );
     auto truncProductions = this->truncateReactions( output, energies, 
                                                     summedProductions );
     pendf.material( MAT, data, 
                     truncReactions, 
-                    truncProductions, energies, sequence );
+                    truncProductions, 
+                    sequence );
 
   }
 

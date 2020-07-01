@@ -1,16 +1,13 @@
-template< typename Production_T, typename Energies_t >
+template< typename Production_T >
 ENDFtk::file::Type< 13 >
 mf13( const int& MAT,
-     const Production_T& productions, 
-     const Energies_t& energies ){
-
-  long size = energies.size();
+     const Production_T& productions ){
 
   std::vector< ENDFtk::section::Type< 13 > > sections;
   for( auto& [ MT, production ] : productions ){
 
-    std::vector< long > boundaries{ size };
-    std::vector< long > interpolants{ 2 };
+    // std::vector< long > boundaries{ ranges::distance( production ) };
+    // std::vector< long > interpolants{ 2 };
 
     // ENDFtk::section::Type< 13 >::PartialCrossSection partial{
     //   0.0, 0.0, 0, 1,

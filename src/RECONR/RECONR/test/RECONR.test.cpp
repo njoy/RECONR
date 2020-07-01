@@ -12,7 +12,26 @@
 using namespace njoy;
 
 nlohmann::json input{R"({
-  "nendf": 20, "npend": 22,
+  "nendf": 20, "npend": 23,
+  "tlabel": "Modern RECONR Testing",
+  "sequence": [
+    {
+      "mat": 125, "ncards": 1, "ngrid": 3,
+      "err": 0.001, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
+      "cards": [ "Material 125 processed with modern RECONR" ],
+      "enode": [ 1.0, 2.0, 3.0 ]
+    },
+    {
+      "mat": 2631, "ncards": 2, "ngrid": 0,
+      "err": 0.001, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
+      "cards": [ "Material 2631 processed with modern RECONR",
+                  "For testing purposes only." ],
+      "enode": [ ]
+    }
+  ]
+})"_json};
+nlohmann::json inputWithU238{R"({
+  "nendf": 20, "npend": 23,
   "tlabel": "Modern RECONR Testing",
   "sequence": [
     {
@@ -27,54 +46,15 @@ nlohmann::json input{R"({
       "cards": [ "Material 2631 processed with modern RECONR",
                   "For testing purposes only." ],
       "enode": [ ]
-    }
-  ]
-})"_json};
-nlohmann::json input2631{R"({
-  "nendf": 21, "npend": 23,
-  "tlabel": "Modern RECONR Testing",
-  "sequence": [
-    {
-      "mat": 2631, "ncards": 2, "ngrid": 0,
-      "err": 0.1, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
-      "cards": [ "Material 2631 processed with modern RECONR",
-                  "For testing purposes only." ],
-      "enode": [ ]
-    }
-  ]
-})"_json};
-nlohmann::json input30{R"({
-  "nendf": 30, "npend": 32,
-  "tlabel": "Modern RECONR Testing",
-  "sequence": [
-    {
-      "mat": 9437, "ncards": 1, "ngrid": 3,
-      "err": 0.1, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
-      "cards": [ "Material 125 processed with modern RECONR" ],
-      "enode": [ 1.0, 2.0, 3.0 ]
-    }
-  ]
-})"_json};
-nlohmann::json input40{R"({
-  "nendf": 40, "npend": 42,
-  "tlabel": "Modern RECONR Testing",
-  "sequence": [
-    {
-      "mat": 9437, "ncards": 1, "ngrid": 3,
-      "err": 0.1, "tempr": 0, "errmax": 0.1, "errint": 5E-7,
-      "cards": [ "Material 125 processed with modern RECONR" ],
-      "enode": [ 1.0, 2.0, 3.0 ]
-    }
-  ]
-})"_json};
-/*
+    },
     {
       "mat": 9228, "ncards": 1, "ngrid": 0,
       "err": 0.1, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
       "cards": [ "Material 9228 processed with modern RECONR" ],
       "enode": [ ]
     }
-*/
+  ]
+})"_json};
 
 std::vector< double> XSEnergies(){
 
@@ -182,48 +162,20 @@ SCENARIO( "Testing creation of RECONR class" ){
     auto args = nlohmann::json::object();
 
     WHEN( "a RECONR object is called" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
+      // CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
+      //                                        std::cout, 
+      //                                        std::cerr, 
+      //                                        args ) );
+    } // THEN
+    WHEN( "processing H-1, Fe-56, and U-238" ){
+      CHECK_NOTHROW( njoy::RECONR::RECONR()( inputWithU238, 
                                              std::cout, 
                                              std::cerr, 
                                              args ) );
-
     } // THEN
   } // GIVEN
-  GIVEN( "a JSON object, and extra arguments" ){
-
-    auto args = nlohmann::json::object();
-
-    WHEN( "a RECONR object is called" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
-                                             std::cout, 
-                                             std::cerr, 
-                                             args ) );
-
-    } // THEN
-  } // GIVEN
-  // GIVEN( "an ENDF file with just one resonance" ){
-
-  //   auto args = nlohmann::json::object();
-
-  //   WHEN( "a RECONR object is called" ){
-  //  CHECK_NOTHROW( njoy::RECONR::RECONR()( input40, 
-  //                                         std::cout, 
-  //                                         std::cerr, 
-  //                                         args ) );
-  //   } // THEN
-  // } // GIVEN
-  // GIVEN( "an ENDF file with just three resonances" ){
-
-  //   auto args = nlohmann::json::object();
-
-  //   WHEN( "a RECONR object is called" ){
-  //  CHECK_NOTHROW( njoy::RECONR::RECONR()( input30, 
-  //                                         std::cout, 
-  //                                         std::cerr, 
-  //                                         args ) );
-  //   } // THEN
-  // } // GIVEN
 } // SCENARIO
+/*
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
     auto evaluatedData = njoy::RECONR::RECONR::getEvaluated(
@@ -574,7 +526,6 @@ SCENARIO( "Testing the resonance reconstruction" ){
       r2d2.resonanceReferenceGrid(),
       user );
 
-    Log::info( "RML grid: {}", grid | ranges::view::all );
     WHEN( "the resonances are reconstructed" ){
       njoy::RECONR::RECONR::reconstructResonances( 
           std::cout, grid, r2d2, 1E-1, 1E-3 );
@@ -586,7 +537,6 @@ SCENARIO( "Testing the resonance reconstruction" ){
       ranges::sort( refIDs );
 
       const auto IDs = ranges::view::keys( reconstructed );
-      Log::info( "IDs: {}", IDs | ranges::view::all );
       REQUIRE( ranges::equal( refIDs, IDs ) );
 
       std::vector< double > refE{ 1e-05,7788,51520,53590,550000 };
@@ -1150,3 +1100,4 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
   } // WHEN
 } // SCENARIO
+*/

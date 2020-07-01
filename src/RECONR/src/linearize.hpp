@@ -7,7 +7,10 @@ linearize2( LAW law, double relTol, double absTol ){
 
     constexpr double infinity = std::numeric_limits<double>::infinity();
 
-    if ( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
+    if( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
+    // Limit of ENDF-6 precision
+    if( xRight/xLeft < 1E-7 ){ return true; }
+
     auto diff = std::abs( trial - reference );
     auto reldiff = (diff/reference);
 
@@ -104,8 +107,10 @@ linearize( const Range& grid, double relTol, double absTol ){
 
       constexpr double infinity = std::numeric_limits< double >::infinity();
 
-      if ( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
+      if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
         return true; }
+      // Limit of ENDF-6 precision
+      if( xRight/xLeft < 1E-7 ){ return true; }
       auto cDiff = trial - reference;
 
       double eRelDiff = std::abs( cDiff.elastic/reference.elastic );
@@ -160,8 +165,10 @@ linearize( const Range& grid,
 
     constexpr double infinity = std::numeric_limits< double >::infinity();
 
-    if ( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
+    if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
       return true; }
+    // Limit of ENDF-6 precision
+    if( xRight/xLeft < 1E-7 ){ return true; }
 
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
@@ -174,8 +181,6 @@ linearize( const Range& grid,
     }
     return true;
   };
-
-  Log::info( "linearizing resonances using an rmatrix::Reconstructor" );
 
   auto first = grid.begin();
   auto end = grid.end();

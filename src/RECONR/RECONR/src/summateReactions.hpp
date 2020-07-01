@@ -38,7 +38,7 @@ auto summateReactions( std::ostream& output,
     if( ID == "18" ){
       if( reactions.find( "19" ) != reactions.end() ){
         output << fmt::format( "{:3s} ", "19" );
-        recon = std::make_unique< PType >( reconstructed.at( "19" ) );
+        recon = std::make_unique< PType >( reconstructed.at( "18" ) );
         reaction = std::make_unique< Reaction_t >( reactions.at( "19" ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
       }
