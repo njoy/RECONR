@@ -162,16 +162,16 @@ SCENARIO( "Testing creation of RECONR class" ){
     auto args = nlohmann::json::object();
 
     WHEN( "a RECONR object is called" ){
-      // CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
-      //                                        std::cout, 
-      //                                        std::cerr, 
-      //                                        args ) );
-    } // THEN
-    WHEN( "processing H-1, Fe-56, and U-238" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( inputWithU238, 
+      CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
                                              std::cout, 
                                              std::cerr, 
                                              args ) );
+    } // THEN
+    WHEN( "processing H-1, Fe-56, and U-238" ){
+      // CHECK_NOTHROW( njoy::RECONR::RECONR()( inputWithU238, 
+      //                                        std::cout, 
+      //                                        std::cerr, 
+      //                                        args ) );
     } // THEN
   } // GIVEN
 } // SCENARIO
