@@ -176,7 +176,7 @@ R2D2::ReconMap_t reconstructResonances(
 
   for( const auto& iso : isotopes ){
     for( const auto& range : iso.resonanceRanges() ){
-      auto eL = range.EL();
+      auto eL = range.EL() * dimwits::electronVolt;
       auto eH = range.EH();
 
       auto g = grid 
