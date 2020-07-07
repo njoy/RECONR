@@ -149,7 +149,7 @@ void reconstructResonances(
   auto [ energies, crossSections ] = linearize( grid, rml, relTol, absTol );
   // Remove units from x
   auto x = energies 
-    | ranges::view::transform( []( auto&& energy ){ return energy.value; } );
+    | ranges::view::transform( []( auto&& energy ){ return energy / dimwits::electronVolt; } );
 
   auto IDs = ranges::view::keys( crossSections.front() );
   for( auto& id : IDs ){
