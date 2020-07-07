@@ -9,6 +9,7 @@
 #include "RECONR/details/checkRanges.hpp"
 
 using namespace njoy;
+using namespace njoy::RECONR;
 
 SCENARIO( "Testing the collection of resonance parameter data" ){
 
@@ -99,7 +100,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 0 == reaction.LR() );
 
         auto xs = std::get< njoy::RECONR::interp::Histogram >( 
-            reaction.crossSections()[ 0 ] );
+            reaction.crossSections< std::vector< interp::Variant > >()[ 0 ] );
         std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
         std::vector< double > refB{
@@ -129,7 +130,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 0 == reaction.LR() );
 
         auto xs = std::get< njoy::RECONR::interp::Histogram >( 
-            reaction.crossSections()[ 0 ] );
+            reaction.crossSections< std::vector< interp::Variant > >()[ 0 ] );
         std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
         std::vector< double > refB( refE.size(), 2.0 );
@@ -158,7 +159,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 0 == reaction.LR() );
 
         auto xs = std::get< njoy::RECONR::interp::LogarithmicLogarithmic >( 
-            reaction.crossSections()[ 0 ] );
+            reaction.crossSections< std::vector< interp::Variant > >()[ 0 ] );
         std::vector< double > refE{
           1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
         std::vector< double > refB{
@@ -202,7 +203,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
 
         {
           auto xs1 = std::get< njoy::RECONR::interp::Histogram >(
-              reaction.crossSections()[ 0 ] );
+              reaction.crossSections< std::vector< interp::Variant > >()[ 0 ] );
           std::vector< double > refE{ 1.0E+5, 1.5E+5, 7.5E+5 };
           std::vector< double > refB{ 1.8E+1, 1.182897E+1, 3.347392E-5 };
 
@@ -218,7 +219,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
         {
           auto xs2 = std::get< njoy::RECONR::interp::LinearLinear >(
-              reaction.crossSections()[ 1 ] );
+              reaction.crossSections< std::vector< interp::Variant > >()[ 1 ] );
           std::vector< double > refE{ 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
           std::vector< double > refB{ 
             3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
@@ -249,7 +250,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
 
         {
           auto xs102 = std::get< njoy::RECONR::interp::LinearLogarithmic >( 
-              reaction.crossSections()[ 0 ] );
+              reaction.crossSections< std::vector< interp::Variant > >()[ 0 ] );
           std::vector< double > refE{ 1.0E-5, 2.0E-5, 7.5E+5 };
           std::vector< double > refB{ 1.02E+2, 1.182897E+1, 3.347392E-5 };
 
@@ -269,7 +270,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
         {
           auto xs4 = std::get< njoy::RECONR::interp::LogarithmicLinear >( 
-              reaction.crossSections()[ 1 ] );
+              reaction.crossSections< std::vector< interp::Variant > >()[ 1 ] );
           std::vector< double > refE{ 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
           std::vector< double > refB{
              3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };

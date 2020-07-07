@@ -1,4 +1,3 @@
-template< typename XS >
 class Reaction {
   int ZA_;
   double atomicWeightRatio_;
@@ -6,7 +5,11 @@ class Reaction {
   double reactionQ_;
   int complexBreakUp_;
 
-  XS crossSection_;
+  using Forms = std::variant< 
+    std::vector< interp::Variant >,
+    interp::LinearTable 
+  >;
+  Forms crossSection_;
 
 public:
   #include "RECONR/Reaction/src/ctor.hpp"
@@ -21,6 +24,6 @@ public:
   int LR() const { return this->complexBreakUp_; }
   int complexBreakUp() const { return this->LR(); }
 
-  const XS& crossSections() const{ return this->crossSection_; }
+  #include "RECONR/Reaction/src/crossSection.hpp"
 
 };

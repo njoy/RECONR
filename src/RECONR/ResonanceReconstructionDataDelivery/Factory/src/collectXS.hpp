@@ -11,7 +11,7 @@ XSMap_t collectXS( const ENDFMaterial_t& material ){
 
   auto MF3 = material.fileNumber( 3 ).parse< 3 >();
   for( auto& section : MF3.sections() ){
-    Reaction< RawInterpolation_t > reaction{ 
+    Reaction reaction{ 
       section.ZA(),
       section.AWR(),
       section.QM(),

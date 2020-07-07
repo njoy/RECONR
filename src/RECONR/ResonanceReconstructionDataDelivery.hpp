@@ -1,9 +1,8 @@
 class ResonanceReconstructionDataDelivery {
 public:
   using RawInterpolation_t = std::vector< interp::Variant >;
-  using XSMap_t = std::map< ReactionID, Reaction< RawInterpolation_t > >;
+  using XSMap_t = std::map< ReactionID, Reaction >;
   using PPMap_t = std::map< ReactionID, PPReaction< RawInterpolation_t > >;
-  using LinMap_t = std::map< ReactionID, Reaction< interp::LinearTable > >;
   using PPLinMap_t = std::map< ReactionID, PPReaction< interp::LinearTable > >;
   using ReconMap_t = std::map< ReactionID, std::vector< interp::LinearLinear > >;
 
@@ -12,7 +11,6 @@ public:
 private:
   XSMap_t reactions_;
   PPMap_t photonProductions_;
-  LinMap_t linearReactions_;
   PPLinMap_t linearPhotonProductions_;
   ReconMap_t reconstructedResonances_;
 
@@ -31,8 +29,6 @@ public:
   auto reactions() const { return this->reactions_; }
   auto photonProductions() const { return this->photonProductions_; }
 
-  auto linearReactions() const { return this->linearReactions_; }
-  void linearReactions( LinMap_t&& lXS ){ this->linearReactions_ = lXS; }
   auto linearPhotonProductions() const { return this->linearPhotonProductions_; }
   void linearPhotonProductions( PPLinMap_t&& ppMap ) { 
     this->linearPhotonProductions_ = ppMap; }
@@ -43,7 +39,6 @@ public:
     this->reconstructedResonances_ = rXS; }
 
   auto resonanceParameters() const { return this->resonanceParameters_; }
-
   auto resonanceReferenceGrid() const { return this->resonanceReferenceGrid_; }
 };
 
