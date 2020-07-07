@@ -149,13 +149,16 @@ void reconstructResonances(
   auto [ energies, crossSections ] = linearize( grid, rml, relTol, absTol );
   // Remove units from x
   auto x = energies 
-    | ranges::view::transform( []( auto&& energy ){ return energy / dimwits::electronVolt; } );
+    | ranges::view::transform( 
+      []( auto&& energy ) -> double { return energy / dimwits::electronVolt; }
+    );
 
   auto IDs = ranges::view::keys( crossSections.front() );
   for( auto& id : IDs ){
 
     auto xs = crossSections
-      | ranges::view::transform( [&]( auto&& m ){ return m.at( id ) / dimwits::barns; } )
+      | ranges::view::transform( 
+          [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
       | ranges::to_vector;
 
     reconstructed[ id ].push_back(
@@ -176,12 +179,12 @@ R2D2::ReconMap_t reconstructResonances(
 
   for( const auto& iso : isotopes ){
     for( const auto& range : iso.resonanceRanges() ){
-      auto eL = range.EL() * dimwits::electronVolt;
-      auto eH = range.EH();
+      auto eL = range.EL()*dimwits::electronVolt;
+      auto eH = range.EH()*dimwits::electronVolt;
 
       auto g = grid 
         | ranges::view::filter( 
-          [&]( auto&& a ){ return ( a.value >= eL ) and ( a.value <= eH ); } )
+          [&]( auto&& e ){ return ( e >= eL ) and ( e <= eH ); } )
         | ranges::to_vector;
 
       std::visit(

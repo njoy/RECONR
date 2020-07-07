@@ -11,7 +11,7 @@ auto mf1( const int& MAT, const nlohmann::json& sequence,
   const auto mt = oldMF1.section( 451_c );
 
   auto cards = sequence[ "cards" ].get< std::vector< std::string > >();
-  auto NWD = cards.size();
+  long NWD = cards.size();
   std::vector< ENDFtk::TEXT > description;
   for( auto& card : cards ){ 
     description.emplace_back( std::move( card ) );
