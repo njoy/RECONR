@@ -155,7 +155,7 @@ void reconstructResonances(
   for( auto& id : IDs ){
 
     auto xs = crossSections
-      | ranges::view::transform( [&]( auto&& m ){ return m.at( id ).value; } )
+      | ranges::view::transform( [&]( auto&& m ){ return m.at( id ) / dimwits::barns; } )
       | ranges::to_vector;
 
     reconstructed[ id ].push_back(
