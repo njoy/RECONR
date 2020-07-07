@@ -30,6 +30,19 @@ nlohmann::json input{R"({
     }
   ]
 })"_json};
+nlohmann::json Fe56Input{R"({
+  "nendf": 20, "npend": 23,
+  "tlabel": "Modern RECONR Testing",
+  "sequence": [
+    {
+      "mat": 2631, "ncards": 2, "ngrid": 0,
+      "err": 0.001, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
+      "cards": [ "Material 2631 processed with modern RECONR",
+                  "For testing purposes only." ],
+      "enode": [ ]
+    }
+  ]
+})"_json};
 nlohmann::json inputWithU238{R"({
   "nendf": 20, "npend": 23,
   "tlabel": "Modern RECONR Testing",
@@ -163,6 +176,12 @@ SCENARIO( "Testing creation of RECONR class" ){
 
     WHEN( "a RECONR object is called" ){
       CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
+                                             std::cout, 
+                                             std::cerr, 
+                                             args ) );
+    } // THEN
+    WHEN( "processing one ENDF Material in a Tape" ){
+      CHECK_NOTHROW( njoy::RECONR::RECONR()( Fe56Input, 
                                              std::cout, 
                                              std::cerr, 
                                              args ) );
