@@ -5,8 +5,7 @@ void linearizeXS( std::ostream& output,
 
   output << "\nLinearizing cross sections." << std::endl;
 
-  r2d2.linearReactions( linearizeXS( output, r2d2.reactions(),
-                                     relTol, absTol ) );
+  linearizeXS( output, r2d2.reactions(), relTol, absTol );
   r2d2.linearPhotonProductions( linearizeXS( output, r2d2.photonProductions(),
                                              relTol, absTol ) );
                                              
@@ -14,16 +13,15 @@ void linearizeXS( std::ostream& output,
 }
 
 static
-R2D2::LinMap_t linearizeXS( std::ostream& output,
-                  const R2D2::XSMap_t& reactions, 
+void linearizeXS( std::ostream& output,
+                  R2D2::XSMap_t& reactions, 
                   double relTol, double absTol ){
 
-  R2D2::LinMap_t linearMap{};
-
-  for( const auto& [ id, reaction ] : reactions ){
+  for( auto& [ id, reaction ] : reactions ){
     std::vector< interp::LinearLinear > linearized{};
 
-    for( const auto& law : reaction.crossSections() ){
+    for( const auto& law : 
+         reaction.crossSections< std::vector< interp::Variant > >() ){
       auto l = std::visit( 
           [&]( auto&& arg ){ 
             return njoy::RECONR::linearize( arg, relTol, absTol ); }, 
@@ -31,12 +29,8 @@ R2D2::LinMap_t linearizeXS( std::ostream& output,
       linearized.emplace_back( l );
     }
 
-    Reaction< interp::LinearTable > lReaction( reaction,
-      interp::LinearTable( std::move( linearized ) ) );
-    linearMap.emplace( id, std::move( lReaction ) );
+    reaction.crossSections( std::move( linearized ) );
   }
-
-  return linearMap;
 }
 
 static

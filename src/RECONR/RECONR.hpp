@@ -17,8 +17,10 @@ public:
   #include "RECONR/RECONR/src/getEvaluated.hpp"
   #include "RECONR/RECONR/src/linearizeXS.hpp"
   #include "RECONR/RECONR/src/unionizeEnergyGrid.hpp"
+  /*
   #include "RECONR/RECONR/src/reconstructResonances.hpp"
   #include "RECONR/RECONR/src/summateReactions.hpp"
   #include "RECONR/RECONR/src/truncateReactions.hpp"
+  */
   #include "RECONR/RECONR/src/call.hpp"
 };

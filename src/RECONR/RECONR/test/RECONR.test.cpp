@@ -9,8 +9,6 @@
 #include "RECONR/details/nextMin.hpp"
 #include "RECONR/details/checkRanges.hpp"
 
-using namespace njoy;
-
 nlohmann::json input{R"({
   "nendf": 20, "npend": 23,
   "tlabel": "Modern RECONR Testing",
@@ -146,6 +144,7 @@ std::vector< double > sumRanges( const Ranges&... ranges ){
       | ranges::to_vector;
 }
 
+/*
 // Linearize and reconstruct resonances
 auto lin_recon( std::string formalism, double absTol, double relTol ){
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
@@ -155,7 +154,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   njoy::RECONR::RECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
   auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid(
     std::cout, 
-    r2d2.linearReactions(), 
+    r2d2.reactions(), 
     r2d2.linearPhotonProductions(), 
     r2d2.resonanceReferenceGrid(),
     userSupplied );
@@ -168,6 +167,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
 
   return std::make_pair( energies, r2d2 );
 }
+*/
 
 SCENARIO( "Testing creation of RECONR class" ){
   GIVEN( "a JSON object, and extra arguments" ){
@@ -194,7 +194,6 @@ SCENARIO( "Testing creation of RECONR class" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
-/*
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
     auto evaluatedData = njoy::RECONR::RECONR::getEvaluated(
@@ -230,16 +229,21 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       njoy::RECONR::RECONR::linearizeXS( 
         std::cout, r2d2, absTolerance, relTolerance );
 
-      auto rXSs = r2d2.reactions();
-      auto lReactions = r2d2.linearReactions();
+      auto reactions = r2d2.reactions();
 
-      auto keys = ranges::view::keys( rXSs );
-      CHECK( ranges::equal( keys, ranges::view::keys( lReactions ) ) );
+      std::vector< njoy::RECONR::ReactionID > refKeys{
+        "1", "2", "16", "18", "51", "52", "102", "875", "876", "877"
+      };
+      ranges::sort( refKeys );
+      auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
+      ranges::sort( keys );
+      CHECK( ranges::equal( refKeys, keys ) );
       
+      using Rxn_t = njoy::RECONR::interp::LinearTable;
       njoy::RECONR::ReactionID MT;
       THEN( "we can check MT=1" ){
         MT = "1";
-        auto reaction = lReactions.at( MT );
+        auto reaction = reactions.at( MT );
         std::vector< double > refE{
           1.0E-5, 
           details::nextMin( 2.0E-5 ), 2.0E-5,
@@ -255,7 +259,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
           2.731301E-5 , 2.731301E-5 , 
           2.710792E-5 };
 
-        auto lXS = reaction.crossSections();
+        auto lXS = reaction.crossSections< Rxn_t >();
         auto energies = lXS.x() | ranges::to_vector;
         auto barns = lXS.y() | ranges::to_vector;
 
@@ -270,7 +274,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       }
       THEN( "we can check MT=16" ){
         MT = "16";
-        auto reaction = lReactions.at( MT );
+        auto reaction = reactions.at( MT );
 				std::vector< double > refE{
 					1e-05,       1.25e-05,    1.5e-05,     2e-05,       
 					2.5457e-05,  3.09139e-05, 4.18279e-05, 5.27418e-05, 6.36557e-05,  
@@ -294,7 +298,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
 					0.000296768, 0.000206284, 0.000143388,    9.96694e-05, 6.92804e-05,  
 					4.81569e-05, 3.34739e-05, 2.75176e-05,    2.7313e-05,  2.71079e-05 };
 
-        auto lXS = reaction.crossSections();
+        auto lXS = reaction.crossSections< Rxn_t >();
         auto energies = lXS.x() | ranges::to_vector;
         auto barns = lXS.y() | ranges::to_vector;
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
@@ -308,7 +312,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       }
       THEN( "we can check MT=18" ){
         MT = "18";
-        auto reaction = lReactions.at( MT );
+        auto reaction = reactions.at( MT );
         std::vector< double > refE{ 
           1.0E+5,
           details::nextMin( 1.5E+5 ), 1.5E+5,
@@ -319,7 +323,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
           1.182897E+1 , 1.182897E+1 , 
           3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
 
-        auto lXS = reaction.crossSections();
+        auto lXS = reaction.crossSections< Rxn_t >();
         auto energies = lXS.x() | ranges::to_vector;
         auto barns = lXS.y() | ranges::to_vector;
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
@@ -333,7 +337,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       }
       THEN( "we can check MT=102" ){
         MT = "102";
-        auto reaction = lReactions.at( MT );
+        auto reaction = reactions.at( MT );
 				std::vector< double > refE{
 					1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
 					1.3125e-05,   1.375e-05,    1.4375e-05,   1.5e-05,      1.5625e-05,   
@@ -359,7 +363,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
 					1.34706,      1.0103,       0.673545,    0.336789,    3.34739e-05,     
 					2.75176e-05,  2.7313e-05,  2.71079e-05 };
 
-        auto lXS = reaction.crossSections();
+        auto lXS = reaction.crossSections< Rxn_t >();
         auto energies = lXS.x() | ranges::to_vector;
         auto barns = lXS.y() | ranges::to_vector;
         CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
@@ -374,6 +378,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
+/*
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
@@ -941,6 +946,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     } // WHEN
   } // GIVEN
 } // SCENARIO
+*/
 SCENARIO( "Testing the unionization of the energy Grid" ){
   // These are the same regardless of the resonance formalism
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
@@ -953,8 +959,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS( 
-        std::cout, r2d2, absTolerance, relTolerance );
+      njoy::RECONR::RECONR::linearizeXS( std::cout, r2d2, absTolerance, relTolerance );
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid{
@@ -969,7 +974,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
-          r2d2.linearReactions(), 
+          r2d2.reactions(), 
           r2d2.linearPhotonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
@@ -1000,7 +1005,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
-          r2d2.linearReactions(), 
+          r2d2.reactions(), 
           r2d2.linearPhotonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
@@ -1029,7 +1034,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
 
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
-          r2d2.linearReactions(), 
+          r2d2.reactions(), 
           r2d2.linearPhotonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
@@ -1039,6 +1044,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
   } // WHEN
 
+/*
   WHEN( "resonances have been reconstructed" ){
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
       auto material = details::ENDFMaterial( "SLBW" );
@@ -1050,7 +1056,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         std::cout, r2d2, absTolerance, relTolerance );
       auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
-          r2d2.linearReactions(), 
+          r2d2.reactions(), 
           r2d2.linearPhotonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
@@ -1088,7 +1094,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         std::cout, r2d2, absTolerance, relTolerance );
       auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
-          r2d2.linearReactions(), 
+          r2d2.reactions(), 
           r2d2.linearPhotonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
@@ -1116,7 +1122,6 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         details::checkRanges( refGrid, trial );
       } // THEN
     } // GIVEN
-    
   } // WHEN
+  */
 } // SCENARIO
-*/

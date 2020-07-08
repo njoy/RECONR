@@ -1,28 +1,27 @@
 // For incident neutrons
 template< typename Range >
 static
-auto summateReactions( std::ostream& output,
-                       const R2D2::LinMap_t& linear,
+void summateReactions( std::ostream& output,
+                       R2D2::XSMap_t& reactions,
                        const R2D2::ReconMap_t& reconstructed,
                        const Range& energies ){
-  using Reaction_t = Reaction< std::vector< double > >;
-  using RMap_t = std::map< ReactionID, Reaction_t >;
-  RMap_t reactions;
 
-  auto keys = ranges::view::keys( linear );
+  auto keys = ranges::view::keys( reactions );
   auto recKeys = ranges::view::keys( reconstructed );
 
   output << "\nCalculating cross sections on unionized energy grid for IDs:\n";
   // Reconstruct everything
   // Perhaps this could be more efficient by only reconstructing those things
   // that are used, but I doubt that is the limiting factor here
-  for( const auto& [ ID, reaction ] : linear ){
+  for( auto& [ ID, reaction ] : reactions ){
     output << fmt::format( "{:3s} ", ID );
     
     auto barns =  energies 
       | ranges::view::transform( reaction.crossSections() )
       | ranges::to_vector;
-    reactions.emplace( ID, Reaction_t{ reaction, std::move( barns ) } );
+
+    reaction.crossSections( 
+      std::make_pair( utility::copy( energies ), barns ) );
   }
 
   // Add reconstructed resonances
@@ -30,7 +29,7 @@ auto summateReactions( std::ostream& output,
   for( const auto& ID : ranges::view::keys( reconstructed ) ){
     std::vector< std::vector< double >  > partials;
 
-    std::unique_ptr< Reaction_t > reaction = nullptr;
+    std::unique_ptr< Reaction > reaction = nullptr;
     using PType = R2D2::ReconMap_t::mapped_type;
     std::unique_ptr< PType > recon = nullptr;
 
@@ -39,7 +38,7 @@ auto summateReactions( std::ostream& output,
       if( reactions.find( "19" ) != reactions.end() ){
         output << fmt::format( "{:3s} ", "19" );
         recon = std::make_unique< PType >( reconstructed.at( "18" ) );
-        reaction = std::make_unique< Reaction_t >( reactions.at( "19" ) );
+        reaction = std::make_unique< Reaction >( reactions.at( "19" ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
       }
     }
@@ -47,7 +46,7 @@ auto summateReactions( std::ostream& output,
       if( reactions.find( ID ) != reactions.end() ){
         output << fmt::format( "{:3s} ", ID );
         recon = std::make_unique< PType >( reconstructed.at( ID ) );
-        reaction = std::make_unique< Reaction_t >( reactions.at( ID ) );
+        reaction = std::make_unique< Reaction >( reactions.at( ID ) );
         partials |= ranges::action::push_back( reaction->crossSections() );
       }
     }
@@ -62,8 +61,8 @@ auto summateReactions( std::ostream& output,
       partials |= ranges::action::push_back( partial );
     }
 
-    Reaction_t rReaction{ *reaction, sumPartials( partials ) };
-    reactions.insert_or_assign( ID, std::move( rReaction ) );
+    reaction->crossSections( 
+      std::make_pair( utility::copy( energies ), sumPartials( partials ) ) );
   } // Reconstructed resonances
 
   // Sum redundant cross sections
@@ -91,8 +90,8 @@ auto summateReactions( std::ostream& output,
             |= ranges::action::push_back( found->second.crossSections() );
         } else{
           // Calculate the summed reaction since it doesn't already exist
-          auto foundReaction = linear.find( p );
-          if( foundReaction != linear.end() ){
+          auto foundReaction = reactions.find( p );
+          if( foundReaction != reactions.end() ){
             auto part = foundReaction->second.crossSections();
             auto party = part.x() 
               | ranges::view::transform( part ) 
@@ -101,15 +100,12 @@ auto summateReactions( std::ostream& output,
           }
         }
 
-        Reaction_t sReaction{ reactions.at( p ), sumPartials( partials ) };
-        reactions.insert_or_assign( MT2ReactionID( ID ), 
-                                    std::move( sReaction ) );
+        reactions.at( p ).crossSections( sumPartials( partials ) );
       } // redundants
       output << std::endl;
     }
 
   } // Redundant cross sections
-  return reactions;
 }
 
 // For Photon production reactions

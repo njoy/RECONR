@@ -25,9 +25,7 @@ template< typename Range >
 static
 auto truncateReactions( std::ostream& output,
                         const Range& grid,
-                        const std::map< ReactionID, 
-                                        Reaction< 
-                                          std::vector< double > > >& summed
+                        const std::map< ReactionID, Reaction >& summed
                         ){
   using Reaction_t = Reaction< std::pair< std::vector< double >,
                                           std::vector< double > > >;

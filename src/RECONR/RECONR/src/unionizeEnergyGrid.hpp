@@ -4,7 +4,7 @@
 template< typename Range >
 static
 auto unionizeEnergyGrid( std::ostream& output,
-                         const R2D2::LinMap_t& reactions,
+                         const R2D2::XSMap_t& reactions,
                          const R2D2::PPLinMap_t& ppReactions,
                          const std::vector< double >& grid,
                          Range& user ){
@@ -15,7 +15,8 @@ auto unionizeEnergyGrid( std::ostream& output,
   user |= ranges::action::push_back( grid );
 
   for( const auto& [ID, reaction] : reactions ){
-    user |= ranges::action::push_back( reaction.crossSections().x() );
+    user |= ranges::action::push_back( 
+      reaction.crossSections< interp::LinearTable >().x() );
     user |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 

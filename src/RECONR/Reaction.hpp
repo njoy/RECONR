@@ -7,7 +7,8 @@ class Reaction {
 
   using Forms = std::variant< 
     std::vector< interp::Variant >,
-    interp::LinearTable 
+    interp::LinearTable,
+    std::pair< std::vector< double >, std::vector< double > >
   >;
   Forms crossSection_;
 

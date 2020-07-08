@@ -20,10 +20,11 @@ void operator()( const nlohmann::json& njoyArgs,
 
     auto data = this->findR2D2( output, sequence, evaluatedData );
     this->linearizeXS( output, data, err, this->absoluteTolerance );
+
     // Get unionized energy grid
     std::vector< double > enode = sequence.at( "enode" );
     auto grid = this->unionizeEnergyGrid( output, 
-                                          data.linearReactions(), 
+                                          data.reactions(), 
                                           data.linearPhotonProductions(),
                                           data.resonanceReferenceGrid(),
                                           enode );
@@ -35,6 +36,7 @@ void operator()( const nlohmann::json& njoyArgs,
       ranges::distance( enode ), gridSize )
            << std::endl;
 
+    /*
     // Reconstruct resonances
     this->reconstructResonances( 
       output, grid, data, err, this->absoluteTolerance );
@@ -50,15 +52,15 @@ void operator()( const nlohmann::json& njoyArgs,
 
     // Sum reactions
     // auto reactions = this->summateReactions( output, data, energies );
-    auto summedReactions = this->summateReactions( 
-      output, data.linearReactions(), 
+    this->summateReactions( 
+      output, data.reactions(), 
       data.reconstructedResonances(), energies );
     auto summedProductions = this->summateReactions( 
       output, data.linearPhotonProductions(), energies );
 
     // Remove leading/trailing zeros
     auto truncReactions = this->truncateReactions( output, energies, 
-                                                  summedReactions );
+                                                   data.reactions() );
     Log::info( "calling truncate for photon productions" );
     auto truncProductions = this->truncateReactions( output, energies, 
                                                     summedProductions );
@@ -67,6 +69,7 @@ void operator()( const nlohmann::json& njoyArgs,
                     truncProductions, 
                     sequence );
 
+  */
   }
 
   pendf.footer();

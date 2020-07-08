@@ -26,7 +26,7 @@ public:
   #include "RECONR/ResonanceReconstructionDataDelivery/src/getResonanceReferenceGrid.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
 
-  auto reactions() const { return this->reactions_; }
+  XSMap_t& reactions() { return this->reactions_; }
   auto photonProductions() const { return this->photonProductions_; }
 
   auto linearPhotonProductions() const { return this->linearPhotonProductions_; }
