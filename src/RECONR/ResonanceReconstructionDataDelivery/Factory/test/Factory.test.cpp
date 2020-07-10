@@ -325,7 +325,8 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
         std::vector< double > refB{ 0.0, 0.0, 0.0, 1.3, 2.3, 3.3, 4.3, 5.3,
                                     6.3, 7.3, 8.3, 9.3, 10.3, 11.3 };
 
-        auto production = reaction.productions()[ 0 ];
+        auto production = 
+          reaction.productions< std::vector< interp::Variant > >()[ 0 ];
 
         auto xs = std::get< njoy::RECONR::interp::LinearLinear >( 
           production[ 0 ] );
@@ -345,7 +346,8 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
         std::vector< double > refE{ 1.0E-5, 3.0E7 };
         std::vector< double > refB{ 10.18, 11.18 };
 
-        auto production = reaction.productions()[ 0 ];
+        auto production = 
+          reaction.productions< std::vector< interp::Variant > >()[ 0 ];
 
         auto xs = std::get< njoy::RECONR::interp::LinearLinear >( 
           production[ 0 ] );

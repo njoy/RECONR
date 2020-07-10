@@ -1,19 +1,18 @@
 class Reaction {
+public:
+  using Forms = std::variant< 
+    std::vector< interp::Variant >,
+    interp::LinearTable,
+    XSPair
+  >;
+
+private:
   int ZA_;
   double atomicWeightRatio_;
   double massDifferenceQ_;
   double reactionQ_;
   int complexBreakUp_;
 
-public:
-  using Pair = std::pair< std::vector< double >, std::vector< double > >;
-  using Forms = std::variant< 
-    std::vector< interp::Variant >,
-    interp::LinearTable,
-    Pair
-  >;
-
-private:
   Forms crossSection_;
 
 public:
@@ -29,7 +28,7 @@ public:
   int LR() const { return this->complexBreakUp_; }
   int complexBreakUp() const { return this->LR(); }
 
-  #include "RECONR/Reaction/src/crossSection.hpp"
+  #include "RECONR/Reaction/src/crossSections.hpp"
 
 };
 

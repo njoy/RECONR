@@ -2,8 +2,7 @@ class ResonanceReconstructionDataDelivery {
 public:
   using RawInterpolation_t = std::vector< interp::Variant >;
   using XSMap_t = std::map< ReactionID, Reaction >;
-  using PPMap_t = std::map< ReactionID, PPReaction< RawInterpolation_t > >;
-  using PPLinMap_t = std::map< ReactionID, PPReaction< interp::LinearTable > >;
+  using PPMap_t = std::map< ReactionID, PPReaction >;
   using ReconMap_t = std::map< ReactionID, std::vector< interp::LinearLinear > >;
 
   using RPVariant = std::variant< ENDFtk::section::Type< 2, 151 > >;
@@ -11,7 +10,6 @@ public:
 private:
   XSMap_t reactions_;
   PPMap_t photonProductions_;
-  PPLinMap_t linearPhotonProductions_;
   ReconMap_t reconstructedResonances_;
 
   RPVariant resonanceParameters_;
@@ -28,11 +26,7 @@ public:
 
   XSMap_t& reactions() { return this->reactions_; }
   const XSMap_t& reactions() const { return this->reactions_; }
-  auto photonProductions() const { return this->photonProductions_; }
-
-  auto linearPhotonProductions() const { return this->linearPhotonProductions_; }
-  void linearPhotonProductions( PPLinMap_t&& ppMap ) { 
-    this->linearPhotonProductions_ = ppMap; }
+  auto photonProductions() { return this->photonProductions_; }
 
   auto reconstructedResonances() const { 
     return this->reconstructedResonances_; }

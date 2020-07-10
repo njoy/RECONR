@@ -1,9 +1,10 @@
+namespace interp{
 
 inline
-std::vector< std::vector< Variant > >
+std::vector< PPForms >
 MF13toInterpolation( const ENDFtk::section::Type< 13 >& section ){
 
-  std::vector< std::vector< Variant > > xs;
+  std::vector< PPForms > xs;
 
   // I never use the total cross section in RECONR
   for( const auto& partial : section.partialCrossSections() ){
@@ -11,3 +12,5 @@ MF13toInterpolation( const ENDFtk::section::Type< 13 >& section ){
   }
   return xs;
 }
+
+} // namespace interp
