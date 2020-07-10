@@ -36,7 +36,6 @@ void operator()( const nlohmann::json& njoyArgs,
       ranges::distance( enode ), gridSize )
            << std::endl;
 
-    /*
     // Reconstruct resonances
     this->reconstructResonances( 
       output, grid, data, err, this->absoluteTolerance );
@@ -51,25 +50,20 @@ void operator()( const nlohmann::json& njoyArgs,
            << std::endl;
 
     // Sum reactions
-    // auto reactions = this->summateReactions( output, data, energies );
     this->summateReactions( 
-      output, data.reactions(), 
+      output, error, data.reactions(), 
       data.reconstructedResonances(), energies );
     auto summedProductions = this->summateReactions( 
       output, data.linearPhotonProductions(), energies );
 
-    // Remove leading/trailing zeros
-    auto truncReactions = this->truncateReactions( output, energies, 
-                                                   data.reactions() );
-    Log::info( "calling truncate for photon productions" );
+    // Remove leading zeros
+    this->truncateReactions( output, data.reactions() );
     auto truncProductions = this->truncateReactions( output, energies, 
                                                     summedProductions );
     pendf.material( MAT, data, 
-                    truncReactions, 
                     truncProductions, 
                     sequence );
 
-  */
   }
 
   pendf.footer();

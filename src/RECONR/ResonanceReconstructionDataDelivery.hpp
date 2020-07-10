@@ -27,6 +27,7 @@ public:
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
 
   XSMap_t& reactions() { return this->reactions_; }
+  const XSMap_t& reactions() const { return this->reactions_; }
   auto photonProductions() const { return this->photonProductions_; }
 
   auto linearPhotonProductions() const { return this->linearPhotonProductions_; }

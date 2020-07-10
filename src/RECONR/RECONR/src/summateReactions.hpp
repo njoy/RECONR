@@ -2,12 +2,11 @@
 template< typename Range >
 static
 void summateReactions( std::ostream& output,
+                       std::ostream& error,
                        R2D2::XSMap_t& reactions,
                        const R2D2::ReconMap_t& reconstructed,
                        const Range& energies ){
 
-  auto keys = ranges::view::keys( reactions );
-  auto recKeys = ranges::view::keys( reconstructed );
 
   output << "\nCalculating cross sections on unionized energy grid for IDs:\n";
   // Reconstruct everything
@@ -17,7 +16,8 @@ void summateReactions( std::ostream& output,
     output << fmt::format( "{:3s} ", ID );
     
     auto barns =  energies 
-      | ranges::view::transform( reaction.crossSections() )
+      | ranges::view::transform( 
+          reaction.crossSections< interp::LinearTable >() )
       | ranges::to_vector;
 
     reaction.crossSections( 
@@ -29,83 +29,91 @@ void summateReactions( std::ostream& output,
   for( const auto& ID : ranges::view::keys( reconstructed ) ){
     std::vector< std::vector< double >  > partials;
 
-    std::unique_ptr< Reaction > reaction = nullptr;
-    using PType = R2D2::ReconMap_t::mapped_type;
-    std::unique_ptr< PType > recon = nullptr;
+    // std::unique_ptr< Reaction > reaction = nullptr;
+    // using PType = R2D2::ReconMap_t::mapped_type;
+    // std::unique_ptr< PType > recon = nullptr;
+
+    auto addReconstructed = [&]( const ReactionID& rxnID, 
+                                 const ReactionID& reconID ){
+      output << fmt::format( "{:3s} ", rxnID );
+      auto& recon = reconstructed.at( reconID );
+      auto& reaction = reactions.at( rxnID );
+      auto& part = reaction.template crossSections< Rxn::Pair >().second;
+      partials |= ranges::action::push_back( part );
+
+      for( const auto& XS : recon ){
+        auto partial = energies | ranges::view::transform( XS );
+        partials |= ranges::action::push_back( partial );
+      }
+      auto sum = sumPartials( partials );
+      reaction.crossSections( std::make_pair( utility::copy( energies ), 
+                                              sum ) );
+      auto xs = reaction.template crossSections< Rxn::Pair >().second;
+    };
 
     // Add resonance data to ID=19 if there are partials
     if( ID == "18" ){
       if( reactions.find( "19" ) != reactions.end() ){
-        output << fmt::format( "{:3s} ", "19" );
-        recon = std::make_unique< PType >( reconstructed.at( "18" ) );
-        reaction = std::make_unique< Reaction >( reactions.at( "19" ) );
-        partials |= ranges::action::push_back( reaction->crossSections() );
+        addReconstructed( "19", "18" );
+      } else if (reactions.find( "18" ) != reactions.end() ) {
+        addReconstructed( "18", "18" );
       }
-    }
-    if( recon == nullptr ){
+    } else{
       if( reactions.find( ID ) != reactions.end() ){
-        output << fmt::format( "{:3s} ", ID );
-        recon = std::make_unique< PType >( reconstructed.at( ID ) );
-        reaction = std::make_unique< Reaction >( reactions.at( ID ) );
-        partials |= ranges::action::push_back( reaction->crossSections() );
+        addReconstructed( ID, ID );
       }
     }
-
-    // There isn't a background cross section to which we can add the 
-    // reconstructed cross sections
-    if( recon == nullptr ) continue;
-
-    // Get cross sections from reconstructed reactions
-    for( const auto& XS : *recon ){
-      auto partial = energies | ranges::view::transform( XS );
-      partials |= ranges::action::push_back( partial );
-    }
-
-    reaction->crossSections( 
-      std::make_pair( utility::copy( energies ), sumPartials( partials ) ) );
+    output << std::endl;
   } // Reconstructed resonances
 
   // Sum redundant cross sections
-  output << "\nSumming redundant cross sections for IDs:\n";
-  for( const auto& [ ID, redundantIDs ] : 
+  output << "Summing redundant cross sections for IDs:\n";
+  for( const auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
 
-    auto redundants = redundantIDs
+    auto ID = MT2ReactionID( MT );
+    auto redundants = redundantMTs
       | ranges::view::filter( 
         [&]( auto&& mt ){ return reactions.count( MT2ReactionID( mt ) ) > 0; } )
       | ranges::view::transform( 
         []( auto&& mt ){ return MT2ReactionID( mt ); } );
 
     if( ranges::distance( redundants ) != 0 ){
-      output << fmt::format( "{:3d}, redundant IDs: ", ID );
+      output << fmt::format( "{:3d}, redundant IDs: ", MT );
       
       std::vector< std::vector< double > > partials;
       for( const auto& p : redundants ){
         output << fmt::format( "{:3s} ", p );
 
-        // Look for already reconstructed reactions
-        auto found = reactions.find( p );
-        if( found != reactions.end() ){
-          partials 
-            |= ranges::action::push_back( found->second.crossSections() );
-        } else{
-          // Calculate the summed reaction since it doesn't already exist
-          auto foundReaction = reactions.find( p );
-          if( foundReaction != reactions.end() ){
-            auto part = foundReaction->second.crossSections();
-            auto party = part.x() 
-              | ranges::view::transform( part ) 
-              | ranges::to_vector;
-            partials |= ranges::action::push_back( party );
-          }
-        }
+        partials 
+          |= ranges::action::push_back( 
+              reactions.at( p ).template crossSections< Rxn::Pair >().second );
 
-        reactions.at( p ).crossSections( sumPartials( partials ) );
       } // redundants
+
+      auto rPair = std::make_pair( utility::copy( energies ), 
+                                   sumPartials( partials ) );
+      try {
+        auto found = reactions.find( ID );
+        if( found != reactions.end() ){
+          reactions.at( ID ).crossSections( std::move( rPair ) );
+        } else {
+          // New reaction made entirely of summations
+          auto id = redundants.front();
+          auto rxn = reactions.at( id );
+          reactions.emplace( ID, 
+            Reaction{ rxn.ZA(), rxn.AWR(), 0.0, 0.0, 0, std::move( rPair ) }
+          );
+        }
+      } catch( std::exception& ){
+        Log::error( "'total' cross section not orginally given for ID: {}",
+                   ID );
+        throw;
+      }
       output << std::endl;
     }
-
   } // Redundant cross sections
+
 }
 
 // For Photon production reactions
@@ -137,6 +145,7 @@ auto summateReactions( std::ostream& output,
     productions.emplace( ID,
                          Production_t{ reaction, sumPartials( partials ) } );
   }
+  output << std::endl;
 
   return productions;
 }

@@ -14,7 +14,7 @@ mf3( const int& MAT,
     //   continue;
     // }
 
-    auto [ energies, crossSections ] = rx.crossSections();
+    auto [ energies, crossSections ] = rx.template crossSections< Rxn::Pair >();
 
     std::vector< long > boundaries{ ranges::distance( energies ) };
     std::vector< long > interpolants{ 2 };

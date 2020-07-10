@@ -5,11 +5,15 @@ class Reaction {
   double reactionQ_;
   int complexBreakUp_;
 
+public:
+  using Pair = std::pair< std::vector< double >, std::vector< double > >;
   using Forms = std::variant< 
     std::vector< interp::Variant >,
     interp::LinearTable,
-    std::pair< std::vector< double >, std::vector< double > >
+    Pair
   >;
+
+private:
   Forms crossSection_;
 
 public:
@@ -28,3 +32,5 @@ public:
   #include "RECONR/Reaction/src/crossSection.hpp"
 
 };
+
+using Rxn = Reaction;
