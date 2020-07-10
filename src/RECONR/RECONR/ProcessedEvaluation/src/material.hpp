@@ -1,13 +1,11 @@
-template< typename Production_t >
 void material( const Tape_t&, 
                const int& MAT,
                const R2D2& data,
-               const Production_t& productions,
                const nlohmann::json& sequence )  {
 
   auto MF2  = this->mf2( MAT, data );
   auto MF3  = this->mf3( MAT, data.reactions() );
-  auto MF13 = this->mf13( MAT, productions );
+  auto MF13 = this->mf13( MAT, data.photonProductions() );
   auto MF1  = this->mf1( MAT, sequence, MF2, MF3, MF13 );
 
   MF1.print( this->ipendf, MAT, 1 );
@@ -19,19 +17,11 @@ void material( const Tape_t&,
   // ENDFtk::MEND().print( this->ipendf );
 }
 
-template< typename Production_t >
 void material( int& MAT, 
                const R2D2& data,
-               const Production_t& productions,
                const nlohmann::json& sequence){
   std::visit(
-    [&]( auto&& eval ){ 
-      return this->material( eval,
-                             MAT,
-                             data,
-                             productions,
-                             sequence ); 
-    },
+    [&]( auto&& eval ){ return this->material( eval, MAT, data, sequence ); },
     this->evaluated
   );
 }

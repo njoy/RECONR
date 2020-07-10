@@ -6,8 +6,7 @@ void linearizeXS( std::ostream& output,
   output << "\nLinearizing cross sections." << std::endl;
 
   linearizeXS( output, r2d2.reactions(), relTol, absTol );
-  r2d2.linearPhotonProductions( linearizeXS( output, r2d2.photonProductions(),
-                                             relTol, absTol ) );
+  linearizeXS( output, r2d2.photonProductions(), relTol, absTol );
                                              
 
 }
@@ -34,15 +33,15 @@ void linearizeXS( std::ostream& output,
 }
 
 static
-R2D2::PPLinMap_t linearizeXS( std::ostream& output,
-                  const R2D2::PPMap_t& reactions, 
+void linearizeXS( std::ostream& output,
+                  R2D2::PPMap_t& reactions, 
                   double relTol, double absTol ){
 
-  R2D2::PPLinMap_t prodMap{};
-  for( const auto & [ id, reaction ] : reactions ){
-    std::vector< interp::LinearTable > linearized{};
+  for( auto & [ id, reaction ] : reactions ){
+    std::vector< PPForms > linearized{};
 
-    for( const auto& production : reaction.productions() ){
+    for( const auto& production : 
+         reaction.productions< std::vector< interp::Variant > >() ){
       std::vector< interp::LinearLinear> lProd{};
       for( const auto& discrete : production ){
       auto l = std::visit( 
@@ -54,12 +53,6 @@ R2D2::PPLinMap_t linearizeXS( std::ostream& output,
       }
       linearized.emplace_back( interp::LinearTable( std::move( lProd ) ) );
     }
-    PPReaction< interp::LinearTable > lppReaction( 
-      reaction, std::move( linearized ) );
-
-    prodMap.emplace( id, std::move( lppReaction ) );
-
+    reaction.productions( std::move( linearized ) );
   }
-
-  return prodMap;
 }

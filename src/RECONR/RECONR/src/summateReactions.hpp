@@ -38,7 +38,7 @@ void summateReactions( std::ostream& output,
       output << fmt::format( "{:3s} ", rxnID );
       auto& recon = reconstructed.at( reconID );
       auto& reaction = reactions.at( rxnID );
-      auto& part = reaction.template crossSections< Rxn::Pair >().second;
+      auto& part = reaction.template crossSections< XSPair >().second;
       partials |= ranges::action::push_back( part );
 
       for( const auto& XS : recon ){
@@ -48,7 +48,7 @@ void summateReactions( std::ostream& output,
       auto sum = sumPartials( partials );
       reaction.crossSections( std::make_pair( utility::copy( energies ), 
                                               sum ) );
-      auto xs = reaction.template crossSections< Rxn::Pair >().second;
+      auto xs = reaction.template crossSections< XSPair >().second;
     };
 
     // Add resonance data to ID=19 if there are partials
@@ -87,7 +87,7 @@ void summateReactions( std::ostream& output,
 
         partials 
           |= ranges::action::push_back( 
-              reactions.at( p ).template crossSections< Rxn::Pair >().second );
+              reactions.at( p ).template crossSections< XSPair >().second );
 
       } // redundants
 
@@ -119,33 +119,50 @@ void summateReactions( std::ostream& output,
 // For Photon production reactions
 template< typename Range >
 static
-auto summateReactions( std::ostream& output,
-                       const R2D2::PPLinMap_t& linear,
+void summateReactions( std::ostream& output,
+                       std::ostream& error,
+                       R2D2::PPMap_t& productions,
                        const Range& energies ){
-
-  using Production_t = PPReaction< double >;
-  using PMap_t = std::map< ReactionID, Production_t >;
-  PMap_t productions;
 
   output << 
     "\nCalculating photon production cross sections on unionized energy grid"
     " for IDs: \n";
-  for( const auto& [ ID, reaction ] : linear ){
+  for( auto& [ ID, production ] : productions ){
     output << fmt::format( "{:3s} ", ID );
 
     std::vector< std::vector< double > > partials;
-    for( const auto& partial : reaction.productions() ){
+    for( const auto& partial : 
+         production.template productions< interp::LinearTable >() ){
       auto barns =  energies 
         | ranges::view::transform( partial )
         | ranges::to_vector;
 
       partials.emplace_back( barns );
     }
-    Production_t prod{ reaction, sumPartials( partials ) };
-    productions.emplace( ID,
-                         Production_t{ reaction, sumPartials( partials ) } );
+    auto sum = sumPartials( partials );
+
+    std::vector< PPForms > pairs;
+    auto eIT = energies.begin();
+    auto sIT = sum.begin();
+    for( ; eIT != energies.end(); eIT++, sIT++ ){
+      pairs.emplace_back( std::make_pair( *eIT, *sIT ) );
+    }
+
+    // auto pairs = ranges::view::zip_with( energies, sum )
+    //   | ranges::to_vector;
+    production.productions( std::move( pairs ) );
   }
   output << std::endl;
+}
 
-  return productions;
+
+template< typename Range >
+static
+void summateReactions( std::ostream& output,
+                       std::ostream& error,
+                       R2D2& data,
+                       const Range& energies ){
+  summateReactions( 
+    output, error, data.reactions(), data.reconstructedResonances(), energies );
+  summateReactions( output, error, data.photonProductions(), energies );
 }

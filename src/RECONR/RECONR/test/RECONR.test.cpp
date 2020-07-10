@@ -154,7 +154,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid(
     std::cout, 
     r2d2.reactions(), 
-    r2d2.linearPhotonProductions(), 
+    r2d2.photonProductions(), 
     r2d2.resonanceReferenceGrid(),
     userSupplied );
 
@@ -167,6 +167,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   return std::make_pair( energies, r2d2 );
 }
 
+/*
 SCENARIO( "Testing creation of RECONR class" ){
   GIVEN( "a JSON object, and extra arguments" ){
 
@@ -603,7 +604,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
-          r2d2.linearPhotonProductions(), 
+          r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
     
@@ -634,7 +635,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
-          r2d2.linearPhotonProductions(), 
+          r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
     
@@ -663,7 +664,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
-          r2d2.linearPhotonProductions(), 
+          r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
     
@@ -684,7 +685,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
       auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
-          r2d2.linearPhotonProductions(), 
+          r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
       auto energies = refGrid;
@@ -722,7 +723,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
       auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
-          r2d2.linearPhotonProductions(), 
+          r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
       auto energies = refGrid;
@@ -751,11 +752,12 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
   } // WHEN
 } // SCENARIO
+*/
 SCENARIO( "Testing the summation of cross sections" ){
   double absTol{ 1E-6 };
   double relTol{ 1E-1 }; // This tolerance is large by design
 
-  using RPair = njoy::RECONR::Reaction::Pair;
+  using RPair = njoy::RECONR::XSPair;
 
   GIVEN( "an SLBW object" ){
     auto [energies, r2d2] = lin_recon( "SLBW", absTol, relTol );
@@ -899,10 +901,12 @@ SCENARIO( "Testing the summation of cross sections" ){
     } // WHEN
     WHEN( "productions have been linearized" ){
       
-      auto productions = njoy::RECONR::RECONR::summateReactions( 
-          std::cout, 
-          r2d2.linearPhotonProductions(), 
+       njoy::RECONR::RECONR::summateReactions( 
+          std::cout, std::cout,
+          r2d2.photonProductions(), 
           energies );
+
+      auto& productions = r2d2.photonProductions();
 
       njoy::RECONR::ReactionID MT;
       THEN( "the productions can be summed up and checked" ){
@@ -911,6 +915,28 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         auto keys = ranges::view::keys( productions );
         CHECK( ranges::equal( reference, keys ) );
+        THEN( "MT = 3 can be tested" ){
+          MT = "3";
+          std::vector< double > refP{};
+
+          auto production = productions.at( MT )
+            | ranges::view::transform(
+              []( auto&& p ){ return p.second; }
+              );
+          details::printV( "prod MT=3: {}", production | ranges::view::all );
+          CHECK( refP == production );
+        } // THEN
+        THEN( "MT = 18 can be tested" ){
+          MT = "18";
+          std::vector< double > refP{};
+
+          auto production = productions.at( MT )
+            | ranges::view::transform(
+              []( auto&& p ){ return p.second; }
+              );
+          details::printV( "prod MT=18: {}", production | ranges::view::all );
+          CHECK( refP == production );
+        } // THEN
       } // THEN
     } // WHEN
   } // GIVEN

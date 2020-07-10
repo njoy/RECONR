@@ -25,7 +25,7 @@ void operator()( const nlohmann::json& njoyArgs,
     std::vector< double > enode = sequence.at( "enode" );
     auto grid = this->unionizeEnergyGrid( output, 
                                           data.reactions(), 
-                                          data.linearPhotonProductions(),
+                                          data.photonProductions(),
                                           data.resonanceReferenceGrid(),
                                           enode );
     auto gridSize = ranges::distance( grid );
@@ -50,19 +50,12 @@ void operator()( const nlohmann::json& njoyArgs,
            << std::endl;
 
     // Sum reactions
-    this->summateReactions( 
-      output, error, data.reactions(), 
-      data.reconstructedResonances(), energies );
-    auto summedProductions = this->summateReactions( 
-      output, data.linearPhotonProductions(), energies );
+    this->summateReactions( output, error, data, energies );
 
     // Remove leading zeros
-    this->truncateReactions( output, data.reactions() );
-    auto truncProductions = this->truncateReactions( output, energies, 
-                                                    summedProductions );
-    pendf.material( MAT, data, 
-                    truncProductions, 
-                    sequence );
+    this->truncateReactions( output, data );
+
+    pendf.material( MAT, data, sequence );
 
   }
 

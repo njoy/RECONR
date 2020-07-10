@@ -26,7 +26,8 @@ public:
 
   XSMap_t& reactions() { return this->reactions_; }
   const XSMap_t& reactions() const { return this->reactions_; }
-  auto photonProductions() { return this->photonProductions_; }
+  PPMap_t& photonProductions() { return this->photonProductions_; }
+  const PPMap_t& photonProductions() const { return this->photonProductions_; }
 
   auto reconstructedResonances() const { 
     return this->reconstructedResonances_; }
