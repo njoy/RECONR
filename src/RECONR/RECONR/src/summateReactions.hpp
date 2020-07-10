@@ -141,15 +141,10 @@ void summateReactions( std::ostream& output,
     }
     auto sum = sumPartials( partials );
 
-    std::vector< PPForms > pairs;
-    auto eIT = energies.begin();
-    auto sIT = sum.begin();
-    for( ; eIT != energies.end(); eIT++, sIT++ ){
-      pairs.emplace_back( std::make_pair( *eIT, *sIT ) );
-    }
-
-    // auto pairs = ranges::view::zip_with( energies, sum )
-    //   | ranges::to_vector;
+    auto pairs = ranges::view::zip_with( 
+      []( auto&& e, auto&& p ){ return PPForms{ std::make_pair( e, p ) }; },
+      energies, sum )
+      | ranges::to_vector;
     production.productions( std::move( pairs ) );
   }
   output << std::endl;

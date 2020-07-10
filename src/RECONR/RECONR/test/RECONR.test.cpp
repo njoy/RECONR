@@ -758,6 +758,7 @@ SCENARIO( "Testing the summation of cross sections" ){
   double relTol{ 1E-1 }; // This tolerance is large by design
 
   using RPair = njoy::RECONR::XSPair;
+  using PPair = njoy::RECONR::PPair;
 
   GIVEN( "an SLBW object" ){
     auto [energies, r2d2] = lin_recon( "SLBW", absTol, relTol );
@@ -917,25 +918,54 @@ SCENARIO( "Testing the summation of cross sections" ){
         CHECK( ranges::equal( reference, keys ) );
         THEN( "MT = 3 can be tested" ){
           MT = "3";
-          std::vector< double > refP{};
+          std::vector< double > refP{
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 2.3, 2.70822, 3.3, 4.3, 5.3,
+            6.3, 7.3, 8.3, 9.3, 10.3, 
+            11.1276, 11.1276, 11.2138, 11.2138, 11.3, 11.3, 0.0
+            };
 
-          auto production = productions.at( MT )
-            | ranges::view::transform(
-              []( auto&& p ){ return p.second; }
-              );
-          details::printV( "prod MT=3: {}", production | ranges::view::all );
-          CHECK( refP == production );
+          auto production = productions.at( MT ).productions< PPair >()
+            | ranges::view::transform( []( auto&& p ){ return p.second; } )
+            | ranges::to_vector;
+          details::checkRanges( refP, production );
         } // THEN
         THEN( "MT = 18 can be tested" ){
           MT = "18";
-          std::vector< double > refP{};
+          std::vector< double > refP{
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18, 10.18,
+            10.18, 10.18, 10.18, 10.18, 10.18, 10.1801, 10.1802, 10.1804,
+            10.1808, 10.1816, 10.1831, 10.1833, 10.185, 10.185, 10.1863, 10.1925,
+            10.205, 10.205, 10.2163, 10.2467, 10.2875, 10.3467, 10.3633, 10.38,
+            10.3967, 10.4133, 10.43, 10.4467, 10.6533, 10.8133, 10.8133, 10.83,
+            10.83, 10.8467, 10.8467, 11.18
+        };
 
-          auto production = productions.at( MT )
-            | ranges::view::transform(
-              []( auto&& p ){ return p.second; }
-              );
-          details::printV( "prod MT=18: {}", production | ranges::view::all );
-          CHECK( refP == production );
+          auto production = productions.at( MT ).productions< PPair >()
+            | ranges::view::transform( []( auto&& p ){ return p.second; } )
+            | ranges::to_vector;
+          details::checkRanges( refP, production );
         } // THEN
       } // THEN
     } // WHEN
