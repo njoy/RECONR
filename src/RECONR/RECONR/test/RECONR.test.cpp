@@ -9,6 +9,22 @@
 #include "RECONR/details/nextMin.hpp"
 #include "RECONR/details/checkRanges.hpp"
 
+class tRECONR: protected njoy::RECONR::RECONR {
+
+  using RECONR = njoy::RECONR::RECONR;
+
+public:
+  using RECONR::RECONR;
+  using RECONR::operator();
+  using RECONR::findR2D2;
+  using RECONR::linearizeXS;
+  using RECONR::reconstructResonances;
+  using RECONR::unionizeEnergyGrid;
+  using RECONR::summateReactions;
+  using RECONR::truncateReactions;
+  using RECONR::getEvaluated;
+};
+
 nlohmann::json input{R"({
   "nendf": 20, "npend": 23,
   "tlabel": "Modern RECONR Testing",
@@ -150,18 +166,18 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   auto material = details::ENDFMaterial( formalism );
   auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
 
-  njoy::RECONR::RECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
-  auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid(
+  tRECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
+  auto refGrid = tRECONR::unionizeEnergyGrid(
     std::cout, 
     r2d2.reactions(), 
     r2d2.photonProductions(), 
     r2d2.resonanceReferenceGrid(),
     userSupplied );
 
-  njoy::RECONR::RECONR::reconstructResonances( 
+  tRECONR::reconstructResonances( 
     std::cout, refGrid, r2d2, relTol, absTol );
 
-  auto energies = njoy::RECONR::RECONR::unionizeEnergyGrid(
+  auto energies = tRECONR::unionizeEnergyGrid(
     std::cout, refGrid, r2d2.reconstructedResonances() );
 
   return std::make_pair( energies, r2d2 );
@@ -173,19 +189,19 @@ SCENARIO( "Testing creation of RECONR class" ){
     auto args = nlohmann::json::object();
 
     // WHEN( "a RECONR object is called" ){
-    //   CHECK_NOTHROW( njoy::RECONR::RECONR()( input, 
+    //   CHECK_NOTHROW( tRECONR()( input, 
     //                                          std::cout, 
     //                                          std::cerr, 
     //                                          args ) );
     // } // WHEN
     WHEN( "processing one ENDF Material in a Tape" ){
-      CHECK_NOTHROW( njoy::RECONR::RECONR()( Fe56Input, 
+      CHECK_NOTHROW( tRECONR()( Fe56Input, 
                                              std::cout, 
                                              std::cerr, 
                                              args ) );
     } // WHEN
     // WHEN( "processing H-1, Fe-56, and U-238" ){
-    //   CHECK_NOTHROW( njoy::RECONR::RECONR()( inputWithU238, 
+    //   CHECK_NOTHROW( tRECONR()( inputWithU238, 
     //                                          std::cout, 
     //                                          std::cerr, 
     //                                          args ) );
@@ -194,7 +210,7 @@ SCENARIO( "Testing creation of RECONR class" ){
 } // SCENARIO
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
-    auto evaluatedData = njoy::RECONR::RECONR::getEvaluated(
+    auto evaluatedData = tRECONR::getEvaluated(
       std::cout, input[ "nendf" ] );
 
     auto tape = std::get< 0 >( evaluatedData );
@@ -211,7 +227,7 @@ SCENARIO( "Getting evaluated data" ){
   } // WHEN
   WHEN( "Getting an non-existant ENDF Tape" ){
     THEN( "an exception is thrown" ){
-      CHECK_THROWS( njoy::RECONR::RECONR::getEvaluated( std::cout, 45 ) );
+      CHECK_THROWS( tRECONR::getEvaluated( std::cout, 45 ) );
     } // THEN
 
   } // WHEN
@@ -224,7 +240,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     WHEN( "the cross sections are linearized" ){
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS( 
+      tRECONR::linearizeXS( 
         std::cout, r2d2, absTolerance, relTolerance );
 
       auto reactions = r2d2.reactions();
@@ -385,7 +401,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
     };
 
     WHEN( "the resonances are reconstructed" ){
-      njoy::RECONR::RECONR::reconstructResonances(
+      tRECONR::reconstructResonances(
         std::cout, refGrid, r2d2, 1E-1, 1E-3 );
 
       THEN( "the linearized reconstruction can be verified" ){
@@ -457,7 +473,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
       };
 
     WHEN( "the resonances are reconstructed" ){
-      njoy::RECONR::RECONR::reconstructResonances( 
+      tRECONR::reconstructResonances( 
           std::cout, refGrid, r2d2, 1E-1, 1E-3 );
 
       THEN( "the linearized reconstruction can be verified" ){
@@ -541,7 +557,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
     std::vector< double > grid{ 1e-05,7788,51520,53590,550000 };
     
     WHEN( "the resonances are reconstructed" ){
-      njoy::RECONR::RECONR::reconstructResonances( 
+      tRECONR::reconstructResonances( 
           std::cout, grid, r2d2, 1E-1, 1E-3 );
 
       auto reconstructed = r2d2.reconstructedResonances();
@@ -587,7 +603,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS( std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( std::cout, r2d2, absTolerance, relTolerance );
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid{
@@ -600,7 +616,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
         refGrid = ranges::view::unique( refGrid );
     
-        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+        auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
@@ -616,7 +632,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS(
+      tRECONR::linearizeXS(
         std::cout, r2d2, absTolerance, relTolerance );
     
       THEN( "the energygrid can be unionized" ){
@@ -632,7 +648,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
         refGrid = ranges::view::unique( refGrid );
     
-        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+        auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
@@ -648,7 +664,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS( 
+      tRECONR::linearizeXS( 
         std::cout, r2d2, absTolerance, relTolerance );
     
       THEN( "the energygrid can be unionized" ){
@@ -662,7 +678,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
         refGrid = ranges::view::unique( refGrid );
 
-        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+        auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
@@ -681,16 +697,16 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS(
+      tRECONR::linearizeXS(
         std::cout, r2d2, absTolerance, relTolerance );
-      auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+      auto refGrid = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
       auto energies = refGrid;
-      njoy::RECONR::RECONR::reconstructResonances(
+      tRECONR::reconstructResonances(
         std::cout, refGrid, r2d2, 1E-1, 1E-3 );
     
       THEN( "the reconstructed energygrid can be unionized" ){
@@ -705,7 +721,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         ranges::sort( refGrid );
         refGrid = ranges::view::unique( refGrid );
 
-        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+        auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           energies,
           r2d2.reconstructedResonances() );
@@ -719,16 +735,16 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      njoy::RECONR::RECONR::linearizeXS( 
+      tRECONR::linearizeXS( 
         std::cout, r2d2, absTolerance, relTolerance );
-      auto refGrid = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+      auto refGrid = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
       auto energies = refGrid;
-      njoy::RECONR::RECONR::reconstructResonances(
+      tRECONR::reconstructResonances(
         std::cout, refGrid, r2d2, 1E-1, 1E-3 );
     
       THEN( "the reconstructed energygrid can be unionized" ){
@@ -743,7 +759,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         ranges::sort( refGrid );
         refGrid = ranges::view::unique( refGrid );
 
-        auto trial = njoy::RECONR::RECONR::unionizeEnergyGrid( 
+        auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           energies,
           r2d2.reconstructedResonances() );
@@ -765,7 +781,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     auto sizeEnergies = ranges::distance( energies );
 
     WHEN( "cross sections have been linearized and resonances reconstructed" ){
-      njoy::RECONR::RECONR::summateReactions( 
+      tRECONR::summateReactions( 
           std::cout, std::cout,
           r2d2.reactions(),
           r2d2.reconstructedResonances(),
@@ -902,7 +918,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     } // WHEN
     WHEN( "productions have been linearized" ){
       
-       njoy::RECONR::RECONR::summateReactions( 
+       tRECONR::summateReactions( 
           std::cout, std::cout,
           r2d2.photonProductions(), 
           energies );
@@ -980,7 +996,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     WHEN( "cross sections have been linearized and resonances reconstructed" ){
 
       njoy::RECONR::ReactionID MT;
-      njoy::RECONR::RECONR::summateReactions( 
+      tRECONR::summateReactions( 
           std::cout, std::cout,
           r2d2.reactions(),
           r2d2.reconstructedResonances(),
