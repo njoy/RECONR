@@ -12,8 +12,8 @@ using LAW = interpolation::Table<
     interpolation::table::discontinuity::TakeLeft, 
     std::vector< double >, std::vector< double > 
   >,
-  interpolation::table::left::interval::IsCompiletimeConstant<Zero>,
-  interpolation::table::right::interval::IsCompiletimeConstant<Zero> 
+  interpolation::table::left::interval::IsCompiletimeConstant< Zero >,
+  interpolation::table::right::interval::IsCompiletimeConstant< Zero > 
 >;
 
 using Histogram              = LAW< interpolation::Histogram >;

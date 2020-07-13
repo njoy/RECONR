@@ -164,7 +164,7 @@ std::vector< double > sumRanges( const Ranges&... ranges ){
 auto lin_recon( std::string formalism, double absTol, double relTol ){
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
   auto material = details::ENDFMaterial( formalism );
-  auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+  auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
   tRECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
   auto refGrid = tRECONR::unionizeEnergyGrid(
@@ -207,11 +207,23 @@ SCENARIO( "Testing creation of RECONR class" ){
     //                                          args ) );
     // } // WHEN
   } // GIVEN
+
+  WHEN( "calling the modern RECONR interface" ){
+    nlohmann::json modern{ R"({
+      "input": "tape20",
+      "output": "Fe56.modern.pendf",
+      "tolerance": 0.001,
+      "energy grid": []
+    })"_json };
+
+    CHECK_NOTHROW( tRECONR()( std::cout, std::cerr, modern ) );
+
+  } // WHEN
 } // SCENARIO
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
     auto evaluatedData = tRECONR::getEvaluated(
-      std::cout, input[ "nendf" ] );
+      std::cout, "tape20" );
 
     auto tape = std::get< 0 >( evaluatedData );
 
@@ -227,7 +239,7 @@ SCENARIO( "Getting evaluated data" ){
   } // WHEN
   WHEN( "Getting an non-existant ENDF Tape" ){
     THEN( "an exception is thrown" ){
-      CHECK_THROWS( tRECONR::getEvaluated( std::cout, 45 ) );
+      CHECK_THROWS( tRECONR::getEvaluated( std::cout, "tape45" ) );
     } // THEN
 
   } // WHEN
@@ -235,7 +247,7 @@ SCENARIO( "Getting evaluated data" ){
 SCENARIO( "Testing the linearization of collected cross sections" ){
   GIVEN( "an ResonanceReconstructionDataDelivery object" ){
     auto material = details::ENDFMaterial( "SLBW" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     WHEN( "the cross sections are linearized" ){
       double absTolerance{ 1E-6 };
@@ -395,7 +407,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
     const std::vector< double > refGrid{
       0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
     };
@@ -465,7 +477,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   GIVEN( "an RM R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RM" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
       std::vector< double > refGrid { 
         0.98596, 1.06389, 1.1389, 1.21391, 2.02109, 2.0361, 2.05111, 
         2.74827, 2.7767, 2.80513, 3.14517, 3.1566, 3.16803, 3.60111, 
@@ -553,7 +565,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   GIVEN( "an RML R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RML" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
     std::vector< double > grid{ 1e-05,7788,51520,53590,550000 };
     
     WHEN( "the resonances are reconstructed" ){
@@ -599,7 +611,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
       auto material = details::ENDFMaterial( "SLBW" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -628,7 +640,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
       auto material = details::ENDFMaterial( "RM" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -660,7 +672,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (RML) object" ){
       auto material = details::ENDFMaterial( "RML" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -693,7 +705,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
   WHEN( "resonances have been reconstructed" ){
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
       auto material = details::ENDFMaterial( "SLBW" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -731,7 +743,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
       auto material = details::ENDFMaterial( "RM" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design

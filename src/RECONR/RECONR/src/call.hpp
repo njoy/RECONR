@@ -4,11 +4,14 @@ void operator()( const nlohmann::json& njoyArgs,
                  const nlohmann::json& ){
 
   output << "Input arguments:\n" << njoyArgs.dump( 2 ) << std::endl;
-  auto filename = "tape" + std::to_string( njoyArgs[ "npend" ].get< int >() );
+  std::string inputFilename = "tape" + 
+    std::to_string( njoyArgs[ "nendf" ].get< int >() );
+  auto outputFilename = "tape" + 
+    std::to_string( njoyArgs[ "npend" ].get< int >() );
 
-  auto evaluatedData = getEvaluated( output, njoyArgs[ "nendf" ] );
+  auto evaluatedData = getEvaluated( output, inputFilename );
 
-  ProcessedEvaluation pendf( evaluatedData, filename );
+  ProcessedEvaluation pendf( evaluatedData, outputFilename );
   pendf.header( njoyArgs[ "tlabel" ].get< std::string >() );
 
   for( auto& sequence : njoyArgs[ "sequence" ] ){
@@ -62,3 +65,12 @@ void operator()( const nlohmann::json& njoyArgs,
   pendf.footer();
 }
 
+/*
+ * This is the modern interface
+ */
+void operator()( std::ostream& output, std::ostream& error, 
+                 const nlohmann::json& arguments ){
+
+  output << "Modern RECONR interface.\n"
+         << "Input arguments: \n" << arguments.dump( 2 ) << std::endl;
+}

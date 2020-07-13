@@ -1,6 +1,6 @@
 
 /*
- * This function will take an MF3 section and return an interpolation table.
+ * This function will take an ENDF section that behaves like an TAB1
  */
 template< typename S >
 std::vector< Variant >

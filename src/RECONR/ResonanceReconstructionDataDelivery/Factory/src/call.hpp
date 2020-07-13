@@ -1,7 +1,8 @@
-ResonanceReconstructionDataDelivery operator()(){
+ResonanceReconstructionDataDelivery operator()( const Material_t& material ){
 
   return ResonanceReconstructionDataDelivery{ 
-    Factory::collectXS( this->material_ ),
-    Factory::collectPPXS( this->material_ ),
-    Factory::collectRP( this->material_ ) };
+    Factory::collectXS(   material ),
+    Factory::collectPPXS( material ),
+    Factory::collectRP(   material ) 
+  };
 }

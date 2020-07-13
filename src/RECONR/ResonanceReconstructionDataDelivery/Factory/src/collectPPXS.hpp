@@ -1,7 +1,7 @@
 static
 PPMap_t collectPPXS( const Material_t& material){
   return std::visit( 
-    [&](auto&& arg ){ return Factory::collectPPXS( arg ); },
+    [&]( auto&& arg ){ return Factory::collectPPXS( arg ); },
     material );
 }
 

@@ -44,12 +44,12 @@ void linearizeXS( std::ostream& output,
          reaction.productions< std::vector< interp::Variant > >() ){
       std::vector< interp::LinearLinear> lProd{};
       for( const auto& discrete : production ){
-      auto l = std::visit( 
-          [&]( auto&& arg ){ 
-            return njoy::RECONR::linearize( arg, relTol, absTol ); }, 
-          discrete );
+        auto l = std::visit( 
+            [&]( auto&& arg ){ 
+              return njoy::RECONR::linearize( arg, relTol, absTol ); }, 
+            discrete );
 
-      lProd.emplace_back( l );
+        lProd.emplace_back( l );
       }
       linearized.emplace_back( interp::LinearTable( std::move( lProd ) ) );
     }

@@ -10,10 +10,10 @@
 #include "resonanceReconstruction.hpp"
 #include "interpolation.hpp"
 #include "twig.hpp"
-// #include "constants.hpp"
-// #include "constants/CODATA2018.hpp"
+#include "constants.hpp"
+#include "constants/CODATA2018.hpp"
 
-// auto CODATA = njoy::constants::CODATA2018;
+auto CODATA = njoy::constants::CODATA2018;
 
 namespace njoy   {
 namespace RECONR {

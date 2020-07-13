@@ -10,7 +10,7 @@
 SCENARIO( "Testing R2D2" ){
   GIVEN( "An ENDF file with SLBW resonance parameters" ){
     auto material = details::ENDFMaterial( "SLBW" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     THEN( "the pieces can be verified" ){
       
@@ -24,7 +24,7 @@ SCENARIO( "Testing R2D2" ){
   } // GIVEN
   GIVEN( "An ENDF file with RM resonance parameters" ){
     auto material = details::ENDFMaterial( "RM" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     THEN( "the pieces can be verified" ){
       
@@ -40,7 +40,7 @@ SCENARIO( "Testing R2D2" ){
   } // GIVEN
   GIVEN( "An ENDF file with RML resonance parameters" ){
     auto material = details::ENDFMaterial( "RML" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory( std::move( material ) )();
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     THEN( "the pieces can be verified" ){
       

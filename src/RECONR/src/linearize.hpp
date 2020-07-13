@@ -1,6 +1,6 @@
 template< typename LAW >
-interp::LinearLinear
-linearize2( LAW law, double relTol, double absTol ){
+const interp::LinearLinear
+linearize2( const LAW & law, double relTol, double absTol ){
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
@@ -25,21 +25,21 @@ linearize2( LAW law, double relTol, double absTol ){
     
   auto eGrid = law.x() | ranges::to_vector;
   auto first = eGrid.begin();
-  auto last = eGrid.end();
+  auto end = eGrid.end();
   std::vector< double > x, y;
 
   auto cached = law.cachedSearch();
   auto call = [&]( auto&& e ){ return law( e, cached ); };
   auto linearization = twig::linearize::callable( x, y );
-  linearization( first, last, call, criterion, midpoint );
+  linearization( first, end, call, criterion, midpoint );
 
   return interp::LinearLinear{ std::move( x ), std::move( y ) };
 
 }
 
 inline
-interp::LinearLinear
-linearize( interp::Histogram histo, double, double ){
+const interp::LinearLinear
+linearize( const interp::Histogram& histo, double, double ){
 
   auto hx = histo.x();
   auto hy = histo.y();
@@ -58,36 +58,36 @@ linearize( interp::Histogram histo, double, double ){
 }
 
 inline
-interp::LinearLinear
-linearize( interp::LinearLinear linlin, double, double ){
+const interp::LinearLinear
+linearize( const interp::LinearLinear& linlin, double, double ){
 
   return linlin;
 }
 
 inline
-interp::LinearLinear
-linearize( interp::LinearLogarithmic linlog, double r, double a ){
+const interp::LinearLinear
+linearize( const interp::LinearLogarithmic& linlog, double r, double a ){
 
   return linearize2( linlog, r, a );
 
 }
 
 inline
-interp::LinearLinear
-linearize( interp::LogarithmicLinear loglin, double r, double a ){
+const interp::LinearLinear
+linearize( const interp::LogarithmicLinear& loglin, double r, double a ){
 
   return linearize2( loglin, r, a );
 }
 
 inline
-interp::LinearLinear
-linearize( interp::LogarithmicLogarithmic loglog, double r, double a ){
+const interp::LinearLinear
+linearize( const interp::LogarithmicLogarithmic& loglog, double r, double a ){
 
   return linearize2( loglog, r, a );
 }
 
 template< typename Range >
-auto
+const interp::LinearLinear
 linearize( const Range& grid, double relTol, double absTol ){
   using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 

@@ -64,7 +64,6 @@ void reconstructResonances(
      const unresolved::EnergyDependent&,
      double, double ){
 
-
   output << "Reconstructing unresolved EnergyDependent parameters." 
          << std::endl;
 }
@@ -138,10 +137,10 @@ void reconstructResonances(
 
   output << "Reconstructing R-Matrix Limited resonances." << std::endl;
 
-  // auto nMass = CODATA[ constants::neutronMass ];
-  // auto eCharge = CODATA[ constants::elementaryCharge ];
-  auto nMass = 1.008664 * dimwits::daltons;
-  auto eCharge = 1.602e-19 * dimwits::coulomb;
+  auto nMass = CODATA[ constants::neutronMass ];
+  auto eCharge = CODATA[ constants::elementaryCharge ];
+  // auto nMass = 1.008664 * dimwits::daltons;
+  // auto eCharge = 1.602e-19 * dimwits::coulomb;
 
   auto rml = resonanceReconstruction::rmatrix::fromENDF( 
     rRange, nMass, eCharge );

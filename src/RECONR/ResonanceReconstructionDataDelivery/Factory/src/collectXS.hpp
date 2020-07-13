@@ -9,6 +9,11 @@ static
 XSMap_t collectXS( const ENDFMaterial_t& material ){
   XSMap_t xs{};
 
+  if( not material.hasFileNumber( 3 ) ){
+    Log::error( "ENDF file does not have MF=3. Can't proceed." );
+    throw std::exception();
+  }
+
   auto MF3 = material.fileNumber( 3 ).parse< 3 >();
   for( auto& section : MF3.sections() ){
     Reaction reaction{ 

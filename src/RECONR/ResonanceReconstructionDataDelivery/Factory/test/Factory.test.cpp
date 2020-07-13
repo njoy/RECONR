@@ -26,7 +26,7 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
         CHECK( 104.0 == resParams.atomicWeightRatio() );
 
         auto isos = resParams.isotopes();
-        // Note, I'm not testing everything because I trust ENDFtk to do it's
+        // Note, I'm not testing everything because I trust ENDFtk to do its
         // job
         CHECK( 1 == ranges::distance( isos ) );
       } // THEN
@@ -46,7 +46,7 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
         CHECK( 104.0 == resParams.atomicWeightRatio() );
 
         auto isos = resParams.isotopes();
-        // Note, I'm not testing everything because I trust ENDFtk to do it's
+        // Note, I'm not testing everything because I trust ENDFtk to do its
         // job
         CHECK( 1 == ranges::distance( isos ) );
       } // THEN
@@ -66,7 +66,7 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
         CHECK( 104.0 == resParams.atomicWeightRatio() );
 
         auto isos = resParams.isotopes();
-        // Note, I'm not testing everything because I trust ENDFtk to do it's
+        // Note, I'm not testing everything because I trust ENDFtk to do its
         // job
         CHECK( 1 == ranges::distance( isos ) );
       } // THEN

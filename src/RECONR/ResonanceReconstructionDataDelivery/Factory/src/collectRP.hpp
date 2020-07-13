@@ -1,7 +1,7 @@
 static
 RPVariant collectRP( const Material_t& material ){
   return std::visit( 
-    [&](auto&& arg ){ return Factory::collectRP( arg ); },
+    [&]( auto&& arg ){ return Factory::collectRP( arg ); },
     material );
 }
 
