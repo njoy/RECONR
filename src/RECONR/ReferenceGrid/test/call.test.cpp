@@ -19,13 +19,18 @@ RP::unresolved::EnergyDependent caseC();
 template< typename T >
 void ignore( T&& ){}
 
+static double nextafter( const double value ){
+  return std::nextafter( value, std::numeric_limits< double >::infinity() );
+}
+
 SCENARIO( "Extracting the reference grid" ){
   using namespace njoy::RECONR;
 
   GIVEN( "an Isotope" ){
 
     const std::vector< double > resonanceEnergies { 
-      0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
+      0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5,
+      nextafter( 7.5 )
     };
     RP::Isotope iso = isotope();
 
@@ -118,8 +123,8 @@ SCENARIO( "Extracting the reference grid" ){
       }
 
       SECTION("will be bounded by the range limits"){
-        CHECK( grid.front() == lowerEnergy );
-        CHECK( grid.back() == upperEnergy );
+        CHECK( grid.front() == Approx( lowerEnergy ) );
+        CHECK( grid.back() == Approx( upperEnergy ) );
       }
     }
   }
@@ -135,6 +140,7 @@ SCENARIO( "Extracting the reference grid" ){
 
     reference.insert( reference.cbegin(), lowerEnergy );
     reference.insert( reference.cend(), upperEnergy );
+    reference.insert( reference.cend(), nextafter( upperEnergy ) );
 
     const auto grid = referenceGrid( rml, lowerEnergy, upperEnergy );
 
@@ -146,9 +152,10 @@ SCENARIO( "Extracting the reference grid" ){
 
     THEN( "the boundaries of the region will be extracted" ){
       std::vector<double> grid = referenceGrid( sc, 0.5, 1.276553 );
-      CHECK( grid.size() == 2 );
-      CHECK( grid.front() == 0.5 );
-      CHECK( grid.back() == 1.276553 );
+      CHECK( grid.size() == 3 );
+      CHECK( grid[ 0 ] == 0.5 );
+      CHECK( grid[ 1 ] == Approx( 1.276553 ) );
+      CHECK( grid[ 2 ] == Approx( 1.276553 ) );
     }
   }
 

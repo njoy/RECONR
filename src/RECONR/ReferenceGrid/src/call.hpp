@@ -50,12 +50,11 @@ auto operator()( const Range& range,
     }
   }
 
-
   energies.push_back( upperEnergy );
+  energies.push_back( nudgeUp( upperEnergy ) );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
-    // orlp::pdqsort( energies.begin(), energies.end() );
   }
 
   energies |= ranges::action::unique;
@@ -81,6 +80,7 @@ auto operator()( const resolved::RMatrixLimited& rml,
   }
 
   energies.push_back( upperEnergy );
+  energies.push_back( nudgeUp( upperEnergy ) );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
@@ -102,6 +102,7 @@ auto operator()( const unresolved::CaseA&,
                                std::log( upperEnergy / lowerEnergy ) ) );
   energies.push_back( lowerEnergy );
   fill( lowerEnergy, upperEnergy, energies );
+  energies.push_back( nudgeUp( upperEnergy ) );
   return energies;
 }
 
@@ -122,6 +123,7 @@ auto operator()( const unresolved::CaseB& caseB,
   }
 
   fill( energies.back(), upperEnergy, energies );
+  energies.push_back( nudgeUp( upperEnergy ) );
   return energies;
 }
 
@@ -178,6 +180,7 @@ auto operator()( const unresolved::CaseC& caseC,
   for( const auto energy : firstPass | ranges::view::drop_exactly(1) ){
     fill( energies.back(), energy, energies );
   }
+  energies.push_back( nudgeUp( upperEnergy ) );
 
   return energies;
 }
@@ -185,7 +188,8 @@ auto operator()( const unresolved::CaseC& caseC,
 std::vector< double >
 operator()( const SpecialCase&,
             const double& lowerEnergy, const double& upperEnergy  ) const {
-  return { lowerEnergy, upperEnergy };
+  return { lowerEnergy, upperEnergy, nudgeUp( upperEnergy ) };
+
 }
 
 template< typename... TS >

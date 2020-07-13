@@ -4,6 +4,9 @@ class ReferenceGrid {
   static double nudgeDown( const double value ){
     return std::nextafter( value, -std::numeric_limits< double >::infinity() );
   }
+  static double nudgeUp( const double value ){
+    return std::nextafter( value, std::numeric_limits< double >::infinity() );
+  }
 
 protected:
   #include "RECONR/ReferenceGrid/src/fill.hpp"
