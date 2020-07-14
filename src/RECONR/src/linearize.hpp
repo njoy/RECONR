@@ -1,5 +1,5 @@
 template< typename LAW >
-const interp::LinearLinear
+interp::LinearLinear
 linearize2( const LAW & law, double relTol, double absTol ){
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
@@ -25,20 +25,20 @@ linearize2( const LAW & law, double relTol, double absTol ){
     
   auto eGrid = law.x() | ranges::to_vector;
   auto first = eGrid.begin();
-  auto end = eGrid.end();
+  auto last = eGrid.end();
   std::vector< double > x, y;
 
   auto cached = law.cachedSearch();
   auto call = [&]( auto&& e ){ return law( e, cached ); };
   auto linearization = twig::linearize::callable( x, y );
-  linearization( first, end, call, criterion, midpoint );
+  linearization( first, last, call, criterion, midpoint );
 
   return interp::LinearLinear{ std::move( x ), std::move( y ) };
 
 }
 
 inline
-const interp::LinearLinear
+interp::LinearLinear
 linearize( const interp::Histogram& histo, double, double ){
 
   auto hx = histo.x();
@@ -58,14 +58,14 @@ linearize( const interp::Histogram& histo, double, double ){
 }
 
 inline
-const interp::LinearLinear
+interp::LinearLinear
 linearize( const interp::LinearLinear& linlin, double, double ){
 
   return linlin;
 }
 
 inline
-const interp::LinearLinear
+interp::LinearLinear
 linearize( const interp::LinearLogarithmic& linlog, double r, double a ){
 
   return linearize2( linlog, r, a );
@@ -73,21 +73,21 @@ linearize( const interp::LinearLogarithmic& linlog, double r, double a ){
 }
 
 inline
-const interp::LinearLinear
+interp::LinearLinear
 linearize( const interp::LogarithmicLinear& loglin, double r, double a ){
 
   return linearize2( loglin, r, a );
 }
 
 inline
-const interp::LinearLinear
+interp::LinearLinear
 linearize( const interp::LogarithmicLogarithmic& loglog, double r, double a ){
 
   return linearize2( loglog, r, a );
 }
 
 template< typename Range >
-const interp::LinearLinear
+auto
 linearize( const Range& grid, double relTol, double absTol ){
   using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 
