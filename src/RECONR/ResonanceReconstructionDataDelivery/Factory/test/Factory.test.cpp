@@ -11,14 +11,23 @@
 using namespace njoy;
 using namespace njoy::RECONR;
 
+class TFactory: protected njoy::RECONR::R2D2::Factory {
+  using Factory = njoy::RECONR::R2D2::Factory;
+
+public:
+  using Factory::Factory;
+  using Factory::collectRP;
+  using Factory::collectXS;
+  using Factory::collectPPXS;
+};
+
 SCENARIO( "Testing the collection of resonance parameter data" ){
 
   GIVEN( "ENDF Material with SLBW" ){
     auto material = details::ENDFMaterial( "SLBW" );
 
     WHEN( "the resonance parameters are extracted" ){
-      auto resParams = std::get< 0 >(
-        njoy::RECONR::R2D2::Factory::collectRP( material ) );
+      auto resParams = std::get< 0 >( TFactory::collectRP( material ) );
 
       THEN( "we can verify a few things" ){
 
@@ -37,8 +46,7 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
     auto material = details::ENDFMaterial( "RM" );
 
     WHEN( "the resonance parameters are extracted" ){
-      auto resParams = std::get< 0 >(
-        njoy::RECONR::R2D2::Factory::collectRP( material ) );
+      auto resParams = std::get< 0 >( TFactory::collectRP( material ) );
 
       THEN( "we can verify a few things" ){
 
@@ -57,8 +65,7 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
     auto material = details::ENDFMaterial( "RML" );
 
     WHEN( "the resonance parameters are extracted" ){
-      auto resParams = std::get< 0 >(
-        njoy::RECONR::R2D2::Factory::collectRP( material ) );
+      auto resParams = std::get< 0 >( TFactory::collectRP( material ) );
 
       THEN( "we can verify a few things" ){
 
@@ -81,7 +88,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
     auto material = details::ENDFMaterial( "SLBW", false );
 
     WHEN( "the resonance reconstruction data can be extracted" ){
-      auto reactions = njoy::RECONR::R2D2::Factory::collectXS( material );
+      auto reactions = TFactory::collectXS( material );
 
       std::vector< njoy::RECONR::ReactionID > MTs{ 
         "1", "2", "16", "18", "51", "52", "102", "875", "876", "877" };
@@ -303,7 +310,7 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
     auto material = details::ENDFMaterial( "SLBW", false );
 
     WHEN( "the photon production cross sections have been extracted" ){
-      auto reactions = njoy::RECONR::R2D2::Factory::collectPPXS( material );
+      auto reactions = TFactory::collectPPXS( material );
       
       std::vector< njoy::RECONR::ReactionID > MTs{ "3", "18" };
       std::sort( MTs.begin(), MTs.end() );

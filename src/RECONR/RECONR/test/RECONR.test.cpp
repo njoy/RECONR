@@ -200,12 +200,12 @@ SCENARIO( "Testing creation of RECONR class" ){
                                              std::cerr, 
                                              args ) );
     } // WHEN
-    // WHEN( "processing H-1, Fe-56, and U-238" ){
-    //   CHECK_NOTHROW( tRECONR()( inputWithU238, 
-    //                                          std::cout, 
-    //                                          std::cerr, 
-    //                                          args ) );
-    // } // WHEN
+    WHEN( "processing H-1, Fe-56, and U-238" ){
+      CHECK_NOTHROW( tRECONR()( inputWithU238, 
+                                             std::cout, 
+                                             std::cerr, 
+                                             args ) );
+    } // WHEN
   } // GIVEN
 
   WHEN( "calling the modern RECONR interface" ){
@@ -216,7 +216,7 @@ SCENARIO( "Testing creation of RECONR class" ){
       "energy grid": []
     })"_json };
 
-    CHECK_NOTHROW( tRECONR()( std::cout, std::cerr, modern ) );
+    CHECK_THROWS( tRECONR()( std::cout, std::cerr, modern ) );
 
   } // WHEN
 } // SCENARIO

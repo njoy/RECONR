@@ -139,8 +139,6 @@ void reconstructResonances(
 
   auto nMass = CODATA[ constants::neutronMass ];
   auto eCharge = CODATA[ constants::elementaryCharge ];
-  // auto nMass = 1.008664 * dimwits::daltons;
-  // auto eCharge = 1.602e-19 * dimwits::coulomb;
 
   auto rml = resonanceReconstruction::rmatrix::fromENDF( 
     rRange, nMass, eCharge );

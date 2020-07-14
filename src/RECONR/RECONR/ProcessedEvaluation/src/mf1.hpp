@@ -6,9 +6,9 @@ auto mf1( const int& MAT, const nlohmann::json& sequence,
   using namespace njoy::ENDFtk::literals;
 
   auto eval = std::get< 0 >( this->evaluated );
-  const auto oldMF1 = eval.materialNumber( MAT ).front()
-                       .fileNumber( 1 ).parse< 1 >();
-  const auto mt = oldMF1.section( 451_c );
+  const auto mt = eval.materialNumber( MAT ).front()
+                       .fileNumber( 1 ).sectionNumber( 451 ).parse< 1, 451 >();
+  // const auto mt = oldMF1.section( 451_c );
 
   auto cards = sequence[ "cards" ].get< std::vector< std::string > >();
   long NWD = cards.size();

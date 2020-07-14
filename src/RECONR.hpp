@@ -13,6 +13,7 @@
 #include "constants.hpp"
 #include "constants/CODATA2018.hpp"
 
+inline
 auto CODATA = njoy::constants::CODATA2018;
 
 namespace njoy   {
