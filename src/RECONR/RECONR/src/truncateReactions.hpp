@@ -6,7 +6,8 @@ truncate( X&& x, Y&& y ){
   auto isZero = []( auto&& cs ){ return cs == 0.0; };
   auto first = std::find_if_not( y.begin(), y.end(), isZero );
 
-  decltype( std::distance( y.begin(), first ) ) start;
+  // decltype( std::distance( y.begin(), first ) ) start;
+  auto start{ std::distance( y.begin(), first ) };
   if( first == y.begin() ){
     start = 0;
   } else{

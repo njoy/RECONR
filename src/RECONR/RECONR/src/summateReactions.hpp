@@ -29,21 +29,17 @@ void summateReactions( std::ostream& output,
   for( const auto& ID : ranges::view::keys( reconstructed ) ){
     std::vector< std::vector< double >  > partials;
 
-    // std::unique_ptr< Reaction > reaction = nullptr;
-    // using PType = R2D2::ReconMap_t::mapped_type;
-    // std::unique_ptr< PType > recon = nullptr;
-
     auto addReconstructed = [&]( const ReactionID& rxnID, 
                                  const ReactionID& reconID ){
       output << fmt::format( "{:3s} ", rxnID );
       auto& recon = reconstructed.at( reconID );
       auto& reaction = reactions.at( rxnID );
       auto& part = reaction.template crossSections< XSPair >().second;
-      partials |= ranges::action::push_back( part );
+      partials.push_back( part );
 
       for( const auto& XS : recon ){
         auto partial = energies | ranges::view::transform( XS );
-        partials |= ranges::action::push_back( partial );
+        partials.push_back( partial );
       }
       auto sum = sumPartials( partials );
       reaction.crossSections( std::make_pair( utility::copy( energies ), 
@@ -85,8 +81,7 @@ void summateReactions( std::ostream& output,
       for( const auto& p : redundants ){
         output << fmt::format( "{:3s} ", p );
 
-        partials 
-          |= ranges::action::push_back( 
+        partials.push_back(
               reactions.at( p ).template crossSections< XSPair >().second );
 
       } // redundants

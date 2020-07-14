@@ -1,34 +1,34 @@
 /*
  * This method is used *before* resonances are reconstructed
  */
-template< typename Range >
 static
 auto unionizeEnergyGrid( std::ostream& output,
                          const R2D2::XSMap_t& reactions,
                          const R2D2::PPMap_t& ppReactions,
-                         const std::vector< double >& grid,
-                         Range& user ){
+                         const std::vector< double >& resonanceGrid,
+                         const std::vector< double >& user ){
 
+  std::vector< double > grid{ resonanceGrid.begin(), resonanceGrid.end() };
   output << 
     "\nGenerating unionized energy grid prior to reconstructing resonances"
          << std::endl;
-  user |= ranges::action::push_back( grid );
+  grid |= ranges::action::push_back( user );
 
   for( const auto& [ID, reaction] : reactions ){
-    user |= ranges::action::push_back( 
+    grid |= ranges::action::push_back( 
       reaction.crossSections< interp::LinearTable >().x() );
-    user |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
+    grid |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 
   for( const auto& [ ID, reaction ] : ppReactions ){
     for( const auto& discrete : reaction.productions< interp::LinearTable >() ){
-      user |= ranges::action::push_back( discrete.x() );
+      grid |= ranges::action::push_back( discrete.x() );
     }
   }
 
-  ranges::sort( user );
+  ranges::sort( grid );
 
-  return user 
+  return grid 
     | ranges::view::unique 
     | ranges::to_vector;
 }

@@ -25,13 +25,13 @@ linearize2( const LAW & law, double relTol, double absTol ){
     
   auto eGrid = law.x() | ranges::to_vector;
   auto first = eGrid.begin();
-  auto last = eGrid.end();
+  auto end = eGrid.end();
   std::vector< double > x, y;
 
   auto cached = law.cachedSearch();
   auto call = [&]( auto&& e ){ return law( e, cached ); };
   auto linearization = twig::linearize::callable( x, y );
-  linearization( first, last, call, criterion, midpoint );
+  linearization( first, end, call, criterion, midpoint );
 
   return interp::LinearLinear{ std::move( x ), std::move( y ) };
 
@@ -94,9 +94,9 @@ linearize( const Range& grid, double relTol, double absTol ){
   auto midpoint = []( auto&& energy, auto&& xs ){
     auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
     auto midXS = std::get<0>( xs ) + std::get<1>( xs );
-    midXS.elastic.value *= 0.5;
-    midXS.fission.value *= 0.5;
-    midXS.capture.value *= 0.5;
+    midXS.elastic *= 0.5;
+    midXS.fission *= 0.5;
+    midXS.capture *= 0.5;
     return std::make_pair( midEnergy, midXS );
   };
 
@@ -166,14 +166,16 @@ linearize( const Range& grid,
     constexpr double infinity = std::numeric_limits< double >::infinity();
 
     if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
-      return true; }
-    // Limit of ENDF-6 precision
-    if( xRight/xLeft < 1E-7 ){ return true; }
+      return true;
+    }
+
+//     // Limit of ENDF-6 precision
+//     if( xRight/xLeft < 1E-7 ){ return true; }
 
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
-      auto t = trial.at( id );
-      auto r = trial.at( id );
+      auto t = reference.at( id );
+      auto r = reference.at( id );
 
       auto diff = std::abs( t - r );
       if( diff.value > absTol ){ return false; }

@@ -10,7 +10,7 @@ std::vector< double > sumPartials( const Range& partials ){
   };
 
   return ranges::accumulate( partials,
-    std::vector< double >( partials[0].size() ),
+    std::vector< double >( partials[0].size(), 0.0 ),
     [&]( const auto& acc, const auto& next ){
       return ranges::view::zip( acc, next )
         | ranges::view::transform( sumTuple )

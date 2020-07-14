@@ -23,7 +23,7 @@ using LogarithmicLinear      = LAW< interpolation::LogarithmicLinear >;
 using LogarithmicLogarithmic = LAW< interpolation::LogarithmicLogarithmic >;
 
 // For convenience
-using Histog = Histogram;
+using HogHog = Histogram;
 using LinLin = LinearLinear;
 using LinLog = LinearLogarithmic;
 using LogLin = LogarithmicLinear;

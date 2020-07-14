@@ -7,7 +7,7 @@ Variant makeInterpolationTable( const E& energies, const B& barns,
 
   switch( LAW ){
     case 1: {
-      return Variant( Histog( std::move( pE ), std::move( pB ) ) );
+      return Variant( HogHog( std::move( pE ), std::move( pB ) ) );
       break;
     }
     case 2: {
