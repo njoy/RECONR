@@ -38,10 +38,9 @@ target_link_libraries( RECONR
     INTERFACE resonanceReconstruction
     INTERFACE Log
     INTERFACE twig
-    INTERFACE json-adapter
+    INTERFACE nlohmann_json::nlohmann_json
     INTERFACE interpolation
     )
-
 
 #######################################################################
 # Top-level Only

@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 #include "ENDFtk.hpp"
 #include "dimwits.hpp"
