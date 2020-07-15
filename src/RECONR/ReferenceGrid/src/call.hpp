@@ -221,8 +221,6 @@ auto operator()( const Isotope& isotope ) const {
   bool foundOverlap = false;
 
   RANGES_FOR( auto pair, overlappingRegions ){
-    Log::info( "pair[0]: {}", pair[0] | ranges::view::all );
-    Log::info( "pair[1]: {}", pair[1] | ranges::view::all );
     auto& lowerGrid = pair[0];
     const auto boundary =
       std::find_if( lowerGrid.rbegin(), lowerGrid.rend(),

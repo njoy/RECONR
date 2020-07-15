@@ -75,4 +75,6 @@ void operator()( std::ostream& output, std::ostream& error,
          << "Input arguments: \n" << arguments.dump( 2 ) << std::endl;
 
   output << "This doesn't do anything at the moment." << std::endl;
+
+  throw std::exception();
 }

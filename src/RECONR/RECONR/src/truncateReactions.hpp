@@ -44,18 +44,23 @@ static
 void truncateReactions( std::ostream& output,
                         R2D2::PPMap_t& summed
                         ){
-  for( const auto& [ ID, reaction ] : summed ){
+  for( auto& [ ID, production ] : summed ){
 
     Log::info( "ID: {}", ID );
-    auto prod = reaction.productions< PPair >();
-    // Log::info( "prod: {}", prod | ranges::view::all );
-    // auto data = truncate( prod.first, prod.second );
-    // Log::info( "data.first: {}", data.first | ranges::view::all );
-    // Log::info( "data.second: {}", data.second | ranges::view::all );
+    auto prod = production.template productions< PPair >();
+    auto energies = prod
+      | ranges::view::transform( []( auto&& p ){ return p.first; } );
+    auto productions = prod
+      | ranges::view::transform( []( auto&& p ){ return p.second; } );
 
-    // auto tuples = ranges::view::zip_with( data.first, data.second )
-    //   | ranges::to_vector;
-    // reactions.emplace( ID, Reaction_t{ reaction, std::move( tuples ) } );
+    auto data = truncate( energies, productions );
+
+    auto tuples = ranges::view::zip_with( 
+      []( auto&& e, auto&& p ){ return PPForms{ std::make_pair( e, p ) }; },
+      data.first, data.second )
+      | ranges::to_vector;
+
+    production.productions( std::move( tuples ) );
   }
 }
 
