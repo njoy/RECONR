@@ -119,8 +119,12 @@ void summateReactions( std::ostream& output,
                        R2D2::PPMap_t& productions,
                        const Range& energies ){
 
+  if( productions.size() <= 0 ){
+    return;
+  }
+
   output << 
-    "\nCalculating photon production cross sections on unionized energy grid"
+    "\nSumming photon production cross sections on unionized energy grid"
     " for IDs: \n";
   for( auto& [ ID, production ] : productions ){
     output << fmt::format( "{:3s} ", ID );

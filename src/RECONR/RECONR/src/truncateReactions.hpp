@@ -27,6 +27,9 @@ void truncateReactions( std::ostream& output,
                         R2D2::XSMap_t& summed
                         ){
 
+  output << "\nTruncating leading zeros of reconstructed reactions." 
+         << std::endl;
+
   for( auto& [ ID, reaction ] : summed ){
 
     auto xs = reaction.crossSections< XSPair >();
@@ -44,9 +47,10 @@ static
 void truncateReactions( std::ostream& output,
                         R2D2::PPMap_t& summed
                         ){
+  output << "\nTruncating leading zeros of photon production cross sections." 
+         << std::endl;
   for( auto& [ ID, production ] : summed ){
 
-    Log::info( "ID: {}", ID );
     auto prod = production.template productions< PPair >();
     auto energies = prod
       | ranges::view::transform( []( auto&& p ){ return p.first; } );

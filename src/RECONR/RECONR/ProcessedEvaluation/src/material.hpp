@@ -13,8 +13,11 @@ void material( const Tape_t&,
 
   MF2.print( this->ipendf, MAT );
   MF3.print( this->ipendf, MAT );
-  MF13.print( this->ipendf, MAT );
-  // ENDFtk::MEND().print( this->ipendf );
+  if( MF13 ){
+    Log::info( "Printing MF=13." );
+    MF13->print( this->ipendf, MAT );
+  }
+  ENDFtk::MEND().print( this->ipendf );
 }
 
 void material( int& MAT, 

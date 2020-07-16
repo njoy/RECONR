@@ -2,6 +2,7 @@
 #define RECONR_HPP
 
 #include <fstream>
+#include <optional>
 
 #include "nlohmann/json.hpp"
 

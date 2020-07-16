@@ -1,7 +1,7 @@
 auto mf1( const int& MAT, const nlohmann::json& sequence,
           const ENDFtk::file::Type< 2 >&  mf2,
           const ENDFtk::file::Type< 3 >&  mf3,
-          const ENDFtk::file::Type< 13 >& mf13
+          const std::optional< ENDFtk::file::Type< 13 > >& mf13
          ){
   using namespace njoy::ENDFtk::literals;
 
@@ -13,10 +13,26 @@ auto mf1( const int& MAT, const nlohmann::json& sequence,
   long NWD = cards.size();
   std::vector< ENDFtk::TEXT > description;
   for( auto& card : cards ){ 
-    description.emplace_back( std::move( card ) );
+    // Make right-padded
+    description.emplace_back( fmt::format( "{:<66s}", card ) );
   }
 
   std::vector< ENDFtk::DIR > directory;
+
+  directory.emplace_back( 2, 151, mf2.section( 151_c ).NC(), 0 );
+  if( mf2.hasSection( 152 ) ){
+    directory.emplace_back( 2, 152, mf2.section( 152_c ).NC(), 0 );
+  }
+  for( const auto& section : mf3.sections() ){
+    directory.emplace_back( 3, section.MT(), section.NC(), 0 );
+  }
+  if( mf13 ){
+    for( const auto& section : mf13->sections() ){
+      directory.emplace_back( 13, section.MT(), section.NC(), 0 );
+    }
+  }
+  //                                   MF,  MT, NC
+  directory.emplace( directory.begin(), 1, 451, directory.size() + 1 + 4, 0 );
   long NXC = directory.size();
 
   std::array< ENDFtk::CONT, 3 > parameters{
