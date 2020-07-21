@@ -17,7 +17,10 @@ protected:
   #include "RECONR/RECONR/src/linearizeXS.hpp"
   #include "RECONR/RECONR/src/unionizeEnergyGrid.hpp"
   #include "RECONR/RECONR/src/reconstructResonances.hpp"
+  #include "RECONR/RECONR/src/reconstructCrossSections.hpp"
+  #include "RECONR/RECONR/src/combineReconstructed.hpp"
   #include "RECONR/RECONR/src/summateReactions.hpp"
+  #include "RECONR/RECONR/src/summateProductions.hpp"
   #include "RECONR/RECONR/src/truncateReactions.hpp"
 
 public:

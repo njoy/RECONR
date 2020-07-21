@@ -53,7 +53,10 @@ void operator()( const nlohmann::json& njoyArgs,
            << std::endl;
 
     // Sum reactions
+    this->reconstructCrossSections( output, error, data, energies );
+    this->combineReconstructed( output, error, data, energies );
     this->summateReactions( output, error, data, energies );
+    this->summateProductions( output, error, data, energies );
 
     // Remove leading zeros
     this->truncateReactions( output, data );

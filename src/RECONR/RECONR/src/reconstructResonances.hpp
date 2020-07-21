@@ -2,7 +2,7 @@ template< typename Range, typename P >
 static
 void reconstructResonances( std::ostream&,
                             Range& , 
-                            R2D2::ReconMap_t& , 
+                            R2D2&,
                             const ResonanceRange&,
                             const P& params,
                             double, double ){ 
@@ -17,7 +17,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range&,
-     R2D2::ReconMap_t&,
+     R2D2&,
      const ResonanceRange&,
      const SpecialCase&,
      double, double ){
@@ -31,7 +31,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range&,
-     R2D2::ReconMap_t&,
+     R2D2&,
      const ResonanceRange&,
      const unresolved::EnergyIndependent&,
      double, double){
@@ -45,7 +45,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range&,
-     R2D2::ReconMap_t&,
+     R2D2&,
      const ResonanceRange&,
      const unresolved::EnergyDependentFissionWidths&,
      double, double ){
@@ -59,7 +59,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range&,
-     R2D2::ReconMap_t&,
+     R2D2&,
      const ResonanceRange&,
      const unresolved::EnergyDependent&,
      double, double ){
@@ -73,7 +73,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range& grid, 
-     R2D2::ReconMap_t& reconstructed,
+     R2D2& r2d2, 
      const ResonanceRange& rRange,
      const resolved::SingleLevelBreitWigner&,
      double relTol, double absTol){
@@ -83,7 +83,7 @@ void reconstructResonances(
   auto bw = resonanceReconstruction::breitWigner::singleLevel::Apply{}(
       rRange, linearize( grid, relTol, absTol ) );
 
-  storeBWReconstruction( bw, reconstructed );
+  storeBWReconstruction( bw, r2d2 );
 
 }
 
@@ -92,7 +92,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range& grid, 
-     R2D2::ReconMap_t& reconstructed,
+     R2D2& r2d2, 
      const ResonanceRange& rRange,
      const resolved::MultiLevelBreitWigner&,
      double relTol, double absTol){
@@ -102,7 +102,7 @@ void reconstructResonances(
   auto bw = resonanceReconstruction::breitWigner::multiLevel::Apply{}(
       rRange, linearize( grid, relTol, absTol ) );
 
-  storeBWReconstruction( bw, reconstructed );
+  storeBWReconstruction( bw, r2d2 );
 
 }
 
@@ -111,7 +111,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range& grid, 
-     R2D2::ReconMap_t& reconstructed,
+     R2D2& r2d2,
      const ResonanceRange& rRange,
      const resolved::ReichMoore&,
      double relTol, double absTol){
@@ -121,7 +121,7 @@ void reconstructResonances(
   auto bw = resonanceReconstruction::reichMoore::Apply{}(
       rRange, linearize( grid, relTol, absTol ) );
 
-  storeBWReconstruction( bw, reconstructed );
+  storeBWReconstruction( bw, r2d2 );
 
 }
 
@@ -130,7 +130,7 @@ static
 void reconstructResonances( 
      std::ostream& output,
      Range& grid, 
-     R2D2::ReconMap_t& reconstructed,
+     R2D2& r2d2,
      const ResonanceRange& rRange,
      const resolved::RMatrixLimited&,
      double relTol, double absTol){
@@ -158,7 +158,7 @@ void reconstructResonances(
           [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
       | ranges::to_vector;
 
-    reconstructed[ id ].push_back(
+    r2d2.reconstructedResonances()[ id ].push_back(
       interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) } );
   }
 
@@ -166,13 +166,13 @@ void reconstructResonances(
 
 template< typename Range >
 static
-R2D2::ReconMap_t reconstructResonances( 
+void reconstructResonances( 
     std::ostream& output,
     Range& grid, 
+    R2D2& r2d2,
     std::vector< ENDFtk::resonanceParameters::Isotope >& isotopes,
     double relTol, double absTol ){
 
-  R2D2::ReconMap_t reconstructed{};
 
   for( const auto& iso : isotopes ){
     for( const auto& range : iso.resonanceRanges() ){
@@ -185,25 +185,25 @@ R2D2::ReconMap_t reconstructResonances(
         | ranges::to_vector;
 
       std::visit(
-        [&]( auto&& param ){ return reconstructResonances( 
-              output, g, reconstructed, range, param, relTol, absTol ); },
+        [&]( auto&& param ){ return RECONR::reconstructResonances( 
+              output, g, r2d2, range, param, relTol, absTol ); },
         range.parameters()
       );
     }
   }
-  return reconstructed;
 }
 
 template< typename Range >
 static
-R2D2::ReconMap_t reconstructResonances( 
+void reconstructResonances( 
     std::ostream& output,
     Range& grid, 
-    ENDFtk::section::Type< 2, 151 >& parameters,
+    R2D2& r2d2,
+    const ENDFtk::section::Type< 2, 151 >& parameters,
     double relTol, double absTol ){
 
   auto isotopes = parameters.isotopes() | ranges::to_vector;
-  return reconstructResonances( output, grid, isotopes , relTol, absTol );
+  RECONR::reconstructResonances( output, grid, r2d2, isotopes , relTol, absTol );
 }
 
 
@@ -218,11 +218,9 @@ void reconstructResonances( std::ostream& output,
       { return v*dimwits::electronVolt; }
   );
 
-  r2d2.reconstructedResonances( 
-    std::visit( 
-      [&]( auto&& arg ){ 
-        return reconstructResonances( output, g, arg, relTol, absTol ); },
-      r2d2.resonanceParameters()
-    )
+  std::visit( 
+    [&]( auto&& arg ){ 
+      RECONR::reconstructResonances( output, g, r2d2, arg, relTol, absTol ); },
+    r2d2.resonanceParameters()
   );
 }

@@ -3,7 +3,7 @@ std::optional< ENDFtk::file::Type< 13 > >
 mf13( const int& MAT, const Production_T& productions ){
 
   std::vector< ENDFtk::section::Type< 13 > > sections;
-  for( auto& [ MT, production ] : productions ){
+  for( auto& [ ID, production ] : productions ){
 
     auto prods = production.template productions< PPair >();
     std::vector< long > boundaries{ static_cast< long >( prods.size() ) };
@@ -23,7 +23,7 @@ mf13( const int& MAT, const Production_T& productions ){
       std::move( photons )
     };
 
-    sections.emplace_back( reactionID2MT( MT ), 
+    sections.emplace_back( elementary::toEndfReactionNumber( ID ),
                            production.ZA(), production.AWR(), 
                            std::move( partial ) );
     

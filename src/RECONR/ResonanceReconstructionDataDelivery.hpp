@@ -16,6 +16,7 @@ private:
   Info_t information_;
 
   XSMap_t reactions_;
+  XSMap_t summations_;
   PPMap_t photonProductions_;
   ReconMap_t reconstructedResonances_;
 
@@ -31,18 +32,21 @@ public:
   #include "RECONR/ResonanceReconstructionDataDelivery/src/getResonanceReferenceGrid.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/src/ctor.hpp"
 
+  auto& projectile() const { return this->projectile_; }
+  auto& target() const { return this->target_; }
+
+  auto& info() const { return this->information_; }
+
   XSMap_t& reactions() { return this->reactions_; }
   const XSMap_t& reactions() const { return this->reactions_; }
+  XSMap_t& summations() { return this->summations_; }
   PPMap_t& photonProductions() { return this->photonProductions_; }
   const PPMap_t& photonProductions() const { return this->photonProductions_; }
 
-  auto reconstructedResonances() const { 
-    return this->reconstructedResonances_; }
-  void reconstructedResonances( ReconMap_t&& rXS ) { 
-    this->reconstructedResonances_ = rXS; }
+  auto& reconstructedResonances() { return this->reconstructedResonances_; }
 
-  auto resonanceParameters() const { return this->resonanceParameters_; }
-  auto resonanceReferenceGrid() const { return this->resonanceReferenceGrid_; }
+  auto& resonanceParameters() const { return this->resonanceParameters_; }
+  auto& resonanceReferenceGrid() const { return this->resonanceReferenceGrid_; }
 };
 
 using R2D2 = ResonanceReconstructionDataDelivery;
