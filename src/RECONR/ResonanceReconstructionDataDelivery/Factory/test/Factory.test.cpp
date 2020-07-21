@@ -114,13 +114,11 @@ SCENARIO( "Testing the the collection of cross sections" ){
       std::sort( IDs.begin(), IDs.end() );
       std::sort( keys.begin(), keys.end() );
 
-      CHECK( IDs.size() == ranges::distance( keys ) );
-
       CHECK( ranges::equal( IDs, keys ) );
 
       for( auto id : IDs ){
         THEN( "ID: " + id.symbol() + " should be in map" ){
-          // CHECK( 1 == reactions.count( id ) );
+          CHECK( 1 == reactions.count( id ) );
           CHECK_NOTHROW( reactions.at( id ) );
         } // THEN
       }
@@ -272,19 +270,22 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
       njoy::elementary::ParticleID target( "h1" );
       auto reactions = TFactory::collectPPXS( material, projectile, target );
       
-      std::vector< njoy::RECONR::ReactionID > MTs{
-        njoy::elementary::ReactionID{ "3" },
-        njoy::elementary::ReactionID{ "18" }
+      using PID = ParticleID;
+      using NID = NucleusID;
+
+      std::vector< njoy::RECONR::ReactionID > IDs{ 
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 3 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 18 } },
       };
-      std::sort( MTs.begin(), MTs.end() );
+      auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
+      std::sort( IDs.begin(), IDs.end() );
+      std::sort( keys.begin(), keys.end() );
 
-      auto keys = ranges::view::keys( reactions );
-      CHECK( ranges::equal( MTs, keys ) );
+      CHECK( ranges::equal( IDs, keys ) );
 
-      njoy::elementary::ReactionID reactionID{ "1" };
       THEN( "MT=3 can be checked" ){
 
-        reactionID = std::string( "3" );
+        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 3 } };
         auto reaction = reactions.at( reactionID );
 
         CHECK( 92235 == reaction.ZA() );
@@ -310,7 +311,7 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
       } // THEN
       THEN( "MT=18 can be checked" ){
 
-        reactionID = std::string( "18" );
+        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 18 } };
         auto reaction = reactions.at( reactionID );
 
         CHECK( 92238 == reaction.ZA() );

@@ -27,9 +27,6 @@ PPMap_t collectPPXS( const ENDFMaterial_t& material,
                                 std::move( reaction ) ) 
                );
     }
-  } else {
-    Log::info( "MF=13 doesn't exist. No photon production data to extract." );
-  }
-  
+  }  
   return xs;
 }
