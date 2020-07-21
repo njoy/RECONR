@@ -220,7 +220,6 @@ SCENARIO( "Testing creation of RECONR class" ){
 
   } // WHEN
 } // SCENARIO
-/*
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
     auto evaluatedData = tRECONR::getEvaluated(
@@ -1367,4 +1366,3 @@ SCENARIO( "Testing the summation of cross sections" ){
     
   } // GIVEN
 } // SCENARIO
-*/

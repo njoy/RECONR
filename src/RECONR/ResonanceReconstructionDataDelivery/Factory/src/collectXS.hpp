@@ -1,13 +1,19 @@
 static
-XSMap_t collectXS( const Material_t& material){
+XSMap_t collectXS( const Material_t& material, 
+                   const elementary::ParticleID& projectile,
+                   const elementary::ParticleID& target ){
   return std::visit( 
-    [&](auto&& arg ){ return Factory::collectXS( arg ); },
-    material );
+    [&](auto&& arg ){ return Factory::collectXS( arg, projectile, target ); },
+    material 
+  );
 }
 
 static
-XSMap_t collectXS( const ENDFMaterial_t& material ){
+XSMap_t collectXS( const ENDFMaterial_t& material,
+                   const elementary::ParticleID& projectile,
+                   const elementary::ParticleID& target ){
   XSMap_t xs{};
+
 
   if( not material.hasFileNumber( 3 ) ){
     Log::error( "ENDF file does not have MF=3. Can't proceed." );
@@ -16,6 +22,17 @@ XSMap_t collectXS( const ENDFMaterial_t& material ){
 
   auto MF3 = material.fileNumber( 3 ).parse< 3 >();
   for( auto& section : MF3.sections() ){
+    auto MT = section.MT();
+    if( ENDFtk::isRedundant( MT ) ){
+      auto redundants = ENDFtk::redundantReactions.at( MT )
+        | ranges::view::filter(
+          [&]( auto&& MT ){ return MF3.hasSection( MT ); } );
+
+      if( ranges::distance( redundants ) > 0 ){
+        continue;
+      }
+    }
+
     Reaction reaction{ 
       section.ZA(),
       section.AWR(),
@@ -24,8 +41,11 @@ XSMap_t collectXS( const ENDFMaterial_t& material ){
       section.LR(),
       interp::TAB1toInterpolation( section ) };
 
-    xs.insert( std::make_pair( MT2ReactionID( section.MT() ), 
-                               std::move( reaction ) ) );
+    elementary::ReactionID reactionID{ 
+      utility::copy( projectile ), utility::copy( target ), section.MT() };
+    xs.insert( std::make_pair( std::move( reactionID ), 
+                               std::move( reaction ) ) 
+             );
   }
 
   return xs;

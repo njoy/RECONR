@@ -7,7 +7,14 @@ public:
 
   using RPVariant = std::variant< ENDFtk::section::Type< 2, 151 > >;
 
+  using Info_t = std::variant< ENDFtk::section::Type< 1, 451 > >;
+
 private:
+  elementary::ParticleID projectile_;
+  elementary::ParticleID target_;
+
+  Info_t information_;
+
   XSMap_t reactions_;
   PPMap_t photonProductions_;
   ReconMap_t reconstructedResonances_;

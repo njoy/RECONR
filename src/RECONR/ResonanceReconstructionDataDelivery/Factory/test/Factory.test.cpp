@@ -7,9 +7,11 @@
 #include "RECONR/details/simpleENDFTestString.hpp"
 #include "RECONR/details/interpLambdas.hpp"
 #include "RECONR/details/checkRanges.hpp"
+#include "RECONR/details/printV.hpp"
 
 using namespace njoy;
 using namespace njoy::RECONR;
+using namespace njoy::elementary;
 
 class TFactory: protected njoy::RECONR::R2D2::Factory {
   using Factory = njoy::RECONR::R2D2::Factory;
@@ -87,48 +89,45 @@ SCENARIO( "Testing the the collection of cross sections" ){
   GIVEN( "an ENDF Material" ){
     auto material = details::ENDFMaterial( "SLBW", false );
 
-    WHEN( "the resonance reconstruction data can be extracted" ){
-      auto reactions = TFactory::collectXS( material );
-
-      std::vector< njoy::RECONR::ReactionID > MTs{ 
-        "1", "2", "16", "18", "51", "52", "102", "875", "876", "877" };
-      std::sort( MTs.begin(), MTs.end() );
-
-      auto keys = ranges::view::keys( reactions );
-      CHECK( ranges::equal( MTs, keys ) );
-
-      THEN( "MT=1 can be checked" ){
-        auto reaction = reactions.at( "1" );
-
-        CHECK( 1001 == reaction.ZA() );
-        CHECK( 0.9991673 == reaction.AWR() );
-        CHECK( 2.224648E6 == reaction.QM() );
-        CHECK( 3.224648E6 == reaction.QI() );
-        CHECK( 0 == reaction.LR() );
-
-        auto xs = std::get< njoy::RECONR::interp::Histogram >( 
-            reaction.crossSections< std::vector< interp::Variant > >()[ 0 ] );
-        std::vector< double > refE{
-          1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
-        std::vector< double > refB{
-          1.0, 1.182897E1, 3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
+    WHEN( "the resonance reconstruction data is extracted" ){
       
-        auto energies = xs.x() | ranges::to_vector;
-        auto barns = xs.y() | ranges::to_vector;
-      
-        details::checkRanges( refE, energies );
-        details::checkRanges( refB, barns );
+      ParticleID projectile( "n" );
+      ParticleID target( "h1" );
+      auto reactions = TFactory::collectXS( material, projectile, target );
 
-        CHECK( 1.0 == Approx( xs( 1.5E-5 ) ) );
-        CHECK( 1.0 == Approx( xs( 1.999999999E-5 ) ) );
-        CHECK( 1.1828971E1 == Approx( xs( 2.0E-5 ) ) );
-        CHECK( 1.1828971E1 == Approx( xs( 1 ) ) );
-        CHECK( 3.347392E-5 == Approx( xs( 8E5 ) ) );
-        CHECK( 2.751761E-5 == Approx( xs( 1.925E7 ) ) );
-        CHECK( 2.731301E-5 == Approx( xs( 1.975E7 ) ) );
-      } // THEN
+      using PID = ParticleID;
+      using NID = NucleusID;
+
+      std::vector< njoy::RECONR::ReactionID > IDs{ 
+        // ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 1 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 2 } },
+        // ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 16 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 18 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 51 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 52 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 102 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 875 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 876 } },
+        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 877 } }
+      };
+      auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
+      std::sort( IDs.begin(), IDs.end() );
+      std::sort( keys.begin(), keys.end() );
+
+      CHECK( IDs.size() == ranges::distance( keys ) );
+
+      CHECK( ranges::equal( IDs, keys ) );
+
+      for( auto id : IDs ){
+        THEN( "ID: " + id.symbol() + " should be in map" ){
+          // CHECK( 1 == reactions.count( id ) );
+          CHECK_NOTHROW( reactions.at( id ) );
+        } // THEN
+      }
+
       THEN( "MT=2 can be checked" ){ 
-        auto reaction = reactions.at( "2" );
+        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 2 } };
+        auto reaction = reactions.at( reactionID );
 
         CHECK( 1002 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -156,51 +155,9 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.0 == Approx( xs( 1.925E7 ) ) );
         CHECK( 2.0 == Approx( xs( 1.975E7 ) ) );
       }
-      THEN( "MT=16 can be checked" ){ 
-        auto reaction = reactions.at( "16" );
-
-        CHECK( 1016 == reaction.ZA() );
-        CHECK( 0.9991673 == reaction.AWR() );
-        CHECK( 2.224648E2 == reaction.QM() );
-        CHECK( 3.224648E2 == reaction.QI() );
-        CHECK( 0 == reaction.LR() );
-
-        auto xs = std::get< njoy::RECONR::interp::LogarithmicLogarithmic >( 
-            reaction.crossSections< std::vector< interp::Variant > >()[ 0 ] );
-        std::vector< double > refE{
-          1.0E-5, 2.0E-5, 7.5E+5, 1.9E+7, 1.95E+7, 2.0E+7 };
-        std::vector< double > refB{
-          1.6E1, 1.182897E1, 3.347392E-5, 
-          2.751761E-5, 2.731301E-5, 2.710792E-5 };
-
-        auto energies = xs.x() | ranges::to_vector;
-        auto barns = xs.y() | ranges::to_vector;
-
-        details::checkRanges( refE, energies );
-        details::checkRanges( refB, barns );
-
-        double refY = loglogInterpolation( 
-          1.5E-5, refE[ 0 ], refE[ 1 ], refB[ 0 ], refB[ 1 ] );
-        CHECK( refY == Approx( xs( 1.5E-5 ) ) );
-
-        refY = loglogInterpolation( 
-          1, refE[ 1 ], refE[ 2 ], refB[ 1 ], refB[ 2 ] );
-        CHECK( refY == Approx( xs( 1 ) ) );
-
-        refY = loglogInterpolation( 
-          8E5, refE[ 2 ], refE[ 3 ], refB[ 2 ], refB[ 3 ] );
-        CHECK( refY == Approx( xs( 8E5 ) ) );
-
-        refY = loglogInterpolation( 
-          1.925E7, refE[ 3 ], refE[ 4 ], refB[ 3 ], refB[ 4 ] );
-        CHECK( refY == Approx( xs( 1.925E7 ) ) );
-
-        refY = loglogInterpolation( 
-          1.975E7, refE[ 4 ], refE[ 5 ], refB[ 4 ], refB[ 5 ] );
-        CHECK( refY == Approx( xs( 1.975E7 ) ) );
-      }
       THEN( "MT=18 can be checked" ){ 
-        auto reaction = reactions.at( "18" );
+        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 18 } };
+        auto reaction = reactions.at( reactionID );
 
         CHECK( 1018 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -247,7 +204,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
       }
       THEN( "MT=102 can be checked" ){ 
-        auto reaction = reactions.at( "102" );
+        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 102 } };
+        auto reaction = reactions.at( reactionID );
 
         CHECK( 1102 == reaction.ZA() );
         CHECK( 0.9991673 == reaction.AWR() );
@@ -310,17 +268,24 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
     auto material = details::ENDFMaterial( "SLBW", false );
 
     WHEN( "the photon production cross sections have been extracted" ){
-      auto reactions = TFactory::collectPPXS( material );
+      njoy::elementary::ParticleID projectile( "n" );
+      njoy::elementary::ParticleID target( "h1" );
+      auto reactions = TFactory::collectPPXS( material, projectile, target );
       
-      std::vector< njoy::RECONR::ReactionID > MTs{ "3", "18" };
+      std::vector< njoy::RECONR::ReactionID > MTs{
+        njoy::elementary::ReactionID{ "3" },
+        njoy::elementary::ReactionID{ "18" }
+      };
       std::sort( MTs.begin(), MTs.end() );
 
       auto keys = ranges::view::keys( reactions );
       CHECK( ranges::equal( MTs, keys ) );
 
+      njoy::elementary::ReactionID reactionID{ "1" };
       THEN( "MT=3 can be checked" ){
 
-        auto reaction = reactions.at( "3" );
+        reactionID = std::string( "3" );
+        auto reaction = reactions.at( reactionID );
 
         CHECK( 92235 == reaction.ZA() );
         CHECK( 233.0248 == reaction.atomicWeightRatio() );
@@ -345,7 +310,8 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
       } // THEN
       THEN( "MT=18 can be checked" ){
 
-        auto reaction = reactions.at( "18" );
+        reactionID = std::string( "18" );
+        auto reaction = reactions.at( reactionID );
 
         CHECK( 92238 == reaction.ZA() );
         CHECK( 245.0248 == Approx( reaction.atomicWeightRatio() ) );

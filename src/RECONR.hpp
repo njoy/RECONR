@@ -8,11 +8,12 @@
 
 #include "ENDFtk.hpp"
 #include "dimwits.hpp"
-#include "resonanceReconstruction.hpp"
+// #include "resonanceReconstruction.hpp"
 #include "interpolation.hpp"
 #include "twig.hpp"
 #include "constants.hpp"
 #include "constants/CODATA2018.hpp"
+#include "elementary.hpp"
 
 inline
 auto CODATA = njoy::constants::CODATA2018;
@@ -22,10 +23,10 @@ namespace RECONR {
 
 using namespace ENDFtk::resonanceParameters;
 
-using ReactionID = std::string; // Attribution to @whaeck
+using ReactionID = elementary::ReactionID;
 
-#include "RECONR/src/MT2ReactionID.hpp"
-#include "RECONR/src/reactionID2MT.hpp"
+// #include "RECONR/src/MT2ReactionID.hpp"
+// #include "RECONR/src/reactionID2MT.hpp"
 #include "RECONR/interp.hpp"
 
 using XSPair = std::pair< std::vector< double >, std::vector< double > >;
@@ -42,8 +43,8 @@ using PPForms = std::variant<
 #include "RECONR/PhotonProduction.hpp"
 #include "RECONR/ReferenceGrid.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
-#include "RECONR/src/linearize.hpp"
-#include "RECONR/RECONR.hpp"
+// #include "RECONR/src/linearize.hpp"
+// #include "RECONR/RECONR.hpp"
 
 }
 }

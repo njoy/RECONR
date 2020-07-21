@@ -46,16 +46,21 @@ FetchContent_Declare(json
     GIT_SHALLOW true
     )
 
-FetchContent_Declare( interpolation
-    GIT_REPOSITORY  http://github.com/njoy/interpolation
-    GIT_TAG         origin/build/fetchcontent
-    )
-
 FetchContent_GetProperties(json)
 if(NOT json_POPULATED)
   FetchContent_Populate(json)
   add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
+
+FetchContent_Declare( interpolation
+    GIT_REPOSITORY  http://github.com/njoy/interpolation
+    GIT_TAG         origin/build/fetchcontent
+    )
+
+FetchContent_Declare( elementary
+    GIT_REPOSITORY  http://github.com/njoy/elementary
+    GIT_TAG         origin/master
+    )
 
 
 ########################################################################
@@ -71,4 +76,5 @@ FetchContent_MakeAvailable(
     twig
     json
     interpolation
+    elementary
     )

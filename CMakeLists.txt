@@ -40,6 +40,7 @@ target_link_libraries( RECONR
     INTERFACE twig
     INTERFACE nlohmann_json::nlohmann_json
     INTERFACE interpolation
+    INTERFACE elementary
     )
 
 #######################################################################
