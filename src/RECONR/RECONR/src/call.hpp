@@ -61,7 +61,7 @@ void operator()( const nlohmann::json& njoyArgs,
     // Remove leading zeros
     this->truncateReactions( output, data );
 
-    pendf.material( MAT, data, sequence );
+    // pendf.material( MAT, data, sequence );
 
   }
 

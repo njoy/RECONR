@@ -13,17 +13,18 @@ void combineReconstructed( std::ostream& output,
   const auto& proj = r2d2.projectile();
   const auto& target = r2d2.target();
 
-  auto fissionTotal = elementary::fromEndfReactionNumber( proj, target, 18 );
-  auto fission = elementary::fromEndfReactionNumber( proj, target, 19 );
+  const auto fissionTotal = 
+    elementary::fromEndfReactionNumber( proj, target, 18 );
+  const auto fission = 
+    elementary::fromEndfReactionNumber( proj, target, 19 );
 
   output << "\nAdding reconstructed cross sections to background for IDs:\n";
   for( const auto& ID : ranges::view::keys( reconstructed ) ){
     std::vector< std::vector< double >  > partials;
 
-    auto addReconstructed = [&]( const ReactionID& rxnID, 
-                                 const ReactionID& reconID ){
-      output << fmt::format( "{:s} ", rxnID.symbol() );
-      auto& recon = reconstructed.at( reconID );
+    auto addReconstructed = [&]( const ReactionID& rxnID ){
+      output << fmt::format( "\t{:s}\n", rxnID.symbol() );
+      auto& recon = reconstructed.at( ID );
       auto& reaction = reactions.at( rxnID );
       auto& part = reaction.template crossSections< XSPair >().second;
       partials.push_back( part );
@@ -34,22 +35,20 @@ void combineReconstructed( std::ostream& output,
       }
       auto sum = sumPartials( partials );
       reaction.crossSections( 
-        std::make_pair( utility::copy( energies ), sum ) );
-      // auto xs = reaction.template crossSections< XSPair >().second;
+        XSForms{ std::make_pair( utility::copy( energies ), sum ) } );
     };
 
-    // Add resonance data to ID=19 if there are partials
     if( ID == fission ){
       if( reactions.find( fission ) != reactions.end() ){
-        addReconstructed( fission, fissionTotal );
+        addReconstructed( fission );
       } else if (reactions.find( fissionTotal ) != reactions.end() ) {
-        addReconstructed( fissionTotal, fissionTotal );
+        addReconstructed( fissionTotal );
       }
     } else{
       if( reactions.find( ID ) != reactions.end() ){
-        addReconstructed( ID, ID );
+        addReconstructed( ID );
       }
     }
-    output << std::endl;
   } // Reconstructed resonances
+  output << std::endl;
 }

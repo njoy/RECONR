@@ -28,6 +28,11 @@ using ReactionID = elementary::ReactionID;
 #include "RECONR/interp.hpp"
 
 using XSPair = std::pair< std::vector< double >, std::vector< double > >;
+using XSForms = std::variant< 
+  std::vector< interp::Variant >,
+  interp::LinearTable,
+  XSPair
+>;
 using PPair = std::pair< double, double >;
 using PPForms = std::variant<
   std::vector< interp::Variant >,

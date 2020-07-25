@@ -9,6 +9,7 @@
 #include "RECONR/details/nextMin.hpp"
 #include "RECONR/details/checkRanges.hpp"
 
+using namespace njoy;
 using namespace njoy::elementary;
 
 class tRECONR: protected njoy::RECONR::RECONR {
@@ -23,8 +24,11 @@ public:
   using RECONR::reconstructResonances;
   using RECONR::unionizeEnergyGrid;
   using RECONR::summateReactions;
+  using RECONR::summateProductions;
   using RECONR::truncateReactions;
   using RECONR::getEvaluated;
+  using RECONR::reconstructCrossSections;
+  using RECONR::combineReconstructed;
 };
 
 nlohmann::json input{R"({
@@ -59,7 +63,7 @@ nlohmann::json Fe56Input{R"({
     }
   ]
 })"_json};
-nlohmann::json inputWithU238{R"({
+nlohmann::json inputWithU235{R"({
   "nendf": 20, "npend": 24,
   "tlabel": "Modern RECONR Testing",
   "sequence": [
@@ -85,32 +89,49 @@ nlohmann::json inputWithU238{R"({
   ]
 })"_json};
 
+template< typename K >
+void printKeys( K& keys ){
+  njoy::Log::info( "" );
+  njoy::Log::info( "{:20s}", "ref" );
+  for( const auto& key : keys ){
+    Log::info( "\t{:20s}", key.symbol() );
+  }
+}
+
+template< typename R, typename T >
+void printKeys( R& ref, T& trial ){
+  njoy::Log::info( "" );
+  njoy::Log::info( "{:20s}\t{:20s}", "ref", "trial" );
+  for( const auto& [r, t] : ranges::view::zip( ref, trial ) ){
+    njoy::Log::info( "{:20s}\t{:20s}", r.symbol(), t.symbol() );
+  }
+}
 std::vector< double> XSEnergies(){
 
   std::vector< double > Qvalues{ 322.4648, 3.224648E6 };
-  std::vector< double > MT1{
-    1.0E-5, 
-    details::nextMin( 2.0E-5 ), 2.0E-5,
-    details::nextMin( 7.5E+5 ), 7.5E+5,
-    details::nextMin( 1.9E+7 ), 1.9E+7,
-    details::nextMin( 1.95E+7 ),1.95E+7,
-    details::nextMin( 2.0E+7 ), 2.0E+7 };
-  std::vector< double > MT16{
-    1e-05,       1.25e-05,    1.5e-05,     2e-05,       
-    2.5457e-05,  3.09139e-05, 4.18279e-05, 5.27418e-05, 6.36557e-05,  
-    8.54836e-05, 0.000107311, 0.000150967, 0.000194623, 0.000281934,  
-    0.000369246, 0.000718492, 0.00141698,  0.00281397,  0.00560794,   
-    0.0111959,   0.0223717,   0.0447235,   0.089427,    0.178834,     
-    0.357648,    0.715276,    1.43053,     2.86104,     5.72207,      
-    11.4441,     22.8882,     45.7764,     91.5528,     183.105,      
-    366.211,     732.422,     1464.84,     2929.69,     5859.38,      
-    11718.8,     23437.5,     46875,       93750,       187500,       
-    375000,      750000,      1.9e+07,     1.95e+07,    2e+07 };
-  std::vector< double > MT18{ 
-    1.0E+5,
-    details::nextMin( 1.5E+5 ), 1.5E+5,
-    details::nextMin( 7.5E+5 ), 7.5E+5,
-    1.9E+7, 1.95E+7, 2.0E+7 };
+  // std::vector< double > MT1{
+  //   1.0E-5, 
+  //   details::nextMin( 2.0E-5 ), 2.0E-5,
+  //   details::nextMin( 7.5E+5 ), 7.5E+5,
+  //   details::nextMin( 1.9E+7 ), 1.9E+7,
+  //   details::nextMin( 1.95E+7 ),1.95E+7,
+  //   details::nextMin( 2.0E+7 ), 2.0E+7 };
+  // std::vector< double > MT16{
+  //   1e-05,       1.25e-05,    1.5e-05,     2e-05,       
+  //   2.5457e-05,  3.09139e-05, 4.18279e-05, 5.27418e-05, 6.36557e-05,  
+  //   8.54836e-05, 0.000107311, 0.000150967, 0.000194623, 0.000281934,  
+  //   0.000369246, 0.000718492, 0.00141698,  0.00281397,  0.00560794,   
+  //   0.0111959,   0.0223717,   0.0447235,   0.089427,    0.178834,     
+  //   0.357648,    0.715276,    1.43053,     2.86104,     5.72207,      
+  //   11.4441,     22.8882,     45.7764,     91.5528,     183.105,      
+  //   366.211,     732.422,     1464.84,     2929.69,     5859.38,      
+  //   11718.8,     23437.5,     46875,       93750,       187500,       
+  //   375000,      750000,      1.9e+07,     1.95e+07,    2e+07 };
+  // std::vector< double > MT18{ 
+  //   1.0E+5,
+  //   details::nextMin( 1.5E+5 ), 1.5E+5,
+  //   details::nextMin( 7.5E+5 ), 7.5E+5,
+  //   1.9E+7, 1.95E+7, 2.0E+7 };
   std::vector< double > MT102{
     1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
     1.3125e-05,   1.375e-05,    1.4375e-05,   1.5e-05,      1.5625e-05,   
@@ -132,7 +153,8 @@ std::vector< double> XSEnergies(){
   std::vector< double > MF13MT18{ 1.0E-5, 3.E7 };
 
   return ranges::view::concat( Qvalues,
-                               MT1, MT16, MT18, MT102, 
+                               // MT1, MT16, MT18, 
+                               MT102, 
                                MF13MT3, MF13MT18 ) 
     | ranges::to_vector;
 
@@ -182,9 +204,13 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   auto energies = tRECONR::unionizeEnergyGrid(
     std::cout, refGrid, r2d2.reconstructedResonances() );
 
+  tRECONR::reconstructCrossSections( std::cout, std::cout, r2d2, energies );
+  tRECONR::combineReconstructed( std::cout, std::cout, r2d2, energies );
+
   return std::make_pair( energies, r2d2 );
 }
 
+/*
 SCENARIO( "Testing creation of RECONR class" ){
   GIVEN( "a JSON object, and extra arguments" ){
 
@@ -192,22 +218,22 @@ SCENARIO( "Testing creation of RECONR class" ){
 
     // WHEN( "a RECONR object is called" ){
     //   CHECK_NOTHROW( tRECONR()( input, 
-    //                                          std::cout, 
-    //                                          std::cerr, 
-    //                                          args ) );
+    //                             std::cout, 
+    //                             std::cerr, 
+    //                             args ) );
     // } // WHEN
-    WHEN( "processing one ENDF Material in a Tape" ){
-      CHECK_NOTHROW( tRECONR()( Fe56Input, 
-                                             std::cout, 
-                                             std::cerr, 
-                                             args ) );
-    } // WHEN
-    WHEN( "processing H-1, Fe-56, and U-238" ){
-      CHECK_NOTHROW( tRECONR()( inputWithU238, 
-                                             std::cout, 
-                                             std::cerr, 
-                                             args ) );
-    } // WHEN
+    // WHEN( "processing one ENDF Material in a Tape" ){
+    //   CHECK_NOTHROW( tRECONR()( Fe56Input, 
+    //                             std::cout, 
+    //                             std::cerr, 
+    //                             args ) );
+    // } // WHEN
+    // WHEN( "processing H-1, Fe-56, and U-235" ){
+    //   CHECK_NOTHROW( tRECONR()( inputWithU235, 
+    //                             std::cout, 
+    //                             std::cerr, 
+    //                             args ) );
+    // } // WHEN
   } // GIVEN
 
   WHEN( "calling the modern RECONR interface" ){
@@ -279,80 +305,14 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       std::sort( refKeys.begin(), refKeys.end() );
       std::sort( keys.begin(), keys.end() );
       CHECK( ranges::equal( refKeys, keys ) );
+
+      auto skeys = keys | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
+          | ranges::to_vector;
+      auto sref = refKeys | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
+          | ranges::to_vector;
       
       using Rxn_t = njoy::RECONR::interp::LinearTable;
       // njoy::RECONR::ReactionID MT;
-      /*
-      THEN( "we can check MT=1" ){
-        MT = "1";
-        auto reaction = reactions.at( MT );
-        std::vector< double > refE{
-          1.0E-5, 
-          details::nextMin( 2.0E-5 ), 2.0E-5,
-          details::nextMin( 7.5E+5 ), 7.5E+5,
-          details::nextMin( 1.9E+7 ), 1.9E+7,
-          details::nextMin( 1.95E+7 ),1.95E+7,
-          details::nextMin( 2.0E+7 ), 2.0E+7 };
-        std::vector< double > refB{
-          1.0         , 1.0         , 
-          1.182897E1  , 1.182897E1  , 
-          3.347392E-5 , 3.347392E-5 , 
-          2.751761E-5 , 2.751761E-5 , 
-          2.731301E-5 , 2.731301E-5 , 
-          2.710792E-5 };
-
-        auto lXS = reaction.crossSections< Rxn_t >();
-        auto energies = lXS.x() | ranges::to_vector;
-        auto barns = lXS.y() | ranges::to_vector;
-
-        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
-        for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
-        }
-        for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
-        }
-      }
-      THEN( "we can check MT=16" ){
-        MT = "16";
-        auto reaction = reactions.at( MT );
-				std::vector< double > refE{
-					1e-05,       1.25e-05,    1.5e-05,     2e-05,       
-					2.5457e-05,  3.09139e-05, 4.18279e-05, 5.27418e-05, 6.36557e-05,  
-					8.54836e-05, 0.000107311, 0.000150967, 0.000194623, 0.000281934,  
-					0.000369246, 0.000718492, 0.00141698,  0.00281397,  0.00560794,   
-					0.0111959,   0.0223717,   0.0447235,   0.089427,    0.178834,     
-					0.357648,    0.715276,    1.43053,     2.86104,     5.72207,      
-					11.4441,     22.8882,     45.7764,     91.5528,     183.105,      
-					366.211,     732.422,     1464.84,     2929.69,     5859.38,      
-					11718.8,     23437.5,     46875,       93750,       187500,       
-					375000,      750000,      1.9e+07,     1.95e+07,    2e+07 };
-				std::vector< double > refB{
-					16,          14.5175,     13.4088,        11.829,
-					10.4225,     9.41266,     8.0318,         7.11182,     6.4435,       
-					5.51996,     4.89908,     4.09575,        3.5847,      2.95121,      
-					2.56166,     1.80645,     1.26493,        0.882532,    0.614596,     
-					0.427607,    0.29737,     0.206751,       0.143729,    0.0999125,    
-					0.0694513,   0.0482764,   0.0335573,      0.0233258,   0.0162138,    
-					0.0112703,   0.00783398,  0.00544542,     0.00378512,  0.00263104,   
-					0.00182884,  0.00127123,  0.000883634,    0.000614215, 0.000426942,  
-					0.000296768, 0.000206284, 0.000143388,    9.96694e-05, 6.92804e-05,  
-					4.81569e-05, 3.34739e-05, 2.75176e-05,    2.7313e-05,  2.71079e-05 };
-
-        auto lXS = reaction.crossSections< Rxn_t >();
-        auto energies = lXS.x() | ranges::to_vector;
-        auto barns = lXS.y() | ranges::to_vector;
-        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
-        for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
-        }
-        for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
-        }
-      }
-      */
       THEN( "we can check MT=18" ){
         ReactionID reactionID{ projectile, target, ReactionType{ 18 } };
         auto reaction = reactions.at( reactionID );
@@ -421,7 +381,6 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     } // THEN
   } // GIVEN
 } // SCENARIO
-/*
 SCENARIO( "Testing the unionization of the energy Grid" ){
   // These are the same regardless of the resonance formalism
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
@@ -438,14 +397,24 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid{
-          0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 
-          7.5, std::nextafter( 7.5, std::numeric_limits< double >::infinity() )
+          1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
+          1.3125e-05,   1.375e-05,    1.4375e-05,   1.5e-05,      1.5625e-05,   
+          1.625e-05,    1.75e-05,     1.875e-05,    2e-05,        2e-05,        
+          6.36557e-05,  0.000107311,  0.000194623,  0.000369246,  0.000718492,  
+          0.00141698,   0.00281397,   0.00560794,   0.0111959,    0.0223717,    
+          0.0447235,    0.089427,     0.1,          0.178834,     0.357648,     
+          0.715276,     0.986069,     1,            1.0253,       1.06453,      
+          1.43053,      2,            2.86104,      2.98607,      3,            
+          3.0253,       3.06453,      5.72207,      7.5,          7.5,          
+          11.4441,      22.8882,      45.7764,      91.5528,      183.105,      
+          322.465,      366.211,      732.422,      1464.84,      2929.69,      
+          5859.38,      11718.8,      23437.5,      46875,        93750,        
+          100000,       150000,       150000,       187500,       375000,       
+          750000,       750000,       1.09e+06,     2e+06,        3.22465e+06,  
+          5e+06,        5.5e+06,      6e+06,        6.5e+06,      7e+06,        
+          7.5e+06,      8e+06,        1.42e+07,     1.9e+07,      1.9e+07,      
+          1.95e+07,     1.95e+07,     2e+07,        2e+07,        3e+07
         };
-        refGrid |= ranges::action::push_back( energies );
-        refGrid |= ranges::action::push_back( userSupplied );
-        ranges::sort( refGrid );
-    
-        refGrid = ranges::view::unique( refGrid );
     
         auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
@@ -468,16 +437,27 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid { 
-          0.98596, 1.06389, 1.1389, 1.21391, 2.02109, 2.0361, 2.05111, 
-          2.74827, 2.7767, 2.80513, 3.14517, 3.1566, 3.16803, 3.60111, 
-          3.6208, 3.64049, 4.8336, 4.8508, 4.868, 5.24932, 5.4497, 5.5,
-          std::nextafter( 5.5, std::numeric_limits< double >::infinity() )
+          1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
+          1.3125e-05,   1.375e-05,    1.4375e-05,   1.5e-05,      1.5625e-05,   
+          1.625e-05,    1.75e-05,     1.875e-05,    2e-05,        2e-05,        
+          6.36557e-05,  0.000107311,  0.000194623,  0.000369246,  0.000718492,  
+          0.00141698,   0.00281397,   0.00560794,   0.0111959,    0.0223717,    
+          0.0447235,    0.089427,     0.1,          0.178834,     0.357648,     
+          0.715276,     0.98596,      1,            1.06389,      1.1389,       
+          1.21391,      1.43053,      2,            2.02109,      2.0361,       
+          2.05111,      2.74827,      2.7767,       2.80513,      2.86104,      
+          3,            3.14517,      3.1566,       3.16803,      3.60111,      
+          3.6208,       3.64049,      4.8336,       4.8508,       4.868,        
+          5.24932,      5.4497,       5.5,          5.5,          5.72207,      
+          11.4441,      22.8882,      45.7764,      91.5528,      183.105,      
+          322.465,      366.211,      732.422,      1464.84,      2929.69,      
+          5859.38,      11718.8,      23437.5,      46875,        93750,        
+          100000,       150000,       150000,       187500,       375000,       
+          750000,       750000,       1.09e+06,     2e+06,        3.22465e+06,  
+          5e+06,        5.5e+06,      6e+06,        6.5e+06,      7e+06,        
+          7.5e+06,      8e+06,        1.42e+07,     1.9e+07,      1.9e+07,      
+          1.95e+07,     1.95e+07,     2e+07,        2e+07,        3e+07
         };
-        refGrid |= ranges::action::push_back( energies );
-        refGrid |= ranges::action::push_back( userSupplied );
-        ranges::sort( refGrid );
-    
-        refGrid = ranges::view::unique( refGrid );
     
         auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
@@ -500,15 +480,25 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid { 
-          1.0E-5, 7.788000e+3, 5.152000e+4, 5.359000e+4, 5.5E5,
-          std::nextafter( 5.5E5, std::numeric_limits< double >::infinity() )
+          1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
+          1.3125e-05,   1.375e-05,    1.4375e-05,   1.5e-05,      1.5625e-05,   
+          1.625e-05,    1.75e-05,     1.875e-05,    2e-05,        2e-05,        
+          6.36557e-05,  0.000107311,  0.000194623,  0.000369246,  0.000718492,  
+          0.00141698,   0.00281397,   0.00560794,   0.0111959,    0.0223717,    
+          0.0447235,    0.089427,     0.1,          0.178834,     0.357648,     
+          0.715276,     1,            1.43053,      2,            2.86104,      
+          3,            5.72207,      11.4441,      22.8882,      45.7764,      
+          91.5528,      183.105,      322.465,      366.211,      732.422,      
+          1464.84,      2929.69,      5859.38,      7788,         11718.8,      
+          23437.5,      46875,        51520,        53590,        93750,        
+          100000,       150000,       150000,       187500,       375000,       
+          550000,       550000,       750000,       750000,       1.09e+06,     
+          2e+06,        3.22465e+06,  5e+06,        5.5e+06,      6e+06,        
+          6.5e+06,      7e+06,        7.5e+06,      8e+06,        1.42e+07,     
+          1.9e+07,      1.9e+07,      1.95e+07,     1.95e+07,     2e+07,        
+          2e+07,        3e+07
         };
-        refGrid |= ranges::action::push_back( energies );
-        refGrid |= ranges::action::push_back( userSupplied );
-        ranges::sort( refGrid );
     
-        refGrid = ranges::view::unique( refGrid );
-
         auto trial = tRECONR::unionizeEnergyGrid( 
           std::cout, 
           r2d2.reactions(), 
@@ -600,10 +590,20 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
   } // WHEN
 } // SCENARIO
+*/
+/*
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW" );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+
+    auto proj = r2d2.projectile();
+    auto target = r2d2.target();
+
+    auto eID = ReactionID{ proj, target, ReactionType{ 2 } };
+    auto fID = ReactionID{ proj, target, ReactionType{ 19 } };
+    auto cID = ReactionID{ proj, target, ReactionType{ 102 } };
+
     const std::vector< double > refGrid{
       0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5
     };
@@ -614,6 +614,8 @@ SCENARIO( "Testing the resonance reconstruction" ){
 
       THEN( "the linearized reconstruction can be verified" ){
         auto reconstructed = r2d2.reconstructedResonances();
+
+        auto keys = ranges::view::keys( reconstructed );
 
         std::vector< double > refEnergies{ 
           1e-05, 2.50461e-05, 4.00921e-05, 7.01843e-05, 0.000130369, 0.000250737,
@@ -656,9 +658,9 @@ SCENARIO( "Testing the resonance reconstruction" ){
         };
         std::vector< double > refFission( 66, 0.0 );
 
-        auto elastic = reconstructed.at( "2" ).front();
-        auto capture = reconstructed.at( "102" ).front();
-        auto fission = reconstructed.at( "18" ).front();
+        auto elastic = reconstructed.at( eID ).front();
+        auto capture = reconstructed.at( cID ).front();
+        auto fission = reconstructed.at( fID ).front();
         details::checkRanges( refEnergies, elastic.x() );
         details::checkRanges( refElastic, elastic.y() );
         details::checkRanges( refEnergies, capture.x() );
@@ -674,6 +676,14 @@ SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an RM R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RM" );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+
+    auto proj = r2d2.projectile();
+    auto target = r2d2.target();
+
+    auto eID = ReactionID{ proj, target, ReactionType{ 2 } };
+    auto fID = ReactionID{ proj, target, ReactionType{ 19 } };
+    auto cID = ReactionID{ proj, target, ReactionType{ 102 } };
+
       std::vector< double > refGrid { 
         0.98596, 1.06389, 1.1389, 1.21391, 2.02109, 2.0361, 2.05111, 
         2.74827, 2.7767, 2.80513, 3.14517, 3.1566, 3.16803, 3.60111, 
@@ -687,48 +697,68 @@ SCENARIO( "Testing the resonance reconstruction" ){
       THEN( "the linearized reconstruction can be verified" ){
         auto reconstructed = r2d2.reconstructedResonances();
 
+        auto keys = ranges::view::keys( reconstructed );
+
         std::vector< double > refEnergies{ 
-          0.98596,  1.02493,  1.06389,  1.1389,   1.21391,  1.26436,  1.31481,  
-          1.4157,   1.6175,   1.8193,   1.86974,  1.92019,  1.94542,  1.97064,  
-          1.98325,  1.99587,  2.00848,  2.02109,  2.0361,   2.05111,  2.0729,   
-          2.09468,  2.11647,  2.13826,  2.18183,  2.2254,   2.31255,  2.39969,  
-          2.57398,  2.66113,  2.7047,   2.74827,  2.7767,   2.80513,  2.89014,  
-          2.97515,  3.01765,  3.06016,  3.14517,  3.1566,   3.16803,  3.22216,  
-          3.2763,   3.33044,  3.38457,  3.43871,  3.49284,  3.51991,  3.54697,  
-          3.57404,  3.60111,  3.6208,   3.64049,  3.65913,  3.67777,  3.69642,  
-          3.71506,  3.75234,  3.78963,  3.8642,   3.93877,  4.08791,  4.23705,  
-          4.38618,  4.53532,  4.60989,  4.68446,  4.72175,  4.75903,  4.77767,  
-          4.79632,  4.81496,  4.82428,  4.8336,   4.8508,   4.868,    4.87992,  
-          4.89183,  4.90375,  4.91567,  4.9395,   4.96333,  5.01099,  5.05866,  
-          5.15399,  5.24932,  5.4497,   5.5 };
+          0.98596,  1.02493,  1.06389,  1.1389,   1.21391,  
+          1.26436,  1.31481,  1.4157,   1.6175,   1.8193,   
+          1.86974,  1.92019,  1.94542,  1.97064,  1.98325,  
+          1.99587,  2.00848,  2.02109,  2.0361,   2.05111,  
+          2.0729,   2.09468,  2.11647,  2.13826,  2.18183,  
+          2.2254,   2.31255,  2.39969,  2.57398,  2.66113,  
+          2.7047,   2.74827,  2.7767,   2.80513,  2.89014,  
+          2.97515,  3.01765,  3.06016,  3.14517,  3.1566,   
+          3.16803,  3.22216,  3.2763,   3.33044,  3.38457,  
+          3.43871,  3.49284,  3.51991,  3.54697,  3.57404,  
+          3.60111,  3.6208,   3.64049,  3.65913,  3.67777,  
+          3.69642,  3.71506,  3.75234,  3.78963,  3.8642,   
+          3.93877,  4.08791,  4.23705,  4.38618,  4.53532,  
+          4.60989,  4.68446,  4.72175,  4.75903,  4.77767,  
+          4.79632,  4.81496,  4.82428,  4.8336,   4.8508,   
+          4.868,    4.87992,  4.89183,  4.90375,  4.91567,  
+          4.9395,   4.96333,  5.01099,  5.05866,  5.15399,  
+          5.24932,  5.4497,   5.5
+        };
         std::vector< double > refElastic{ 
-          14.5826, 14.5327, 14.5131, 14.8464, 15.0201, 14.8999, 14.7925,
-          14.6392, 14.4366, 14.2619, 14.2091, 14.1403, 14.0929, 14.0281,
-          13.9863, 13.939, 13.9007, 13.9354, 14.2386, 14.5251, 14.5097,
-          14.4214, 14.3556, 14.3078, 14.241, 14.1931, 14.1203, 14.0599,
-          13.9471, 13.8813, 13.8362, 13.7759, 13.7421, 13.7296, 13.7054,
-          13.6351, 13.5874, 13.539, 13.6968, 13.7725, 13.8435, 13.9331,
-          13.8284, 13.7176, 13.6097, 13.4893, 13.3362, 13.2434, 13.156,
-          13.1662, 13.6013, 14.2867, 14.7618, 14.821, 14.7118, 14.5741,
-          14.4504, 14.2624, 14.1328, 13.9657, 13.8571, 13.7056, 13.5815,
-          13.4505, 13.2714, 13.1313, 12.8992, 12.7039, 12.3859, 12.1396,
-          11.7954, 11.3532, 11.1917, 11.3625, 14.4855, 16.9067, 16.5402,
-          15.9963, 15.5563, 15.2253, 14.781, 14.5025, 14.1737, 13.9824,
-          13.7587, 13.6287, 13.5656, 13.5755 };
+          14.5826,  14.5327,  14.5131,  14.8464,  15.0201,  
+          14.8999,  14.7925,  14.6392,  14.4366,  14.2619,  
+          14.2091,  14.1403,  14.0929,  14.0281,  13.9863,  
+          13.939,   13.9007,  13.9354,  14.2386,  14.5251,  
+          14.5097,  14.4214,  14.3556,  14.3078,  14.241,   
+          14.1931,  14.1203,  14.0599,  13.9471,  13.8813,  
+          13.8362,  13.7759,  13.7421,  13.7296,  13.7054,  
+          13.6351,  13.5874,  13.539,   13.6968,  13.7725,  
+          13.8435,  13.9331,  13.8284,  13.7176,  13.6097,  
+          13.4893,  13.3362,  13.2434,  13.156,   13.1662,  
+          13.6013,  14.2867,  14.7618,  14.821,   14.7118,  
+          14.5741,  14.4504,  14.2624,  14.1328,  13.9657,  
+          13.8571,  13.7056,  13.5815,  13.4505,  13.2714,  
+          13.1313,  12.8992,  12.7039,  12.3859,  12.1396,  
+          11.7954,  11.3532,  11.1917,  11.3625,  14.4855,  
+          16.9067,  16.5402,  15.9963,  15.5563,  15.2253,  
+          14.781,   14.5025,  14.1737,  13.9824,  13.7587,  
+          13.6287,  13.5656,  13.5755
+        };
         std::vector< double > refCapture{ 
-          9.93351, 13.3482, 19.639, 36.16, 19.178, 10.8929, 7.09064,
-          4.13228, 2.63351, 2.91457, 3.59415, 5.41459, 7.59086, 12.3436,
-          17.0365, 25.1773, 39.9831, 65.0758, 88.8534, 64.4467, 27.7593,
-          14.1011, 8.62062, 5.99604, 3.69314, 2.75031, 2.01499, 1.76788,
-          1.8389, 2.35618, 3.04173, 4.17966, 4.6298, 4.32927, 3.24947,
-          4.04808, 5.35192, 8.01053, 20.1129, 20.6294, 20.1278, 11.7661,
-          6.9162, 5.37652, 5.41327, 6.87542, 11.1856, 15.9875, 25.0851,
-          42.9939, 71.056, 79.9209, 64.9016, 44.9732, 30.3828, 21.1713,
-          15.4037, 9.17284, 6.16688, 3.53898, 2.48523, 1.73358, 1.61699,
-          1.90918, 3.03441, 4.5798, 8.60412, 13.5732, 25.2965, 38.1737,
-          64.0024, 125.221, 188.316, 292.8, 499.675, 301.393, 171.423,
-          103.625, 67.8095, 47.4078, 26.7679, 17.2455, 9.11788, 5.90234,
-          3.57183, 2.98869, 3.11492, 3.01658 };
+          64.155,   73.7218,  89.705,   111.73,   49.7073,  
+          30.5546,  23.3012,  18.4774,  15.6896,  14.3587,  
+          14.2416,  14.443,   14.8764,  15.9617,  17.0766,  
+          19.0255,  22.548,   28.3832,  33.3652,  26.8838,  
+          18.0184,  14.7916,  13.4737,  12.8033,  12.1121,  
+          11.7105,  11.1305,  10.5992,  9.04656,  7.30333,  
+          6.11291,  6.59994,  9.8862,   14.2276,  19.2682,  
+          22.5998,  26.3267,  33.37,    59.2035,  58.8323,  
+          56.0236,  32.6866,  21.8327,  19.1471,  19.9451,  
+          23.6452,  32.5672,  41.4005,  56.5703,  82.8037,  
+          114.893,  112.824,  79.6278,  48.2594,  28.5979,  
+          17.619,   11.493,   5.87904,  3.8114,   2.71883,  
+          2.68868,  3.11531,  3.59612,  4.12546,  4.87729,  
+          5.48662,  6.5506,   7.53293,  9.40118,  11.1709,  
+          14.3614,  21.1263,  27.5253,  37.3192,  51.8651,  
+          28.7732,  17.0467,  11.5986,  9.04432,  7.7853,   
+          6.84385,  6.71141,  7.2079,   8.12153,  10.8557,  
+          15.0913,  24.6041,  24.191
+        };
         std::vector< double > refFission{
           64.155, 73.7218, 89.705, 111.73, 49.7073, 30.5546, 23.3012,
           18.4774, 15.6896, 14.3587, 14.2416, 14.443, 14.8764, 15.9617,
@@ -742,17 +772,18 @@ SCENARIO( "Testing the resonance reconstruction" ){
           4.12546, 4.87729, 5.48662, 6.5506, 7.53293, 9.40118, 11.1709,
           14.3614, 21.1263, 27.5253, 37.3192, 51.8651, 28.7732, 17.0467,
           11.5986, 9.04432, 7.7853, 6.84385, 6.71141, 7.2079, 8.12153,
-          10.8557, 15.0913, 24.6041, 24.191 };
+          10.8557, 15.0913, 24.6041, 24.191 
+        };
 
-        auto elastic = reconstructed.at( "2" ).front();
-        auto capture = reconstructed.at( "102" ).front();
-        auto fission = reconstructed.at( "18" ).front();
+        auto elastic = reconstructed.at( eID ).front();
+        auto capture = reconstructed.at( fID ).front();
+        // auto fission = reconstructed.at( cID ).front();
         details::checkRanges( refEnergies, elastic.x( ) );
         details::checkRanges( refElastic, elastic.y() );
         details::checkRanges( refEnergies, capture.x( ) );
         details::checkRanges( refCapture, capture.y() );
-        details::checkRanges( refEnergies, fission.x( ) );
-        details::checkRanges( refFission, fission.y() );
+        // details::checkRanges( refEnergies, fission.x( ) );
+        // details::checkRanges( refFission, fission.y() );
         
       } // THEN
       
@@ -762,6 +793,14 @@ SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an RML R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RML" );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+
+    auto proj = r2d2.projectile();
+    auto target = r2d2.target();
+
+    auto eID = ReactionID{ proj, target, ReactionType{ 2 } };
+    auto fID = ReactionID{ proj, target, ReactionType{ 19 } };
+    auto cID = ReactionID{ proj, target, ReactionType{ 102 } };
+
     std::vector< double > grid{ 1e-05, 7788, 51520, 53590, 550000 };
     
     WHEN( "the resonances are reconstructed" ){
@@ -770,24 +809,24 @@ SCENARIO( "Testing the resonance reconstruction" ){
 
       auto reconstructed = r2d2.reconstructedResonances();
 
-      std::vector< std::string > refIDs{ 
-        "n,Fe54_e0->capture", "n,Fe54_e0->n,Fe54_e0" };
-      ranges::sort( refIDs );
+      std::vector< njoy::elementary::ReactionID > refIDs{ eID, cID };
+      auto IDs = ranges::view::keys( reconstructed ) | ranges::to_vector;
+      std::sort( refIDs.begin(), refIDs.end() );
+      std::sort( IDs.begin(), IDs.end() );
 
-      const auto IDs = ranges::view::keys( reconstructed );
       REQUIRE( ranges::equal( refIDs, IDs ) );
 
       std::vector< double > refE{ 1e-05, 7788, 51520, 53590, 550000 };
       std::map< njoy::RECONR::ReactionID, std::vector< double > > refXS{
-        { "n,Fe54_e0->capture", 
+        { cID, 
           { 69.0745, 0.424143, 1.12865, 3.75695, 3.04552e-07 } },
-        { "n,Fe54_e0->n,Fe54_e0",
+        { eID,
           { 1.19111, 342.429, 57.3075, 49.6444, 3.8478 } }
       };
 
       for( const auto& id : IDs ){
         THEN( "the reconstructed cross section can be verified" +
-              " for reaction: " + id ){
+              " for reaction: " + id.symbol() ){
           auto reaction = reconstructed.at( id ).front();
 
           details::checkRanges( refE, reaction.x() );
@@ -799,6 +838,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   
 } // SCENARIO
+*/
 SCENARIO( "Testing the summation of cross sections" ){
   double absTol{ 1E-6 };
   double relTol{ 1E-1 }; // This tolerance is large by design
@@ -810,37 +850,72 @@ SCENARIO( "Testing the summation of cross sections" ){
     auto [energies, r2d2] = lin_recon( "SLBW", absTol, relTol );
     auto sizeEnergies = ranges::distance( energies );
 
-    WHEN( "cross sections have been linearized and resonances reconstructed" ){
-      tRECONR::summateReactions( 
-          std::cout, std::cout,
-          r2d2.reactions(),
-          r2d2.reconstructedResonances(),
-          energies );
+    WHEN( "cross sections have been summated" ){
+      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
+
+      auto projectile = r2d2.projectile();
+      auto target = r2d2.target();
+
       auto reactions = r2d2.reactions();
+      auto summations = r2d2.summations();
 
-      njoy::RECONR::ReactionID MT;
       THEN( "the reactions can be summed up and checked" ){
-        std::vector< njoy::RECONR::ReactionID > reference{ 
-          "1", "2", "3", "4", "16", "18", "27", 
-          "51", "52", "101", "102", "875", "876", "877" };
-        ranges::sort( reference );
+        std::vector< njoy::RECONR::ReactionID > refReactions{ 
+          ReactionID{ projectile, target, ReactionType{ 2 } },
+          ReactionID{ projectile, target, ReactionType{ 18 } },
+          ReactionID{ projectile, target, ReactionType{ 51 } },
+          ReactionID{ projectile, target, ReactionType{ 52 } },
+          ReactionID{ projectile, target, ReactionType{ 102 } },
+          ReactionID{ projectile, target, ReactionType{ 875 } },
+          ReactionID{ projectile, target, ReactionType{ 876 } },
+          ReactionID{ projectile, target, ReactionType{ 877 } }
+        };
+        auto rxKeys = ranges::view::keys( reactions ) | ranges::to_vector;
+        std::sort( refReactions.begin(), refReactions.end() );
+        std::sort( rxKeys.begin(), rxKeys.end() );
 
-        auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
+        printKeys( refReactions, rxKeys );
 
-        CHECK( reference == keys );
+        CHECK( ranges::equal( refReactions, rxKeys ) );
+
+        std::vector< njoy::RECONR::ReactionID > refSummations{ 
+          ReactionID{ projectile, target, ReactionType{ 1 } },
+          ReactionID{ projectile, target, ReactionType{ 4 } },
+          ReactionID{ projectile, target, ReactionType{ 16 } },
+          ReactionID{ projectile, target, ReactionType{ 27 } },
+          ReactionID{ projectile, target, ReactionType{ 101 } }
+        };
+        auto smKeys = ranges::view::keys( summations ) | ranges::to_vector;
+        std::sort( refSummations.begin(), refSummations.end() );
+        std::sort( smKeys.begin(), smKeys.end() );
+
+        printKeys( refSummations, smKeys );
+
+        CHECK( ranges::equal( refSummations, smKeys ) );
+
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
-        MT = "1";
-        std::vector< double > refXS = sumRanges(
-          reactions.at( "2" ).crossSections< RPair >().second, 
-          reactions.at( "3" ).crossSections< RPair >().second
+        auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
+
+        std::vector< int > redundants = { 2, 4, 16, 27, 101 };
+        auto mt2 = ReactionID{ projectile, target, ReactionType{ 2 } };
+        auto mt4 = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt16 = ReactionID{ projectile, target, ReactionType{ 16 } };
+        auto mt27 = ReactionID{ projectile, target, ReactionType{ 27 } };
+        auto mt101 = ReactionID{ projectile, target, ReactionType{ 101 } };
+        std::vector< double  > refXS = sumRanges(
+          reactions.at(  mt2   ).template crossSections< RPair >().second,
+          summations.at( mt4   ).template crossSections< RPair >().second,
+          summations.at( mt16  ).template crossSections< RPair >().second,
+          summations.at( mt27  ).template crossSections< RPair >().second,
+          summations.at( mt101 ).template crossSections< RPair >().second
         );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 2 can be tested" ){ 
-        MT = "2";
+        auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
         std::vector< double > refXS{
           2.12506,  2.12506,  2.12506,  2.12506,  2.12506,  
           2.12506,  2.12506,  2.12506,  2.12506,  2.12506,  
@@ -871,30 +946,32 @@ SCENARIO( "Testing the summation of cross sections" ){
           2,        2,        0
         };
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( capture );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 4 can be tested" ){ 
-        MT = "4";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt51 = ReactionID{ projectile, target, ReactionType{ 51 } };
+        auto mt52 = ReactionID{ projectile, target, ReactionType{ 52 } };
         std::vector< double > refXS = sumRanges( 
-            reactions.at( "51" ).crossSections< RPair >().second, 
-            reactions.at( "52" ).crossSections< RPair >().second );
+            reactions.at( mt51 ).template crossSections< RPair >().second, 
+            reactions.at( mt52 ).template crossSections< RPair >().second );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
 
       } // THEN
       THEN( "MT = 16 can be tested" ){ 
-        MT = "16";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 16 } };
         std::vector< double > refXS( sizeEnergies, 1.5 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 18 can be tested" ){ 
-        MT = "18";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 18 } };
         std::vector< double > refXS{
           0,            0,            0,            0,            0,            
           0,            0,            0,            0,            0,            
@@ -925,28 +1002,28 @@ SCENARIO( "Testing the summation of cross sections" ){
           2.71079e-05,  2.71079e-05,  0
         };
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
 
       } // THEN
       THEN( "MT = 51 can be tested" ){ 
-        MT = "51";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 51 } };
         std::vector< double > refXS( sizeEnergies, 51.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 52 can be tested" ){ 
-        MT = "52";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 52 } };
         std::vector< double > refXS( sizeEnergies, 52.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 102 can be tested" ){ 
-        MT = "102";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 102 } };
         std::vector< double > refXS{
           6952.24,      6739.82,      6545.15,      6365.86,      6200.01,      
           6046,         5902.48,      5768.28,      5642.45,      5524.13,      
@@ -976,28 +1053,33 @@ SCENARIO( "Testing the summation of cross sections" ){
           2.90842e-05,  2.75176e-05,  2.75176e-05,  2.7313e-05,   2.7313e-05,   
           2.71079e-05,  2.71079e-05,  0.0
         };
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
     } // WHEN
-    WHEN( "productions have been linearized" ){
+    WHEN( "productions have been linearized and summarized" ){
       
-       tRECONR::summateReactions( 
-          std::cout, std::cout,
-          r2d2.photonProductions(), 
-          energies );
+      tRECONR::summateProductions( std::cout, std::cout, r2d2, energies );
 
       auto& productions = r2d2.photonProductions();
 
-      njoy::RECONR::ReactionID MT;
-      THEN( "the productions can be summed up and checked" ){
-        std::vector< njoy::RECONR::ReactionID > reference{ "3", "18" };
-        ranges::sort( reference );
+      auto projectile = r2d2.projectile();
+      auto target = r2d2.target();
 
-        auto keys = ranges::view::keys( productions );
+      THEN( "the productions can be summed up and checked" ){
+        std::vector< njoy::RECONR::ReactionID > reference{
+          ReactionID{ projectile, target, ReactionType{ 3 } },
+          ReactionID{ projectile, target, ReactionType{ 18 } },
+        };
+        auto keys = ranges::view::keys( productions ) | ranges::to_vector;
+        std::sort( reference.begin(), reference.end() );
+        std::sort( keys.begin(), keys.end() );
+
+        printKeys( reference, keys );
+
         CHECK( ranges::equal( reference, keys ) );
         THEN( "MT = 3 can be tested" ){
-          MT = "3";
+          auto ID = ReactionID{ projectile, target, ReactionType{ 3 } };
           std::vector< double > refP{
             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -1015,13 +1097,13 @@ SCENARIO( "Testing the summation of cross sections" ){
             11.1276, 11.1276, 11.2138, 11.2138, 11.3, 11.3, 0.0
             };
 
-          auto production = productions.at( MT ).productions< PPair >()
+          auto production = productions.at( ID ).productions< PPair >()
             | ranges::view::transform( []( auto&& p ){ return p.second; } )
             | ranges::to_vector;
           details::checkRanges( refP, production );
         } // THEN
         THEN( "MT = 18 can be tested" ){
-          MT = "18";
+          auto ID = ReactionID{ projectile, target, ReactionType{ 18 } };
           std::vector< double > refP{
             10.18,    10.18,    10.18,    10.18,    10.18,    10.18,    10.18,    
             10.18,    10.18,    10.18,    10.18,    10.18,    10.18,    10.18,    
@@ -1044,7 +1126,7 @@ SCENARIO( "Testing the summation of cross sections" ){
             10.8133,  10.8133,  10.83,    10.83,    10.8467,  10.8467,  11.18
         };
 
-          auto production = productions.at( MT ).productions< PPair >()
+          auto production = productions.at( ID ).productions< PPair >()
             | ranges::view::transform( []( auto&& p ){ return p.second; } )
             | ranges::to_vector;
           details::checkRanges( refP, production );
@@ -1056,39 +1138,65 @@ SCENARIO( "Testing the summation of cross sections" ){
     auto [energies, r2d2] = lin_recon( "RM", absTol, relTol );
     auto sizeEnergies = ranges::distance( energies );
 
-    WHEN( "cross sections have been linearized and resonances reconstructed" ){
+    WHEN( "cross sections have been summated" ){
+      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
 
-      njoy::RECONR::ReactionID MT;
-      tRECONR::summateReactions( 
-          std::cout, std::cout,
-          r2d2.reactions(),
-          r2d2.reconstructedResonances(),
-          energies );
+      auto projectile = r2d2.projectile();
+      auto target = r2d2.target();
+
       auto reactions = r2d2.reactions();
+      auto summations = r2d2.summations();
 
       THEN( "the reactions can be summed up and checked" ){
-        std::vector< njoy::RECONR::ReactionID > reference{ 
-          "1", "2", "3", "4", "16", "18", "27", 
-          "51", "52", "101", "102", "875", "876", "877" };
-        ranges::sort( reference );
+        std::vector< njoy::RECONR::ReactionID > refReactions{ 
+          ReactionID{ projectile, target, ReactionType{ 2 } },
+          ReactionID{ projectile, target, ReactionType{ 51 } },
+          ReactionID{ projectile, target, ReactionType{ 52 } },
+          ReactionID{ projectile, target, ReactionType{ 102 } },
+          ReactionID{ projectile, target, ReactionType{ 875 } },
+          ReactionID{ projectile, target, ReactionType{ 876 } },
+          ReactionID{ projectile, target, ReactionType{ 877 } }
+        };
+        auto rxKeys = ranges::view::keys( reactions ) | ranges::to_vector;
+        std::sort( refReactions.begin(), refReactions.end() );
+        std::sort( rxKeys.begin(), rxKeys.end() );
 
-        auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
+        printKeys( refReactions, rxKeys );
 
-        CHECK( reference == keys );
-      
+        CHECK( ranges::equal( refReactions, rxKeys ) );
+
+        std::vector< njoy::RECONR::ReactionID > refSummations{ 
+          ReactionID{ projectile, target, ReactionType{ 1 } },
+          ReactionID{ projectile, target, ReactionType{ 3 } },
+          ReactionID{ projectile, target, ReactionType{ 4 } },
+          ReactionID{ projectile, target, ReactionType{ 16 } },
+          ReactionID{ projectile, target, ReactionType{ 18 } },
+          ReactionID{ projectile, target, ReactionType{ 27 } },
+          ReactionID{ projectile, target, ReactionType{ 101 } }
+        };
+        auto smKeys = ranges::view::keys( summations ) | ranges::to_vector;
+        std::sort( refSummations.begin(), refSummations.end() );
+        std::sort( smKeys.begin(), smKeys.end() );
+
+        printKeys( refReactions, rxKeys );
+
+        CHECK( ranges::equal( refSummations, rxKeys ) );
+
       } // THEN
       THEN( "MT=1 can be checked" ){
-        MT = "1";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
+        auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
+        auto nonelastic = ReactionID{ projectile, target, ReactionType{ 3 } };
         std::vector< double > refXS = sumRanges(
-          reactions.at( "2" ).crossSections< RPair >().second, 
-          reactions.at( "3" ).crossSections< RPair >().second
+          reactions.at( capture ).template crossSections< RPair >().second, 
+          summations.at( nonelastic ).template crossSections< RPair >().second
         );
       
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 2 can be tested" ){
-        MT = "2";
+        auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
         std::vector< double > refXS{
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
@@ -1126,32 +1234,38 @@ SCENARIO( "Testing the summation of cross sections" ){
           2,        2,        0
         };
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( capture );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 4 can be tested" ){
-        MT = "4";
-        std::vector< double > refXS = sumRanges( 
-            reactions.at( "51" ).crossSections< RPair >().second, 
-            reactions.at( "52" ).crossSections< RPair >().second );
+        auto ID = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt51 = ReactionID{ projectile, target, ReactionType{ 51 } };
+        auto mt52 = ReactionID{ projectile, target, ReactionType{ 52 } };
+        std::vector< double > refXS = sumRanges(
+          reactions.at( mt51 ).template crossSections< RPair >().second, 
+          reactions.at( mt52 ).template crossSections< RPair >().second
+        );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
 
       } // THEN
       THEN( "MT = 16 can be tested" ){ 
-        MT = "16";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 16 } };
+        auto mt875 = ReactionID{ projectile, target, ReactionType{ 875 } };
+        auto mt876 = ReactionID{ projectile, target, ReactionType{ 876 } };
+        auto mt877 = ReactionID{ projectile, target, ReactionType{ 877 } };
         std::vector< double > refXS = sumRanges(
-          reactions.at( "875" ).crossSections< RPair >().second,
-          reactions.at( "876" ).crossSections< RPair >().second,
-          reactions.at( "877" ).crossSections< RPair >().second );
+          reactions.at( mt875 ).template crossSections< RPair >().second,
+          reactions.at( mt876 ).template crossSections< RPair >().second,
+          reactions.at( mt877 ).template crossSections< RPair >().second );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 18 can be tested" ){ 
-        MT = "18";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 18 } };
         std::vector< double > refXS{
           0,            0,            0,            0,            0,            
           0,            0,            0,            0,            0,            
@@ -1189,27 +1303,27 @@ SCENARIO( "Testing the summation of cross sections" ){
           2.71079e-05,  2.71079e-05,  0
         };
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 51 can be tested" ){ 
-        MT = "51";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 51 } };
         std::vector< double > refXS( sizeEnergies, 51.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 52 can be tested" ){ 
-        MT = "52";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 52 } };
         std::vector< double > refXS( sizeEnergies, 52.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 102 can be tested" ){ 
-        MT = "102";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 102 } };
         std::vector< double > refXS{
           102,          94.1134,      86.6777,      79.6441,      72.9714,      
           66.6243,      60.5726,      54.7899,      49.2533,      43.9428,      
@@ -1246,7 +1360,7 @@ SCENARIO( "Testing the summation of cross sections" ){
           2.90842e-05,  2.75176e-05,  2.75176e-05,  2.7313e-05,   2.7313e-05,   
           2.71079e-05,  2.71079e-05,  0
         };
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
     } // WHEN
@@ -1254,64 +1368,95 @@ SCENARIO( "Testing the summation of cross sections" ){
   GIVEN( "an RML object" ){
     auto [energies, r2d2] = lin_recon( "RML", absTol, relTol );
     auto sizeEnergies = ranges::distance( energies );
-    WHEN( "cross sections have been linearized and resonance reconstructed" ){
-      njoy::RECONR::ReactionID MT;
-      tRECONR::summateReactions( 
-          std::cout, std::cout,
-          r2d2.reactions(),
-          r2d2.reconstructedResonances(),
-          energies );
+
+    WHEN( "cross sections have been summated" ){
+      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
+
+      auto projectile = r2d2.projectile();
+      auto target = r2d2.target();
+
       auto reactions = r2d2.reactions();
-      
-      THEN( "the reactions can be checked" ){
-        std::vector< njoy::RECONR::ReactionID > reference{ 
-          "1", "2", "3", "4", "16", "18", "27", 
-          "51", "52", "101", "102", "875", "876", "877" };
-        ranges::sort( reference );
+      auto summations = r2d2.summations();
 
-        auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
+      THEN( "the reactions can be summed up and checked" ){
+        std::vector< njoy::RECONR::ReactionID > refReactions{ 
+          ReactionID{ projectile, target, ReactionType{ 2 } },
+          ReactionID{ projectile, target, ReactionType{ 51 } },
+          ReactionID{ projectile, target, ReactionType{ 52 } },
+          ReactionID{ projectile, target, ReactionType{ 102 } },
+          ReactionID{ projectile, target, ReactionType{ 875 } },
+          ReactionID{ projectile, target, ReactionType{ 876 } },
+          ReactionID{ projectile, target, ReactionType{ 877 } }
+        };
+        auto rxKeys = ranges::view::keys( reactions ) | ranges::to_vector;
+        std::sort( refReactions.begin(), refReactions.end() );
+        std::sort( rxKeys.begin(), rxKeys.end() );
 
-        CHECK( reference == keys );
+        printKeys( refReactions, rxKeys );
+
+        CHECK( ranges::equal( refReactions, rxKeys ) );
+
+        std::vector< njoy::RECONR::ReactionID > refSummations{ 
+          ReactionID{ projectile, target, ReactionType{ 1 } },
+          ReactionID{ projectile, target, ReactionType{ 3 } },
+          ReactionID{ projectile, target, ReactionType{ 4 } },
+          ReactionID{ projectile, target, ReactionType{ 16 } },
+          ReactionID{ projectile, target, ReactionType{ 18 } },
+          ReactionID{ projectile, target, ReactionType{ 27 } },
+          ReactionID{ projectile, target, ReactionType{ 101 } }
+        };
+        auto smKeys = ranges::view::keys( summations ) | ranges::to_vector;
+        std::sort( refSummations.begin(), refSummations.end() );
+        std::sort( smKeys.begin(), smKeys.end() );
+
+        printKeys( refReactions, rxKeys );
+
+        CHECK( ranges::equal( refSummations, rxKeys ) );
+
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
-        MT = "1";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
+        auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
+        auto nonelastic = ReactionID{ projectile, target, ReactionType{ 3 } };
         std::vector< double > refXS = sumRanges(
-          reactions.at( "2" ).crossSections< RPair >().second, 
-          reactions.at( "3" ).crossSections< RPair >().second
+          reactions.at( capture ).template crossSections< RPair >().second, 
+          summations.at( nonelastic ).template crossSections< RPair >().second
         );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 2 can be tested" ){ 
-        MT = "2";
+        auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
         std::vector< double > refXS( sizeEnergies, 2.0 );
         refXS.back() = 0.0;
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( capture );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 4 can be tested" ){ 
-        MT = "4";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt51 = ReactionID{ projectile, target, ReactionType{ 51 } };
+        auto mt52 = ReactionID{ projectile, target, ReactionType{ 52 } };
         std::vector< double > refXS = sumRanges( 
-            reactions.at( "51" ).crossSections< RPair >().second, 
-            reactions.at( "52" ).crossSections< RPair >().second );
+            reactions.at( mt51 ).template crossSections< RPair >().second, 
+            reactions.at( mt52 ).template crossSections< RPair >().second );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
 
       } // THEN
       THEN( "MT = 16 can be tested" ){ 
-        MT = "16";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 16 } };
         std::vector< double > refXS( sizeEnergies, 1.5 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 18 can be tested" ){ 
-        MT = "18";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 18 } };
         std::vector< double > refXS{
           0,            0,            0,            0,            0,            
           0,            0,            0,            0,            0,            
@@ -1333,28 +1478,28 @@ SCENARIO( "Testing the summation of cross sections" ){
           2.7313e-05,   2.71079e-05,  2.71079e-05,  0
         };
 
-        auto reaction = reactions.at( MT );
+        auto reaction = summations.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
 
       } // THEN
       THEN( "MT = 51 can be tested" ){ 
-        MT = "51";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 51 } };
         std::vector< double > refXS( sizeEnergies, 51.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 52 can be tested" ){ 
-        MT = "52";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 52 } };
         std::vector< double > refXS( sizeEnergies, 52.0 );
         zeroXS( energies, refXS, 1E5, 2E7 );
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 102 can be tested" ){ 
-        MT = "102";
+        auto ID = ReactionID{ projectile, target, ReactionType{ 102 } };
         std::vector< double > refXS{
           102,          94.1134,      86.6777,      79.6441,      72.9714,      
           66.6243,      60.5726,      54.7899,      49.2533,      43.9428,      
@@ -1376,12 +1521,10 @@ SCENARIO( "Testing the summation of cross sections" ){
           2.7313e-05,   2.71079e-05,  2.71079e-05,  0
         };
 
-        auto reaction = reactions.at( MT );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
 
       } // THEN
     } // WHEN
-    
   } // GIVEN
 } // SCENARIO
-*/

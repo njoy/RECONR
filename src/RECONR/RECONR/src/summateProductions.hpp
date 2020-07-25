@@ -16,7 +16,7 @@ void summateProductions( std::ostream& output,
     "\nSumming photon production cross sections on unionized energy grid"
     " for IDs: \n";
   for( auto& [ ID, production ] : productions ){
-    output << fmt::format( "{:3s} ", ID.symbol() );
+    output << fmt::format( "\t{:20s} ", ID.symbol() );
 
     std::vector< std::vector< double > > partials;
     for( const auto& partial : 
@@ -29,9 +29,11 @@ void summateProductions( std::ostream& output,
     }
     auto sum = sumPartials( partials );
 
+    auto trunc = truncate( energies, sum );
+
     auto pairs = ranges::view::zip_with( 
       []( auto&& e, auto&& p ){ return PPForms{ std::make_pair( e, p ) }; },
-      energies, sum )
+      trunc.first, trunc.second )
       | ranges::to_vector;
     production.productions( std::move( pairs ) );
   }

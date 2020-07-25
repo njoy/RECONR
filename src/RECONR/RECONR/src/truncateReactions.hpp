@@ -23,55 +23,26 @@ truncate( X&& x, Y&& y ){
 }
 
 static
-void truncateReactions( std::ostream& output,
-                        R2D2::XSMap_t& summed
-                        ){
+void truncateReactions( std::ostream& output, R2D2& r2d2 ){
 
   output << "\nTruncating leading zeros of reconstructed reactions." 
          << std::endl;
 
-  for( auto& [ ID, reaction ] : summed ){
+  auto trunc = [&]( auto&& reactions ){
+    for( auto& [ ID, reaction ] : reactions ){
+      output << fmt::format( "\n\t{:20s} ", ID.symbol() );
 
-    auto xs = reaction.crossSections< XSPair >();
+      auto xs = reaction.template crossSections< XSPair >();
 
-    auto data = truncate( xs.first, xs.second );
-    if( data.first.size() > 0 ){
-      reaction.crossSections( std::move( data ) );
-    } else{
-      continue;
+      auto data = truncate( xs.first, xs.second );
+      if( data.first.size() > 0 ){
+        reaction.crossSections( std::move( data ) );
+      } else{
+        continue;
+      }
     }
-  }
-}
+  };
 
-static
-void truncateReactions( std::ostream& output,
-                        R2D2::PPMap_t& summed
-                        ){
-  output << "\nTruncating leading zeros of photon production cross sections." 
-         << std::endl;
-  for( auto& [ ID, production ] : summed ){
-
-    auto prod = production.template productions< PPair >();
-    auto energies = prod
-      | ranges::view::transform( []( auto&& p ){ return p.first; } );
-    auto productions = prod
-      | ranges::view::transform( []( auto&& p ){ return p.second; } );
-
-    auto data = truncate( energies, productions );
-
-    auto tuples = ranges::view::zip_with( 
-      []( auto&& e, auto&& p ){ return PPForms{ std::make_pair( e, p ) }; },
-      data.first, data.second )
-      | ranges::to_vector;
-
-    production.productions( std::move( tuples ) );
-  }
-}
-
-static
-void truncateReactions( std::ostream& output,
-                        R2D2& data ){
-  truncateReactions( output, data.reactions() );
-  truncateReactions( output, data.photonProductions() );
-
+  trunc( r2d2.reactions() );
+  trunc( r2d2.summations() );
 }

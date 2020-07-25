@@ -1,10 +1,5 @@
 class Reaction {
 public:
-  using Forms = std::variant< 
-    std::vector< interp::Variant >,
-    interp::LinearTable,
-    XSPair
-  >;
 
 private:
   int ZA_;
@@ -13,7 +8,7 @@ private:
   double reactionQ_;
   int complexBreakUp_;
 
-  Forms crossSection_;
+  XSForms crossSection_;
 
 public:
   #include "RECONR/Reaction/src/ctor.hpp"

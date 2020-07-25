@@ -5,8 +5,8 @@ ResonanceReconstructionDataDelivery operator()( const Material_t& material ){
   auto projectile = Factory::projectile( info );
   
   return ResonanceReconstructionDataDelivery{ 
-    std::move( target  ),
     std::move( projectile ),
+    std::move( target  ),
     std::move( info ),
     Factory::collectXS(   material, projectile, target ),
     Factory::collectPPXS( material, projectile, target ),

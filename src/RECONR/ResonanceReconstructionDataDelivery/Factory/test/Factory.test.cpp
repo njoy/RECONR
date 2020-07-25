@@ -24,7 +24,6 @@ public:
 };
 
 SCENARIO( "Testing the collection of resonance parameter data" ){
-
   GIVEN( "ENDF Material with SLBW" ){
     auto material = details::ENDFMaterial( "SLBW" );
 
@@ -80,9 +79,7 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
         CHECK( 1 == ranges::distance( isos ) );
       } // THEN
     } // WHEN
-    
   } // GIVEN
-  
 } // SCENARIO
 
 SCENARIO( "Testing the the collection of cross sections" ){
@@ -91,24 +88,24 @@ SCENARIO( "Testing the the collection of cross sections" ){
 
     WHEN( "the resonance reconstruction data is extracted" ){
       
-      ParticleID projectile( "n" );
-      ParticleID target( "h1" );
-      auto reactions = TFactory::collectXS( material, projectile, target );
+      ParticleID proj{ "n" };
+      ParticleID target{ "fe56" };
+      auto reactions = TFactory::collectXS( material, proj, target );
 
       using PID = ParticleID;
       using NID = NucleusID;
 
       std::vector< njoy::RECONR::ReactionID > IDs{ 
-        // ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 1 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 2 } },
-        // ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 16 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 18 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 51 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 52 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 102 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 875 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 876 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 877 } }
+        // ReactionID{ proj, target, ReactionType{ 1 } },
+        ReactionID{ proj, target, ReactionType{ 2 } },
+        // ReactionID{ proj, target, ReactionType{ 16 } },
+        ReactionID{ proj, target, ReactionType{ 18 } },
+        ReactionID{ proj, target, ReactionType{ 51 } },
+        ReactionID{ proj, target, ReactionType{ 52 } },
+        ReactionID{ proj, target, ReactionType{ 102 } },
+        ReactionID{ proj, target, ReactionType{ 875 } },
+        ReactionID{ proj, target, ReactionType{ 876 } },
+        ReactionID{ proj, target, ReactionType{ 877 } }
       };
       auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
       std::sort( IDs.begin(), IDs.end() );
@@ -116,15 +113,8 @@ SCENARIO( "Testing the the collection of cross sections" ){
 
       CHECK( ranges::equal( IDs, keys ) );
 
-      for( auto id : IDs ){
-        THEN( "ID: " + id.symbol() + " should be in map" ){
-          CHECK( 1 == reactions.count( id ) );
-          CHECK_NOTHROW( reactions.at( id ) );
-        } // THEN
-      }
-
       THEN( "MT=2 can be checked" ){ 
-        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 2 } };
+        ReactionID reactionID{ PID{ "n" }, PID{ "fe56" }, ReactionType{ 2 } };
         auto reaction = reactions.at( reactionID );
 
         CHECK( 1002 == reaction.ZA() );
@@ -154,7 +144,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         CHECK( 2.0 == Approx( xs( 1.975E7 ) ) );
       }
       THEN( "MT=18 can be checked" ){ 
-        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 18 } };
+        ReactionID reactionID{ PID{ "n" }, PID{ "fe56" }, ReactionType{ 18 } };
         auto reaction = reactions.at( reactionID );
 
         CHECK( 1018 == reaction.ZA() );
@@ -202,7 +192,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
         }
       }
       THEN( "MT=102 can be checked" ){ 
-        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 102 } };
+        ReactionID reactionID{ PID{ "n" }, PID{ "fe56" }, ReactionType{ 102 } };
         auto reaction = reactions.at( reactionID );
 
         CHECK( 1102 == reaction.ZA() );
@@ -266,16 +256,16 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
     auto material = details::ENDFMaterial( "SLBW", false );
 
     WHEN( "the photon production cross sections have been extracted" ){
-      njoy::elementary::ParticleID projectile( "n" );
-      njoy::elementary::ParticleID target( "h1" );
-      auto reactions = TFactory::collectPPXS( material, projectile, target );
+      njoy::elementary::ParticleID proj{ "n" };
+      njoy::elementary::ParticleID target{ "fe56" };
+      auto reactions = TFactory::collectPPXS( material, proj, target );
       
       using PID = ParticleID;
       using NID = NucleusID;
 
       std::vector< njoy::RECONR::ReactionID > IDs{ 
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 3 } },
-        ReactionID{ PID{ "n" }, PID{ NID{ 1001, 0 } }, ReactionType{ 18 } },
+        ReactionID{ proj, target, ReactionType{ 3 } },
+        ReactionID{ proj, target, ReactionType{ 18 } },
       };
       auto keys = ranges::view::keys( reactions ) | ranges::to_vector;
       std::sort( IDs.begin(), IDs.end() );
@@ -285,7 +275,7 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
 
       THEN( "MT=3 can be checked" ){
 
-        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 3 } };
+        ReactionID reactionID{ PID{ "n" }, PID{ "fe56" }, ReactionType{ 3 } };
         auto reaction = reactions.at( reactionID );
 
         CHECK( 92235 == reaction.ZA() );
@@ -311,7 +301,7 @@ SCENARIO( "Testing the collection of photon production cross sections" ){
       } // THEN
       THEN( "MT=18 can be checked" ){
 
-        ReactionID reactionID{ PID{ "n" }, PID{ "h1" }, ReactionType{ 18 } };
+        ReactionID reactionID{ PID{ "n" }, PID{ "fe56" }, ReactionType{ 18 } };
         auto reaction = reactions.at( reactionID );
 
         CHECK( 92238 == reaction.ZA() );

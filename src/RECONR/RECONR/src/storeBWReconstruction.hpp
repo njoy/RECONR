@@ -16,7 +16,7 @@ void storeBWReconstruction( BW& bw, R2D2& r2d2 ){
     | ranges::view::transform( []( auto&&  xs ){ return xs.capture.value; } )
     | ranges::to_vector;
 
-  auto reconstructed = r2d2.reconstructedResonances();
+  auto& reconstructed = r2d2.reconstructedResonances();
   auto elasticR = elementary::fromEndfReactionNumber( 
       r2d2.projectile(), r2d2.target(), 2 );
   auto fissionR = elementary::fromEndfReactionNumber( 

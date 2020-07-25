@@ -1,5 +1,5 @@
 Reaction( int ZA, double AWR, double QM, double QI, int LR,
-         Forms&& xs )
+         XSForms&& xs )
 try:
   ZA_( ZA ),
   atomicWeightRatio_( AWR ),
