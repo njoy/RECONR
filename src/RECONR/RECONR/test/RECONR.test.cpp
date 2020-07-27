@@ -914,6 +914,7 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
+      /*
       THEN( "MT = 2 can be tested" ){ 
         auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
         std::vector< double > refXS{
@@ -1056,6 +1057,7 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
+    */
     } // WHEN
     WHEN( "productions have been linearized and summarized" ){
       
@@ -1134,6 +1136,7 @@ SCENARIO( "Testing the summation of cross sections" ){
       } // THEN
     } // WHEN
   } // GIVEN
+  /*
   GIVEN( "an RM object" ){
     auto [energies, r2d2] = lin_recon( "RM", absTol, relTol );
     auto sizeEnergies = ranges::distance( energies );
@@ -1527,4 +1530,5 @@ SCENARIO( "Testing the summation of cross sections" ){
       } // THEN
     } // WHEN
   } // GIVEN
+  */
 } // SCENARIO

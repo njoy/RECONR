@@ -25,7 +25,7 @@ void combineReconstructed( std::ostream& output,
     auto addReconstructed = [&]( const ReactionID& rxnID ){
       output << fmt::format( "\t{:s}\n", rxnID.symbol() );
       auto& recon = reconstructed.at( ID );
-      auto& reaction = reactions.at( rxnID );
+      Reaction& reaction = reactions.at( rxnID );
       auto& part = reaction.template crossSections< XSPair >().second;
       partials.push_back( part );
 
