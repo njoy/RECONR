@@ -8,8 +8,8 @@ void combineReconstructed( std::ostream& output,
                            R2D2& r2d2,
                            const Range& energies ){
 
-  auto reactions = r2d2.reactions();
-  const auto reconstructed = r2d2.reconstructedResonances();
+  auto& reactions = r2d2.reactions();
+  const auto& reconstructed = r2d2.reconstructedResonances();
   const auto& proj = r2d2.projectile();
   const auto& target = r2d2.target();
 
@@ -24,8 +24,8 @@ void combineReconstructed( std::ostream& output,
 
     auto addReconstructed = [&]( const ReactionID& rxnID ){
       output << fmt::format( "\t{:s}\n", rxnID.symbol() );
-      auto& recon = reconstructed.at( ID );
-      Reaction& reaction = reactions.at( rxnID );
+      const auto& recon = reconstructed.at( ID );
+      auto& reaction = reactions.at( rxnID );
       auto& part = reaction.template crossSections< XSPair >().second;
       partials.push_back( part );
 
