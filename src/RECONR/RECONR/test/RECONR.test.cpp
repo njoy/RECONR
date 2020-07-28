@@ -221,18 +221,18 @@ SCENARIO( "Testing creation of RECONR class" ){
     //                             std::cerr, 
     //                             args ) );
     // } // WHEN
-    // WHEN( "processing one ENDF Material in a Tape" ){
-    //   CHECK_NOTHROW( tRECONR()( Fe56Input, 
-    //                             std::cout, 
-    //                             std::cerr, 
-    //                             args ) );
-    // } // WHEN
-    // WHEN( "processing H-1, Fe-56, and U-235" ){
-    //   CHECK_NOTHROW( tRECONR()( inputWithU235, 
-    //                             std::cout, 
-    //                             std::cerr, 
-    //                             args ) );
-    // } // WHEN
+    WHEN( "processing one ENDF Material in a Tape" ){
+      CHECK_NOTHROW( tRECONR()( Fe56Input, 
+                                std::cout, 
+                                std::cerr, 
+                                args ) );
+    } // WHEN
+    WHEN( "processing H-1, Fe-56, and U-235" ){
+      CHECK_NOTHROW( tRECONR()( inputWithU235, 
+                                std::cout, 
+                                std::cerr, 
+                                args ) );
+    } // WHEN
   } // GIVEN
 
   WHEN( "calling the modern RECONR interface" ){
@@ -1125,7 +1125,6 @@ SCENARIO( "Testing combineReconstructed" ){
       std::sort( refReconstructed.begin(), refReconstructed.end() );
       std::sort( rnKeys.begin(), rnKeys.end() );
 
-      printKeys( refReconstructed, rnKeys );
       CHECK( ranges::equal( refReconstructed, rnKeys ) );
 
 
@@ -1146,22 +1145,6 @@ SCENARIO( "Testing combineReconstructed" ){
       details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       
     } // THEN
-    // THEN( "combined fission cross section can be verified" ){
-    //   ReactionID fissionT{ projectile, target, ReactionType{ 18 } };
-    //   ReactionID fission{ projectile, target, ReactionType{ 19 } };
-
-    //   auto rx = preReactions.at( fissionT ).
-    //       template crossSections< RPair >().second;
-    //   auto rn = energies | ranges::view::transform( 
-    //       reconstructed.at( fission ).front() )
-    //       | ranges::to_vector;
-
-    //   std::vector< double > refXS = sumRanges( rx, rn );
-
-    //   auto reaction = reactions.at( fissionT );
-    //   details::checkRanges( refXS, reaction.crossSections< RPair >().second );
-      
-    // } // THEN
     THEN( "combined capture cross section can be verified" ){
       ReactionID capture{ projectile, target, ReactionType{ 102 } };
 
@@ -1215,8 +1198,6 @@ SCENARIO( "Testing the summation of cross sections" ){
         std::sort( refReactions.begin(), refReactions.end() );
         std::sort( rxKeys.begin(), rxKeys.end() );
 
-        printKeys( refReactions, rxKeys );
-
         CHECK( ranges::equal( refReactions, rxKeys ) );
 
         std::vector< njoy::RECONR::ReactionID > refSummations{ 
@@ -1229,8 +1210,6 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto smKeys = ranges::view::keys( summations ) | ranges::to_vector;
         std::sort( refSummations.begin(), refSummations.end() );
         std::sort( smKeys.begin(), smKeys.end() );
-
-        printKeys( refSummations, smKeys );
 
         CHECK( ranges::equal( refSummations, smKeys ) );
 
@@ -1250,8 +1229,6 @@ SCENARIO( "Testing the summation of cross sections" ){
         );
 
         auto reaction = summations.at( ID );
-        details::printV( "ref MT=1", refXS );
-        details::printV( "tri MT=1", reaction.crossSections< RPair >().second );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 2 can be tested" ){ 
@@ -1412,8 +1389,6 @@ SCENARIO( "Testing the summation of cross sections" ){
         std::sort( reference.begin(), reference.end() );
         std::sort( keys.begin(), keys.end() );
 
-        printKeys( reference, keys );
-
         CHECK( ranges::equal( reference, keys ) );
         THEN( "MT = 3 can be tested" ){
           auto ID = ReactionID{ projectile, target, ReactionType{ 3 } };
@@ -1466,7 +1441,6 @@ SCENARIO( "Testing the summation of cross sections" ){
       } // THEN
     } // WHEN
   } // GIVEN
-  /*
   GIVEN( "an RM object" ){
     auto [energies, r2d2] = lin_recon( "RM", absTol, relTol );
     auto sizeEnergies = ranges::distance( energies );
@@ -1483,6 +1457,7 @@ SCENARIO( "Testing the summation of cross sections" ){
       THEN( "the reactions can be summed up and checked" ){
         std::vector< njoy::RECONR::ReactionID > refReactions{ 
           ReactionID{ projectile, target, ReactionType{ 2 } },
+          ReactionID{ projectile, target, ReactionType{ 18 } },
           ReactionID{ projectile, target, ReactionType{ 51 } },
           ReactionID{ projectile, target, ReactionType{ 52 } },
           ReactionID{ projectile, target, ReactionType{ 102 } },
@@ -1494,16 +1469,12 @@ SCENARIO( "Testing the summation of cross sections" ){
         std::sort( refReactions.begin(), refReactions.end() );
         std::sort( rxKeys.begin(), rxKeys.end() );
 
-        printKeys( refReactions, rxKeys );
-
         CHECK( ranges::equal( refReactions, rxKeys ) );
 
         std::vector< njoy::RECONR::ReactionID > refSummations{ 
           ReactionID{ projectile, target, ReactionType{ 1 } },
-          ReactionID{ projectile, target, ReactionType{ 3 } },
           ReactionID{ projectile, target, ReactionType{ 4 } },
           ReactionID{ projectile, target, ReactionType{ 16 } },
-          ReactionID{ projectile, target, ReactionType{ 18 } },
           ReactionID{ projectile, target, ReactionType{ 27 } },
           ReactionID{ projectile, target, ReactionType{ 101 } }
         };
@@ -1511,22 +1482,25 @@ SCENARIO( "Testing the summation of cross sections" ){
         std::sort( refSummations.begin(), refSummations.end() );
         std::sort( smKeys.begin(), smKeys.end() );
 
-        printKeys( refReactions, rxKeys );
-
-        CHECK( ranges::equal( refSummations, rxKeys ) );
+        CHECK( ranges::equal( refSummations, smKeys ) );
 
       } // THEN
-      THEN( "MT=1 can be checked" ){
+      THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
-        auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
-        auto nonelastic = ReactionID{ projectile, target, ReactionType{ 3 } };
-        std::vector< double > refXS = sumRanges(
-          reactions.at( capture ).template crossSections< RPair >().second, 
-          summations.at( nonelastic ).template crossSections< RPair >().second
+
+        auto mt2 = ReactionID{ projectile, target, ReactionType{ 2 } };
+        auto mt4 = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt16 = ReactionID{ projectile, target, ReactionType{ 16 } };
+        auto mt27 = ReactionID{ projectile, target, ReactionType{ 27 } };
+        std::vector< double  > refXS = sumRanges(
+          reactions.at(  mt2   ).template crossSections< RPair >().second,
+          summations.at( mt4   ).template crossSections< RPair >().second,
+          summations.at( mt16  ).template crossSections< RPair >().second,
+          summations.at( mt27  ).template crossSections< RPair >().second
         );
-      
+
         auto reaction = summations.at( ID );
-        CHECK( refXS == reaction.crossSections< RPair >().second );
+        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 2 can be tested" ){
         auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
@@ -1537,26 +1511,24 @@ SCENARIO( "Testing the summation of cross sections" ){
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
-          2,        2,        2,        2,        2,        
-          2,        2,        2,        16.5826,  16.5634,  
-          16.5131,  16.8464,  17.02,    16.8912,  16.7787,  
-          16.6211,  16.4759,  16.3538,  16.2227,  16.18,    
-          16.1255,  16.0463,  15.99,    15.924,   15.9353,  
-          16.2386,  16.5252,  16.5097,  16.4214,  16.3556,  
-          16.3078,  16.241,   16.1931,  16.1203,  16.0599,  
-          15.9471,  15.8813,  15.8362,  15.7759,  15.7421,  
-          15.7296,  15.7194,  15.6767,  15.608,   15.5652,  
-          15.5287,  15.6968,  15.7725,  15.8435,  15.9331,  
-          15.8284,  15.7176,  15.6097,  15.4893,  15.3362,  
-          15.2434,  15.156,   15.1662,  15.6013,  16.2867,  
-          16.7619,  16.821,   16.7118,  16.5741,  16.4504,  
-          16.2624,  16.1328,  15.9657,  15.8571,  15.7056,  
-          15.5815,  15.4505,  15.2714,  15.1313,  14.8992,  
-          14.7039,  14.3859,  14.1396,  13.7954,  13.3533,  
-          13.1917,  13.3624,  16.4855,  18.9067,  18.5401,  
-          17.9962,  17.5562,  17.2252,  16.7809,  16.5025,  
-          16.1737,  15.9824,  15.7587,  15.6287,  15.5656,  
-          15.5755,  15.5755,  2,        2,        2,        
+          2,        16.5826,  16.5634,  16.5131,  16.8464,  
+          17.02,    16.8912,  16.7787,  16.6211,  16.4759,  
+          16.3538,  16.2227,  16.18,    16.1255,  16.0463,  
+          15.99,    15.924,   15.9353,  16.2386,  16.5252,  
+          16.5097,  16.4214,  16.3556,  16.3078,  16.241,   
+          16.1931,  16.1203,  16.0599,  15.9471,  15.8813,  
+          15.8362,  15.7759,  15.7421,  15.7296,  15.7194,  
+          15.6767,  15.608,   15.5652,  15.5287,  15.6968,  
+          15.7725,  15.8435,  15.9331,  15.8284,  15.7176,  
+          15.6097,  15.4893,  15.3362,  15.2434,  15.156,   
+          15.1662,  15.6013,  16.2867,  16.7619,  16.821,   
+          16.7118,  16.5741,  16.4504,  16.2624,  16.1328,  
+          15.9657,  15.8571,  15.7056,  15.5815,  15.4505,  
+          15.2714,  15.1313,  14.8992,  14.7039,  14.3859,  
+          14.1396,  13.7954,  13.3533,  13.1917,  13.3624,  
+          16.4855,  18.9067,  18.5401,  17.9962,  17.5562,  
+          17.2252,  16.7809,  16.5025,  16.1737,  15.9824,  
+          15.7587,  15.6287,  15.5656,  15.5755,  15.5755,  
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
@@ -1564,7 +1536,8 @@ SCENARIO( "Testing the summation of cross sections" ){
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
           2,        2,        2,        2,        2,        
-          2,        2,        0
+          2,        2,        2,        2,        2,        
+          0
         };
 
         auto reaction = reactions.at( capture );
@@ -1597,48 +1570,6 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
-      THEN( "MT = 18 can be tested" ){ 
-        auto ID = ReactionID{ projectile, target, ReactionType{ 18 } };
-        std::vector< double > refXS{
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            64.155,       67.0129,      
-          89.704,       111.73,       49.7061,      29.7634,      22.6738,      
-          18.1326,      16.1068,      14.9333,      14.2522,      14.2715,      
-          14.5498,      15.5904,      16.9593,      19.9589,      28.3807,      
-          33.3652,      26.8811,      18.0174,      14.7912,      13.4735,      
-          12.8033,      12.1121,      11.7105,      11.1305,      10.5992,      
-          9.04657,      7.30338,      6.11296,      6.59973,      9.8862,       
-          14.228,       18.4102,      20.4639,      24.4972,      28.8624,      
-          36.4463,      59.2031,      58.8323,      56.0219,      32.6852,      
-          21.8323,      19.1471,      19.9452,      23.6453,      32.5675,      
-          41.4007,      56.5704,      82.8036,      114.893,      112.824,      
-          79.627,       48.2589,      28.5977,      17.6188,      11.4929,      
-          5.87903,      3.8114,       2.71883,      2.68868,      3.11531,      
-          3.59612,      4.12546,      4.87728,      5.48661,      6.55057,      
-          7.53287,      9.40104,      11.1707,      14.3609,      21.1252,      
-          27.5235,      37.3166,      51.8651,      28.7703,      17.0452,      
-          11.598,       9.04398,      7.78512,      6.84381,      6.71142,      
-          7.20795,      8.12161,      10.8558,      15.0915,      24.6041,      
-          24.191,       24.191,       0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            0,            18,           18,           
-          11.829,       11.829,       11.829,       11.829,       3.34739e-05,  
-          3.3363e-05,   3.3066e-05,   3.26663e-05,  3.20868e-05,  3.19236e-05,  
-          3.17605e-05,  3.15973e-05,  3.14341e-05,  3.12709e-05,  3.11077e-05,  
-          2.90842e-05,  2.75176e-05,  2.75176e-05,  2.7313e-05,   2.7313e-05,   
-          2.71079e-05,  2.71079e-05,  0
-        };
-
-        auto reaction = summations.at( ID );
-        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
-      } // THEN
       THEN( "MT = 51 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 51 } };
         std::vector< double > refXS( sizeEnergies, 51.0 );
@@ -1661,37 +1592,36 @@ SCENARIO( "Testing the summation of cross sections" ){
           102,          94.1134,      86.6777,      79.6441,      72.9714,      
           66.6243,      60.5726,      54.7899,      49.2533,      43.9428,      
           38.8406,      29.2,         20.2247,      11.829,       11.829,       
-          11.7587,      11.6884,      11.5477,      11.4071,      11.2665,      
-          11.1396,      11.0128,      10.8681,      10.7235,      10.568,       
-          10.4124,      10.089,       9.75904,      9.42573,      9.0907,       
-          8.75481,      8.41849,      8.08195,      7.7453,       7.70549,      
-          7.4086,       7.07187,      6.73513,      16.5412,      17.5337,      
-          26.2096,      42.6957,      25.6779,      16.9795,      13.1785,      
-          10.3098,      9.14646,      8.86177,      9.6696,       10.4949,      
-          12.2795,      17.0288,      22.8138,      35.3477,      71.3244,      
-          95.1092,      70.6882,      34.002,       20.3416,      14.8569,      
-          12.2275,      9.91456,      8.96154,      8.20573,      7.93812,      
-          7.96811,      8.46485,      9.14011,      10.2678,      10.7113,      
-          10.404,       9.45222,      9.45907,      10.7438,      12.3269,      
-          15.2668,      26.1406,      26.6563,      26.1529,      17.7846,      
-          12.9288,      11.3829,      11.4133,      12.8691,      17.1729,      
-          21.9717,      31.0661,      48.9715,      77.0302,      85.8931,      
-          70.871,       50.9405,      36.3481,      27.1344,      21.3648,      
-          15.1295,      12.1192,      9.48253,      8.42001,      7.65081,      
-          7.51666,      7.7913,       8.89895,      10.4355,      14.451,       
-          19.4155,      31.1338,      44.0079,      69.8322,      131.042,      
-          194.129,      298.6,        505.502,      307.189,      177.23,       
-          109.438,      73.6256,      53.2245,      32.5834,      23.059,       
-          14.9262,      11.7052,      9.36352,      8.7692,       8.87186,      
-          8.7676,       8.7676,       5.72488,      5.38812,      5.05137,      
-          4.71461,      4.37786,      4.0411,       3.7848,       3.70435,      
-          3.36759,      3.03083,      2.69408,      2.35732,      2.02057,      
-          1.68381,      1.34706,      1.0103,       0.98785,      0.808247,     
-          0.808247,     0.673545,     0.336789,     3.34739e-05,  3.34739e-05,  
-          3.3363e-05,   3.3066e-05,   3.26663e-05,  3.20868e-05,  3.19236e-05,  
-          3.17605e-05,  3.15973e-05,  3.14341e-05,  3.12709e-05,  3.11077e-05,  
-          2.90842e-05,  2.75176e-05,  2.75176e-05,  2.7313e-05,   2.7313e-05,   
-          2.71079e-05,  2.71079e-05,  0
+          11.2665,      11.0128,      10.7235,      10.4124,      10.089,       
+          9.75904,      9.42573,      9.0907,       8.75481,      8.41849,      
+          8.08195,      7.7453,       7.70549,      7.4086,       7.07187,      
+          6.73513,      16.5412,      17.5337,      26.2096,      42.6957,      
+          25.6779,      16.9795,      13.1785,      10.3098,      9.14646,      
+          8.86177,      9.6696,       10.4949,      12.2795,      17.0288,      
+          22.8138,      35.3477,      71.3244,      95.1092,      70.6882,      
+          34.002,       20.3416,      14.8569,      12.2275,      9.91456,      
+          8.96154,      8.20573,      7.93812,      7.96811,      8.46485,      
+          9.14011,      10.2678,      10.7113,      10.404,       9.45222,      
+          9.45907,      10.7438,      12.3269,      15.2668,      26.1406,      
+          26.6563,      26.1529,      17.7846,      12.9288,      11.3829,      
+          11.4133,      12.8691,      17.1729,      21.9717,      31.0661,      
+          48.9715,      77.0302,      85.8931,      70.871,       50.9405,      
+          36.3481,      27.1344,      21.3648,      15.1295,      12.1192,      
+          9.48253,      8.42001,      7.65081,      7.51666,      7.7913,       
+          8.89895,      10.4355,      14.451,       19.4155,      31.1338,      
+          44.0079,      69.8322,      131.042,      194.129,      298.6,        
+          505.502,      307.189,      177.23,       109.438,      73.6256,      
+          53.2245,      32.5834,      23.059,       14.9262,      11.7052,      
+          9.36352,      8.7692,       8.87186,      8.7676,       8.7676,       
+          5.72488,      5.38812,      5.05137,      4.71461,      4.37786,      
+          4.0411,       3.7848,       3.70435,      3.36759,      3.03083,      
+          2.69408,      2.35732,      2.02057,      1.68381,      1.34706,      
+          1.0103,       0.98785,      0.808247,     0.808247,     0.673545,     
+          0.336789,     3.34739e-05,  3.34739e-05,  3.3363e-05,   3.3066e-05,   
+          3.26663e-05,  3.20868e-05,  3.19236e-05,  3.17605e-05,  3.15973e-05,  
+          3.14341e-05,  3.12709e-05,  3.11077e-05,  2.90842e-05,  2.75176e-05,  
+          2.75176e-05,  2.7313e-05,   2.7313e-05,   2.71079e-05,  2.71079e-05,  
+          0
         };
         auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
@@ -1714,6 +1644,7 @@ SCENARIO( "Testing the summation of cross sections" ){
       THEN( "the reactions can be summed up and checked" ){
         std::vector< njoy::RECONR::ReactionID > refReactions{ 
           ReactionID{ projectile, target, ReactionType{ 2 } },
+          ReactionID{ projectile, target, ReactionType{ 18 } },
           ReactionID{ projectile, target, ReactionType{ 51 } },
           ReactionID{ projectile, target, ReactionType{ 52 } },
           ReactionID{ projectile, target, ReactionType{ 102 } },
@@ -1725,16 +1656,12 @@ SCENARIO( "Testing the summation of cross sections" ){
         std::sort( refReactions.begin(), refReactions.end() );
         std::sort( rxKeys.begin(), rxKeys.end() );
 
-        printKeys( refReactions, rxKeys );
-
         CHECK( ranges::equal( refReactions, rxKeys ) );
 
         std::vector< njoy::RECONR::ReactionID > refSummations{ 
           ReactionID{ projectile, target, ReactionType{ 1 } },
-          ReactionID{ projectile, target, ReactionType{ 3 } },
           ReactionID{ projectile, target, ReactionType{ 4 } },
           ReactionID{ projectile, target, ReactionType{ 16 } },
-          ReactionID{ projectile, target, ReactionType{ 18 } },
           ReactionID{ projectile, target, ReactionType{ 27 } },
           ReactionID{ projectile, target, ReactionType{ 101 } }
         };
@@ -1742,26 +1669,47 @@ SCENARIO( "Testing the summation of cross sections" ){
         std::sort( refSummations.begin(), refSummations.end() );
         std::sort( smKeys.begin(), smKeys.end() );
 
-        printKeys( refReactions, rxKeys );
-
-        CHECK( ranges::equal( refSummations, rxKeys ) );
+        CHECK( ranges::equal( refSummations, smKeys ) );
 
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
-        auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
-        auto nonelastic = ReactionID{ projectile, target, ReactionType{ 3 } };
-        std::vector< double > refXS = sumRanges(
-          reactions.at( capture ).template crossSections< RPair >().second, 
-          summations.at( nonelastic ).template crossSections< RPair >().second
+
+        auto mt2 = ReactionID{ projectile, target, ReactionType{ 2 } };
+        auto mt4 = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt16 = ReactionID{ projectile, target, ReactionType{ 16 } };
+        auto mt27 = ReactionID{ projectile, target, ReactionType{ 27 } };
+        std::vector< double  > refXS = sumRanges(
+          reactions.at(  mt2   ).template crossSections< RPair >().second,
+          summations.at( mt4   ).template crossSections< RPair >().second,
+          summations.at( mt16  ).template crossSections< RPair >().second,
+          summations.at( mt27  ).template crossSections< RPair >().second
         );
 
         auto reaction = summations.at( ID );
-        CHECK( refXS == reaction.crossSections< RPair >().second );
+        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
       THEN( "MT = 2 can be tested" ){ 
         auto capture = ReactionID{ projectile, target, ReactionType{ 2 } };
-        std::vector< double > refXS( sizeEnergies, 2.0 );
+        std::vector< double > refXS{
+          3.19112,  3.19112,  3.19112,  3.19112,  3.19112,  
+          3.19112,  3.19112,  3.19112,  3.19112,  3.19112,  
+          3.19112,  3.19112,  3.19112,  3.19112,  3.19112,  
+          3.19112,  3.19112,  3.19112,  3.19112,  3.19112,  
+          3.19111,  3.19111,  3.19111,  3.19111,  3.19111,  
+          3.1911,   3.19108,  3.19108,  3.19104,  3.19097,  
+          3.19083,  3.19072,  3.19054,  3.19032,  3.18997,  
+          3.18992,  3.18883,  3.18655,  3.18197,  3.17281,  
+          3.15444,  3.11748,  3.0607,   3.04275,  2.89053,  
+          2.58061,  2.05545,  11.7242,  344.429,  28.6191,  
+          11.9466,  9.33498,  59.3075,  51.6443,  8.23213,  
+          8.15067,  7.65864,  7.65864,  7.38591,  6.44477,  
+          5.8478,   5.8478,   2,        2,        2,        
+          2,        2,        2,        2,        2,        
+          2,        2,        2,        2,        2,        
+          2,        2,        2,        2,        2,        
+          2,        0
+        };
         refXS.back() = 0.0;
 
         auto reaction = reactions.at( capture );
@@ -1802,16 +1750,15 @@ SCENARIO( "Testing the summation of cross sections" ){
           0,            0,            0,            0,            0,            
           0,            0,            0,            0,            0,            
           0,            0,            0,            0,            0,            
-          0,            0,            0,            0,            0,            
-          0,            0,            18,           18,           11.829,       
-          11.829,       11.829,       11.829,       11.829,       11.829,       
-          3.34739e-05,  3.3363e-05,   3.3066e-05,   3.26663e-05,  3.20868e-05,  
-          3.19236e-05,  3.17605e-05,  3.15973e-05,  3.14341e-05,  3.12709e-05,  
-          3.11077e-05,  2.90842e-05,  2.75176e-05,  2.75176e-05,  2.7313e-05,   
-          2.7313e-05,   2.71079e-05,  2.71079e-05,  0
+          18,           18,           11.829,       11.829,       11.829,       
+          11.829,       11.829,       11.829,       3.34739e-05,  3.3363e-05,   
+          3.3066e-05,   3.26663e-05,  3.20868e-05,  3.19236e-05,  3.17605e-05,  
+          3.15973e-05,  3.14341e-05,  3.12709e-05,  3.11077e-05,  2.90842e-05,  
+          2.75176e-05,  2.75176e-05,  2.7313e-05,   2.7313e-05,   2.71079e-05,  
+          2.71079e-05,  0
         };
 
-        auto reaction = summations.at( ID );
+        auto reaction = reactions.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
 
       } // THEN
@@ -1834,24 +1781,23 @@ SCENARIO( "Testing the summation of cross sections" ){
       THEN( "MT = 102 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 102 } };
         std::vector< double > refXS{
-          102,          94.1134,      86.6777,      79.6441,      72.9714,      
-          66.6243,      60.5726,      54.7899,      49.2533,      43.9428,      
-          38.8406,      29.2,         20.2247,      11.829,       11.829,       
-          11.7587,      11.6884,      11.5477,      11.4071,      11.2665,      
-          11.1396,      11.0128,      10.8681,      10.7235,      10.568,       
-          10.4124,      10.089,       9.75904,      9.42573,      9.0907,       
-          8.75481,      8.41849,      8.08195,      7.7453,       7.70549,      
-          7.4086,       7.07187,      6.73513,      6.60108,      6.39838,      
-          6.26433,      6.06163,      6.04528,      5.72488,      5.38812,      
-          5.05137,      4.71461,      4.37786,      4.0411,       3.7848,       
-          3.70435,      3.36759,      3.03083,      2.69408,      2.35732,      
-          2.24648,      2.02057,      1.68381,      1.34706,      1.31369,      
-          1.29881,      1.0103,       0.98785,      0.808247,     0.808247,     
-          0.673545,     0.336789,     0.179636,     0.179636,     3.34739e-05,  
-          3.34739e-05,  3.3363e-05,   3.3066e-05,   3.26663e-05,  3.20868e-05,  
-          3.19236e-05,  3.17605e-05,  3.15973e-05,  3.14341e-05,  3.12709e-05,  
-          3.11077e-05,  2.90842e-05,  2.75176e-05,  2.75176e-05,  2.7313e-05,   
-          2.7313e-05,   2.71079e-05,  2.71079e-05,  0
+          171.074,      161.125,      151.802,      143.031,      134.753,      
+          126.917,      119.479,      112.402,      105.652,      99.2024,      
+          93.0271,      81.4153,      70.6696,      60.672,       60.672,       
+          38.6443,      32.0988,      26.381,       21.7798,      18.238,       
+          15.5618,      13.5435,      12.0076,      10.8192,      9.87888,      
+          9.11484,      8.47576,      8.39625,      7.92515,      7.43716,      
+          6.99345,      6.81957,      6.58108,      6.41886,      6.19086,      
+          6.17148,      5.81633,      5.45288,      5.09729,      4.74728,      
+          4.40123,      4.05803,      3.79803,      3.71691,      3.37742,      
+          3.03948,      2.70441,      2.40124,      2.67062,      2.0281,       
+          1.68416,      1.34711,      2.44233,      5.05576,      1.01031,      
+          0.987856,     0.80825,      0.80825,      0.673546,     0.33679,      
+          0.179637,     0.179637,     3.34739e-05,  3.34739e-05,  3.3363e-05,   
+          3.3066e-05,   3.26663e-05,  3.20868e-05,  3.19236e-05,  3.17605e-05,  
+          3.15973e-05,  3.14341e-05,  3.12709e-05,  3.11077e-05,  2.90842e-05,  
+          2.75176e-05,  2.75176e-05,  2.7313e-05,   2.7313e-05,   2.71079e-05,  
+          2.71079e-05,  0
         };
 
         auto reaction = reactions.at( ID );
@@ -1860,5 +1806,4 @@ SCENARIO( "Testing the summation of cross sections" ){
       } // THEN
     } // WHEN
   } // GIVEN
-  */
 } // SCENARIO

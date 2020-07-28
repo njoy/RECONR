@@ -17,16 +17,23 @@ void summateReactions( std::ostream& output,
   const auto& reactions = r2d2.reactions();
   auto& summations = r2d2.summations();
 
-  auto fromENDF = [&]( auto&& mt ){ 
+   auto fromENDF = [&]( auto&& mt ) -> elementary::ReactionID { 
     return fromEndfReactionNumber( proj, target, mt ); };
 
   auto transform = [&]( auto&& MTs ){
-    return MTs
-      | ranges::view::transform( fromENDF )
-      | ranges::to_vector;
+    std::vector< elementary::ReactionID > IDs;
+    for( const auto& mt : MTs ){
+      try {
+        IDs.push_back( fromENDF( mt ) );
+      } catch( std::exception& ){
+        continue;
+      }
+    }
+
+    return IDs;
   };
   // Sum redundant cross sections
-  output << "Summing redundant cross sections for IDs:\n";
+  output << "Summing redundant cross sections\n";
   for( auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
 
@@ -57,21 +64,13 @@ void summateReactions( std::ostream& output,
       }
     } else { redundants = transform( redundantMTs ); }
 
-    output << fmt::format( "{:5}", MT ) << std::endl;
-
     std::vector< std::vector< double > > partials;
     for( const auto& id : redundants ){
     
       std::vector< double > partial;
       if ( summations.count( id ) > 0 ) {
-        output << fmt::format( "\t{:20s} summation {}", 
-                                id.symbol(), toEndfReactionNumber( id ) ) 
-               << std::endl;
         partial = summations.at( id ).template crossSections< XSPair >().second;
       } else if( reactions.count( id ) > 0 ){
-        output << fmt::format( "\t{:20s} reaction {}", 
-                                id.symbol(), toEndfReactionNumber( id ) ) 
-               << std::endl;
         partial = reactions.at( id ).template crossSections< XSPair >().second;
       } else { continue; } // no existing partial
 
