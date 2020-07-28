@@ -61,7 +61,8 @@ void operator()( const nlohmann::json& njoyArgs,
     // Remove leading zeros
     this->truncateReactions( output, data );
 
-    // pendf.material( MAT, data, sequence );
+    output << "Writing processed data to file." << std::endl;
+    pendf.material( MAT, data, sequence );
 
   }
 

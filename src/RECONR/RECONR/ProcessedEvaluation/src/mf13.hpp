@@ -1,9 +1,8 @@
-template< typename Production_T >
 std::optional< ENDFtk::file::Type< 13 > >
-mf13( const int& MAT, const Production_T& productions ){
+mf13( const int& MAT, const R2D2& data ){
 
   std::vector< ENDFtk::section::Type< 13 > > sections;
-  for( auto& [ ID, production ] : productions ){
+  for( auto& [ ID, production ] : data.photonProductions() ){
 
     auto prods = production.template productions< PPair >();
     std::vector< long > boundaries{ static_cast< long >( prods.size() ) };

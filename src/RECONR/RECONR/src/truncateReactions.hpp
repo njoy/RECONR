@@ -30,7 +30,6 @@ void truncateReactions( std::ostream& output, R2D2& r2d2 ){
 
   auto trunc = [&]( auto&& reactions ){
     for( auto& [ ID, reaction ] : reactions ){
-      output << fmt::format( "\n\t{:20s} ", ID.symbol() );
 
       auto xs = reaction.template crossSections< XSPair >();
 

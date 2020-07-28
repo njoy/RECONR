@@ -40,6 +40,7 @@ public:
   XSMap_t& reactions() { return this->reactions_; }
   const XSMap_t& reactions() const { return this->reactions_; }
   XSMap_t& summations() { return this->summations_; }
+  const XSMap_t& summations() const { return this->summations_; }
   PPMap_t& photonProductions() { return this->photonProductions_; }
   const PPMap_t& photonProductions() const { return this->photonProductions_; }
 
