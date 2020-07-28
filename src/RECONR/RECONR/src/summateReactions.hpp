@@ -37,7 +37,8 @@ void summateReactions( std::ostream& output,
         // otherwise they won't be included in MT=1.
         auto mts = ranges::view::concat( 
           redundantMTs, ENDFtk::redundantReactions.at( 3 ) )
-          | ranges::view::unique;
+          | ranges::view::unique
+          | ranges::to_vector;
 
         redundants = transform( mts );
       }
@@ -56,29 +57,34 @@ void summateReactions( std::ostream& output,
       }
     } else { redundants = transform( redundantMTs ); }
 
-    // njoy::Log::info( "{:20s}", "redundants" );
-    // for( const auto& key : redundants ){
-    //   Log::info( "\t{:20s}", key.symbol() );
-    // }
+    output << fmt::format( "{:5}", MT ) << std::endl;
 
     std::vector< std::vector< double > > partials;
     for( const auto& id : redundants ){
     
-      if( reactions.count( id ) > 0 ){
-        partials.push_back(
-          reactions.at( id ).template crossSections< XSPair >().second );
-      } else if ( summations.count( id ) > 0 ) {
-        partials.push_back(
-          summations.at( id ).template crossSections< XSPair >().second );
+      std::vector< double > partial;
+      if ( summations.count( id ) > 0 ) {
+        output << fmt::format( "\t{:20s} summation {}", 
+                                id.symbol(), toEndfReactionNumber( id ) ) 
+               << std::endl;
+        partial = summations.at( id ).template crossSections< XSPair >().second;
+      } else if( reactions.count( id ) > 0 ){
+        output << fmt::format( "\t{:20s} reaction {}", 
+                                id.symbol(), toEndfReactionNumber( id ) ) 
+               << std::endl;
+        partial = reactions.at( id ).template crossSections< XSPair >().second;
       } else { continue; } // no existing partial
+
+      partials.push_back( partial );
       
-      if( partials.size() > 0 ){
-        auto rPair = std::make_pair( utility::copy( energies ), 
-                                    sumPartials( partials ) );
-        summations.emplace(
-          elementary::fromEndfReactionNumber( proj, target, MT ),
-          Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
-      }
     } // for id
+
+    if( partials.size() > 0 ){
+      auto rPair = std::make_pair( utility::copy( energies ), 
+                                  sumPartials( partials ) );
+      summations.emplace(
+        elementary::fromEndfReactionNumber( proj, target, MT ),
+        Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
+    }
   } // for MT
 }

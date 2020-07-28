@@ -6,7 +6,7 @@ void summateProductions( std::ostream& output,
                         R2D2& data,
                         const Range& energies ){
 
-  auto productions = data.photonProductions();
+  auto& productions = data.photonProductions();
 
   if( productions.size() <= 0 ){
     return;
@@ -35,6 +35,7 @@ void summateProductions( std::ostream& output,
       []( auto&& e, auto&& p ){ return PPForms{ std::make_pair( e, p ) }; },
       trunc.first, trunc.second )
       | ranges::to_vector;
+
     production.productions( std::move( pairs ) );
   }
   output << std::endl;
