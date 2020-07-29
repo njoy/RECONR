@@ -19,7 +19,6 @@ mf3( const int& MAT, const R2D2& data ){
 
   for( auto& [ ID, rx ] : data.reactions() ){ 
     auto mt = elementary::toEndfReactionNumber( ID );
-    Log::info( "ID: {:25s}, MT: {:4}", ID.symbol(), mt );
     addSection( mt, rx );
   }
 
@@ -36,7 +35,6 @@ mf3( const int& MAT, const R2D2& data ){
   for( auto& [ ID, rx ] : data.summations() ){ 
     auto mt = elementary::toEndfReactionNumber( ID );
     if( p2t.count( mt ) ){ mt = p2t.at( mt ); }
-    Log::info( "ID: {:25s}, MT: {:4}", ID.symbol(), mt );
     addSection( mt, rx );
   }
 
