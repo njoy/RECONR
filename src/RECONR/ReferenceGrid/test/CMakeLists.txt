@@ -1,7 +1,5 @@
 
 add_executable( RECONR.ReferenceGrid.test
-                call.test.cpp
-                fill.test.cpp
                 ReferenceGrid.test.cpp )
 target_compile_options( RECONR.ReferenceGrid.test PRIVATE ${${PREFIX}_common_flags}
 $<$<BOOL:${strict}>:${${PREFIX}_strict_flags}>$<$<CONFIG:DEBUG>:
