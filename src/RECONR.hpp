@@ -27,12 +27,21 @@ using ReactionID = elementary::ReactionID;
 
 #include "RECONR/interp.hpp"
 
+// For Reaction
 using XSPair = std::pair< std::vector< double >, std::vector< double > >;
 using XSForms = std::variant< 
   std::vector< interp::Variant >,
   interp::LinearTable,
   XSPair
 >;
+
+// For UnresolvedReaction
+using UForms = std::variant< 
+  interp::LinearLinear,
+  XSPair
+>;
+
+// For PhotonProductions
 using PPair = std::pair< double, double >;
 using PPForms = std::variant<
   std::vector< interp::Variant >,
@@ -44,6 +53,7 @@ using PPForms = std::variant<
 
 #include "RECONR/Reaction.hpp"
 #include "RECONR/PhotonProduction.hpp"
+#include "RECONR/UnresolvedReaction.hpp"
 #include "RECONR/ReferenceGrid.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
 #include "RECONR/src/linearize.hpp"

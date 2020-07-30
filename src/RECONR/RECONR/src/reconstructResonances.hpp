@@ -26,6 +26,7 @@ void reconstructResonances(
   // Nothing to do for SpecialCase
 }
 
+/*
 template< typename Range >
 static
 void reconstructResonances( 
@@ -53,19 +54,54 @@ void reconstructResonances(
   output << "Reconstructing unresolved EnergyDependentFissionWidths parameters." 
          << std::endl;
 }
+*/
 
 template< typename Range >
 static
 void reconstructResonances( 
      std::ostream& output,
      Range&,
-     R2D2&,
-     const ResonanceRange&,
-     const unresolved::EnergyDependent&,
+     R2D2& r2d2,
+     const ResonanceRange& rRange,
+     const unresolved::EnergyDependent& uRange,
      double, double ){
 
-  output << "Reconstructing unresolved EnergyDependent parameters." 
+  output << "Reconstructing unresolved parameters." 
          << std::endl;
+
+  const auto& MT451 = std::get< 0 >( r2d2.info() );
+  const auto& nMass = CODATA[ constants::neutronMass ];
+  const auto& eCharge = CODATA[ constants::elementaryCharge ];
+
+  auto lru = resonanceReconstruction::rmatrix::fromENDF( 
+    rRange, nMass, eCharge, r2d2.projectile(), r2d2.target() );
+
+  const auto energies = lru.grid();
+  auto crossSections = energies 
+    | ranges::view::transform(
+      [&]( auto&& energy ){ return lru( energy ); }
+      )
+    | ranges::to_vector;
+
+  auto x = energies 
+    | ranges::view::transform( 
+      []( auto&& energy ) -> double { return energy / dimwits::electronVolt; }
+    );
+
+  auto& unresolved = r2d2.unresolved();
+  auto IDs = ranges::view::keys( crossSections.front() );
+  for( auto& id : IDs ){
+
+    auto xs = crossSections
+      | ranges::view::transform( 
+          [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
+      | ranges::to_vector;
+
+    URxn rxn{ MT451.ZA(), MT451.AWR(), uRange.LSSF(), 
+              interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) }
+            };
+    unresolved.emplace( id , std::move( rxn ) );
+  }
 }
 
 template< typename Range >
@@ -137,11 +173,11 @@ void reconstructResonances(
 
   output << "Reconstructing R-Matrix Limited resonances." << std::endl;
 
-  auto nMass = CODATA[ constants::neutronMass ];
-  auto eCharge = CODATA[ constants::elementaryCharge ];
+  const auto& nMass = CODATA[ constants::neutronMass ];
+  const auto& eCharge = CODATA[ constants::elementaryCharge ];
 
   auto rml = resonanceReconstruction::rmatrix::fromENDF( 
-    rRange, nMass, eCharge );
+    rRange, nMass, eCharge, r2d2.projectile(), r2d2.target() );
 
   auto [ energies, crossSections ] = linearize( grid, rml, relTol, absTol );
   // Remove units from x
@@ -150,6 +186,7 @@ void reconstructResonances(
       []( auto&& energy ) -> double { return energy / dimwits::electronVolt; }
     );
 
+  auto& reconstructed = r2d2.reconstructedResonances();
   auto IDs = ranges::view::keys( crossSections.front() );
   for( auto& id : IDs ){
 
@@ -158,7 +195,7 @@ void reconstructResonances(
           [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
       | ranges::to_vector;
 
-    r2d2.reconstructedResonances()[ id ].push_back(
+    reconstructed[ id ].push_back(
       interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) } );
   }
 

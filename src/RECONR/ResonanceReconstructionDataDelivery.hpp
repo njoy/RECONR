@@ -4,6 +4,7 @@ public:
   using XSMap_t = std::map< ReactionID, Reaction >;
   using PPMap_t = std::map< ReactionID, PPReaction >;
   using ReconMap_t = std::map< ReactionID, std::vector< interp::LinearLinear > >;
+  using UnresolvedMap_t = std::map< ReactionID, UnresolvedReaction >;
 
   using RPVariant = std::variant< ENDFtk::section::Type< 2, 151 > >;
 
@@ -19,6 +20,7 @@ private:
   XSMap_t summations_;
   PPMap_t photonProductions_;
   ReconMap_t reconstructedResonances_;
+  UnresolvedMap_t reconstructedUnresolved_;
 
   RPVariant resonanceParameters_;
   std::vector< double > resonanceReferenceGrid_;
@@ -45,9 +47,10 @@ public:
   const PPMap_t& photonProductions() const { return this->photonProductions_; }
 
   auto& reconstructedResonances() { return this->reconstructedResonances_; }
+  auto& unresolved() { return this->reconstructedUnresolved_; }
 
-  auto& resonanceParameters() const { return this->resonanceParameters_; }
-  auto& resonanceReferenceGrid() const { return this->resonanceReferenceGrid_; }
+  const auto& resonanceParameters() const { return this->resonanceParameters_; }
+  const auto& resonanceReferenceGrid() const { return this->resonanceReferenceGrid_; }
 };
 
 using R2D2 = ResonanceReconstructionDataDelivery;

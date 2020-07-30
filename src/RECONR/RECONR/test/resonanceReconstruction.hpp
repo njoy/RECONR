@@ -1,6 +1,6 @@
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
-    auto material = details::ENDFMaterial( "SLBW" );
+    auto material = details::ENDFMaterial( "SLBW", true );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     auto proj = r2d2.projectile();
@@ -73,6 +73,61 @@ SCENARIO( "Testing the resonance reconstruction" ){
         details::checkRanges( refEnergies, fission.x() );
         details::checkRanges( refFission, fission.y() );
         
+      } // THEN
+      THEN( "the unresolved resonance keys can also be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< ReactionID > refKeys{ eID, cID };
+        auto keys = ranges::view::keys( unresolved ) | ranges::to_vector;
+
+        printKeys( refKeys, keys );
+
+        std::sort( refKeys.begin(), refKeys.end() );
+        std::sort( keys.begin(), keys.end() );
+        CHECK( ranges::equal( refKeys, keys ) );
+
+      } // THEN
+      THEN( "the unresolved capture cross section can be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< double > refEnergies{
+          15000,  17000,  20000,   25000,  30000,  
+          35000,  40000,  50000,   60000,  70000,  
+          80000,  90000,  100000
+        };
+        std::vector< double > refXS{
+          0.00500132,   0.00442008,  0.00376465,   0.00301958,   
+          0.00252133,   0.00216459,  0.0018965,    0.00152033,   
+          0.00126893,   0.001089,    0.000953847,  0.000848589,  
+          0.000764289
+        };
+        auto capture = unresolved.at( cID );
+        auto crossSections = capture.crossSections< 
+            njoy::RECONR::interp::LinearLinear >();
+
+        details::checkRanges( refEnergies, crossSections.x() );
+        details::checkRanges( refXS, crossSections.y() );
+      } // THEN
+      THEN( "the unresolved elastic cross section can be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< double > refEnergies{
+          15000,  17000,  20000,   25000,  30000,  
+          35000,  40000,  50000,   60000,  70000,  
+          80000,  90000,  100000
+        };
+        std::vector< double > refXS{
+          8.73463,  8.4211,   8.03861,  7.55437,  
+          7.18993,  6.90114,  6.6638,   6.29054,  
+          6.00425,  5.77319,  5.57992,  5.41392,  
+          5.26844
+        };
+        auto elastic = unresolved.at( eID );
+        auto crossSections = elastic.crossSections< 
+            njoy::RECONR::interp::LinearLinear >();
+
+        details::checkRanges( refEnergies, crossSections.x() );
+        details::checkRanges( refXS, crossSections.y() );
       } // THEN
       
     } // WHEN
@@ -190,6 +245,61 @@ SCENARIO( "Testing the resonance reconstruction" ){
         // details::checkRanges( refFission, fission.y() );
         
       } // THEN
+      THEN( "the unresolved resonance keys can also be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< ReactionID > refKeys{ eID, cID };
+        auto keys = ranges::view::keys( unresolved ) | ranges::to_vector;
+
+        printKeys( refKeys, keys );
+
+        std::sort( refKeys.begin(), refKeys.end() );
+        std::sort( keys.begin(), keys.end() );
+        CHECK( ranges::equal( refKeys, keys ) );
+
+      } // THEN
+      THEN( "the unresolved capture cross section can be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< double > refEnergies{
+          15000,  17000,  20000,   25000,  30000,  
+          35000,  40000,  50000,   60000,  70000,  
+          80000,  90000,  100000
+        };
+        std::vector< double > refXS{
+          0.00500132,   0.00442008,  0.00376465,   0.00301958,   
+          0.00252133,   0.00216459,  0.0018965,    0.00152033,   
+          0.00126893,   0.001089,    0.000953847,  0.000848589,  
+          0.000764289
+        };
+        auto capture = unresolved.at( cID );
+        auto crossSections = capture.crossSections< 
+            njoy::RECONR::interp::LinearLinear >();
+
+        details::checkRanges( refEnergies, crossSections.x() );
+        details::checkRanges( refXS, crossSections.y() );
+      } // THEN
+      THEN( "the unresolved elastic cross section can be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< double > refEnergies{
+          15000,  17000,  20000,   25000,  30000,  
+          35000,  40000,  50000,   60000,  70000,  
+          80000,  90000,  100000
+        };
+        std::vector< double > refXS{
+          8.73463,  8.4211,   8.03861,  7.55437,  
+          7.18993,  6.90114,  6.6638,   6.29054,  
+          6.00425,  5.77319,  5.57992,  5.41392,  
+          5.26844
+        };
+        auto elastic = unresolved.at( eID );
+        auto crossSections = elastic.crossSections< 
+            njoy::RECONR::interp::LinearLinear >();
+
+        details::checkRanges( refEnergies, crossSections.x() );
+        details::checkRanges( refXS, crossSections.y() );
+      } // THEN
       
     } // WHEN
     
@@ -237,6 +347,61 @@ SCENARIO( "Testing the resonance reconstruction" ){
           
         } // THEN
       }
+      THEN( "the unresolved resonance keys can also be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< ReactionID > refKeys{ eID, cID };
+        auto keys = ranges::view::keys( unresolved ) | ranges::to_vector;
+
+        printKeys( refKeys, keys );
+
+        std::sort( refKeys.begin(), refKeys.end() );
+        std::sort( keys.begin(), keys.end() );
+        CHECK( ranges::equal( refKeys, keys ) );
+
+      } // THEN
+      THEN( "the unresolved capture cross section can be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< double > refEnergies{
+          15000,  17000,  20000,   25000,  30000,  
+          35000,  40000,  50000,   60000,  70000,  
+          80000,  90000,  100000
+        };
+        std::vector< double > refXS{
+          0.00500132,   0.00442008,  0.00376465,   0.00301958,   
+          0.00252133,   0.00216459,  0.0018965,    0.00152033,   
+          0.00126893,   0.001089,    0.000953847,  0.000848589,  
+          0.000764289
+        };
+        auto capture = unresolved.at( cID );
+        auto crossSections = capture.crossSections< 
+            njoy::RECONR::interp::LinearLinear >();
+
+        details::checkRanges( refEnergies, crossSections.x() );
+        details::checkRanges( refXS, crossSections.y() );
+      } // THEN
+      THEN( "the unresolved elastic cross section can be verified" ){
+        const auto& unresolved = r2d2.unresolved();
+
+        std::vector< double > refEnergies{
+          15000,  17000,  20000,   25000,  30000,  
+          35000,  40000,  50000,   60000,  70000,  
+          80000,  90000,  100000
+        };
+        std::vector< double > refXS{
+          8.73463,  8.4211,   8.03861,  7.55437,  
+          7.18993,  6.90114,  6.6638,   6.29054,  
+          6.00425,  5.77319,  5.57992,  5.41392,  
+          5.26844
+        };
+        auto elastic = unresolved.at( eID );
+        auto crossSections = elastic.crossSections< 
+            njoy::RECONR::interp::LinearLinear >();
+
+        details::checkRanges( refEnergies, crossSections.x() );
+        details::checkRanges( refXS, crossSections.y() );
+      } // THEN
     } // WHEN
   } // GIVEN
   

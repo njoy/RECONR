@@ -1,6 +1,4 @@
 class Reaction {
-public:
-
 private:
   int ZA_;
   double atomicWeightRatio_;
