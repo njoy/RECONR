@@ -8,6 +8,7 @@ protected:
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectXS.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectPPXS.hpp"
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectRP.hpp"
+  #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/collectResonanceRanges.hpp"
 
 public:
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory/src/call.hpp"

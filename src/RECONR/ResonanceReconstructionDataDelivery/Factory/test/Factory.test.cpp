@@ -21,6 +21,7 @@ public:
   using Factory::collectRP;
   using Factory::collectXS;
   using Factory::collectPPXS;
+  using Factory::collectResonanceRanges;
 };
 
 #include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.hpp"
