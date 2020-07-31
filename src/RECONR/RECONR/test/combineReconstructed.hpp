@@ -7,7 +7,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
   GIVEN( "an SLBW object" ){
     std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
-    auto material = details::ENDFMaterial( "SLBW" );
+    auto material = details::ENDFMaterial( "SLBW", 1, true );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     auto projectile = r2d2.projectile();
@@ -68,7 +68,6 @@ SCENARIO( "Testing combineReconstructed" ){
 
 
     } // THEN
-
     THEN( "combined elastic cross section can be verified" ){
       ReactionID elastic{ projectile, target, ReactionType{ 2 } };
 
@@ -119,7 +118,7 @@ SCENARIO( "Testing combineReconstructed" ){
   } // GIVEN
   GIVEN( "an RM object" ){
     std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
-    auto material = details::ENDFMaterial( "RM" );
+    auto material = details::ENDFMaterial( "RM", 0 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     auto projectile = r2d2.projectile();
@@ -141,9 +140,10 @@ SCENARIO( "Testing combineReconstructed" ){
     tRECONR::reconstructCrossSections( std::cout, std::cout, r2d2, energies );
 
     const auto preReactions = r2d2.reactions();
-    auto& reconstructed = r2d2.reconstructedResonances();
+    const auto& reconstructed = r2d2.reconstructedResonances();
 
     tRECONR::combineReconstructed( std::cout, std::cout, r2d2, energies );
+    const auto& unresolved = r2d2.unresolved();
 
     auto sizeEnergies = ranges::distance( energies );
     auto& reactions = r2d2.reactions();
@@ -180,20 +180,13 @@ SCENARIO( "Testing combineReconstructed" ){
 
 
     } // THEN
-
     THEN( "combined elastic cross section can be verified" ){
       ReactionID elastic{ projectile, target, ReactionType{ 2 } };
 
-      auto rx = preReactions.at( elastic ).
-          template crossSections< RPair >().second;
-      auto rn = energies | ranges::view::transform( 
-          reconstructed.at( elastic ).front() )
-          | ranges::to_vector;
-
-      std::vector< double > refXS = sumRanges( rx, rn );
-
-      auto reaction = reactions.at( elastic );
-      details::checkRanges( refXS, reaction.crossSections< RPair >().second );
+      details::checkRanges( 
+        reactions.at( elastic ).template crossSections< RPair >().second,
+        unresolved.at( elastic ).template crossSections< RPair >().second
+      );
       
     } // THEN
     THEN( "combined fission cross section can be verified" ){
@@ -215,23 +208,17 @@ SCENARIO( "Testing combineReconstructed" ){
     THEN( "combined capture cross section can be verified" ){
       ReactionID capture{ projectile, target, ReactionType{ 102 } };
 
-      auto rx = preReactions.at( capture ).
-          template crossSections< RPair >().second;
-      auto rn = energies | ranges::view::transform( 
-          reconstructed.at( capture ).front() )
-          | ranges::to_vector;
-
-      std::vector< double > refXS = sumRanges( rx, rn );
-
-      auto reaction = reactions.at( capture );
-      details::checkRanges( refXS, reaction.crossSections< RPair >().second );
+      details::checkRanges( 
+        reactions.at( capture ).template crossSections< RPair >().second,
+        unresolved.at( capture ).template crossSections< RPair >().second
+      );
       
     } // THEN
     
   } // GIVEN
   GIVEN( "an RML object" ){
     std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
-    auto material = details::ENDFMaterial( "RML" );
+    auto material = details::ENDFMaterial( "RML", 1 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     auto projectile = r2d2.projectile();

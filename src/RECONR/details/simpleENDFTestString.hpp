@@ -81,7 +81,7 @@ inline
 std::string RML(){
   return
     //        EL         EH        LRU        LRF        NRO       NAPS
-    " 1.000000-5 5.500000+5          1          7          0          02631 2151     \n" // CONT (range)
+    " 1.000000-5 5.500000+3          1          7          0          02631 2151     \n" // CONT (range)
     " 0.000000+0 0.000000+0          0          3          2          02631 2151     \n"
     " 0.000000+0 0.000000+0          2          0         24          42631 2151     \n"
     " 0.000000+0 5.446635+1 0.000000+0 2.600000+1 1.000000+0 0.000000+02631 2151     \n"
@@ -102,24 +102,12 @@ std::string RML(){
     " 5.359000+4 1.500000+0 1.700000+1 0.000000+0 0.000000+0 0.000000+02631 2151     ";
 }
 
-inline 
-std::string MF2( std::string formalism = "SLBW" ){
-  std::string endf = "\n"
-    //        ZA        AWR                              NIS
-    " 4.510500+4 1.040000+2          0          0          1          02631 2151     \n" // HEAD
-    //       ZAI        ABN                   LFW        NER
-    " 4.510500+4 1.000000+0          0          0          2          02631 2151     \n";// CONT (isotope)
-
-  if( formalism == "SpecialCase" ) endf += SpecialCase();
-  if( formalism == "SLBW" ) endf += SLBW();
-  if( formalism == "MLBW" ) endf += MLBW();
-  if( formalism == "RM" )   endf += RM();
-  if( formalism == "RML" )  endf += RML();
-
-  std::string unresolved = "\n"
+inline
+std::string unresolved( int LSSF ){
+  return fmt::format( "\n"
     //        EL         EH        LRU        LRF        NRO       NAPS
     " 1.500000+4 1.000000+5          2          2          0          02631 2151     \n"
-    " 3.000000+0 5.700000-1          0          0          1          02631 2151     \n"
+    " 3.000000+0 5.700000-1          {}          0          1          02631 2151     \n"
     " 2.180550+1 0.000000+0          0          0          2          02631 2151     \n"
     " 2.500000+0 0.000000+0          2          0         66         102631 2151     \n"
     " 0.000000+0 0.000000+0 0.000000+0 1.000000+0 0.000000+0 0.000000+02631 2151     \n"
@@ -145,8 +133,26 @@ std::string MF2( std::string formalism = "SLBW" ){
     " 8.000000+4 6.840720+4 0.000000+0 9.166560+0 1.081650+0 0.000000+02631 2151     \n"
     " 9.000000+4 6.840720+4 0.000000+0 9.166560+0 1.081650+0 0.000000+02631 2151     \n"
     " 1.000000+5 6.840720+4 0.000000+0 9.166560+0 1.081650+0 0.000000+02631 2151     \n"
-    " 0.000000+0 0.000000+0          0          0          0          02631 2  0     ";
-  return endf + unresolved + FEND();
+    " 0.000000+0 0.000000+0          0          0          0          02631 2  0     ",
+    LSSF
+  );
+}
+
+inline 
+std::string MF2( std::string formalism = "SLBW", int LSSF = 0 ){
+  std::string endf = "\n"
+    //        ZA        AWR                              NIS
+    " 4.510500+4 1.040000+2          0          0          1          02631 2151     \n" // HEAD
+    //       ZAI        ABN                   LFW        NER
+    " 4.510500+4 1.000000+0          0          0          2          02631 2151     \n";// CONT (isotope)
+
+  if( formalism == "SpecialCase" ) endf += SpecialCase();
+  if( formalism == "SLBW" ) endf += SLBW();
+  if( formalism == "MLBW" ) endf += MLBW();
+  if( formalism == "RM" )   endf += RM();
+  if( formalism == "RML" )  endf += RML();
+
+  return endf + unresolved( LSSF ) + FEND();
 }
 
 inline
@@ -237,9 +243,9 @@ std::string MF13(){
 
 inline 
 njoy::ENDFtk::syntaxTree::Tape< std::string >::Material_t
-ENDFMaterial( std::string formalism = "SLBW", bool print = false ){
+ENDFMaterial( std::string formalism = "SLBW", int LSSF = 0, bool print = false ){
 
-  const std::string endf = MF1() + MF2( formalism ) + MF3() + MF13() + MEND();
+  const std::string endf = MF1() + MF2( formalism, LSSF ) + MF3() + MF13() + MEND();
 
   if( print ){
     njoy::Log::info( "material: \n{}", endf );

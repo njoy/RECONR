@@ -7,6 +7,7 @@ public:
   using UnresolvedMap_t = std::map< ReactionID, UnresolvedReaction >;
 
   using RPVariant = std::variant< ENDFtk::section::Type< 2, 151 > >;
+  using Range_t = std::pair< double, double >;
 
   using Info_t = std::variant< ENDFtk::section::Type< 1, 451 > >;
 
@@ -24,6 +25,8 @@ private:
 
   RPVariant resonanceParameters_;
   std::vector< double > resonanceReferenceGrid_;
+  Range_t resolvedRange_;
+  Range_t unresolvedRange_;
 public:
 
   using Buffer_t = const std::string;
@@ -48,6 +51,9 @@ public:
 
   auto& reconstructedResonances() { return this->reconstructedResonances_; }
   auto& unresolved() { return this->reconstructedUnresolved_; }
+
+  const Range_t& resolvedRange() const { return this->resolvedRange_; }
+  const Range_t& unresolvedRange() const { return this->unresolvedRange_; }
 
   const auto& resonanceParameters() const { return this->resonanceParameters_; }
   const auto& resonanceReferenceGrid() const { return this->resonanceReferenceGrid_; }

@@ -41,7 +41,7 @@ void printKeys( K& keys ){
 }
 
 template< typename R, typename T >
-void printKeys( R& ref, T& trial ){
+void printKeys( R&& ref, T&& trial ){
   njoy::Log::info( "" );
   njoy::Log::info( "{:25s} {:25s}", "ref", "trial" );
   for( const auto& [r, t] : ranges::view::zip( ref, trial ) ){
@@ -250,9 +250,9 @@ SCENARIO( "Testing creation of RECONR class" ){
 } // SCENARIO
 */
 
-// #include "RECONR/RECONR/test/combineReconstructed.hpp"
+#include "RECONR/RECONR/test/combineReconstructed.hpp"
 // #include "RECONR/RECONR/test/evaluatedData.hpp"
 // #include "RECONR/RECONR/test/linearization.hpp"
-#include "RECONR/RECONR/test/resonanceReconstruction.hpp"
+// #include "RECONR/RECONR/test/resonanceReconstruction.hpp"
 // #include "RECONR/RECONR/test/summateReactions.hpp"
 // #include "RECONR/RECONR/test/unionization.hpp"
