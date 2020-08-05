@@ -7,7 +7,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
   GIVEN( "an SLBW object" ){
     std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
-    auto material = details::ENDFMaterial( "SLBW", 1, true );
+    auto material = details::ENDFMaterial( "SLBW", 1 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
     auto projectile = r2d2.projectile();

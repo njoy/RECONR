@@ -26,93 +26,61 @@ void reconstructResonances(
   // Nothing to do for SpecialCase
 }
 
-/*
 template< typename Range >
 static
 void reconstructResonances( 
-     std::ostream& output,
-     Range&,
-     R2D2&,
-     const ResonanceRange&,
-     const unresolved::EnergyIndependent&,
-     double, double){
+  std::ostream& output,
+  Range&,
+  R2D2& r2d2,
+  const ResonanceRange& rRange,
+  const unresolved::EnergyIndependent& uRange,
+  double, double){
 
   output << "Reconstructing unresolved EnergyIndependent parameters." 
          << std::endl;
+  reconstructUnresolved( output, r2d2, rRange, uRange );
 }
 
 template< typename Range >
 static
 void reconstructResonances( 
-     std::ostream& output,
-     Range&,
-     R2D2&,
-     const ResonanceRange&,
-     const unresolved::EnergyDependentFissionWidths&,
-     double, double ){
+  std::ostream& output,
+  Range&,
+  R2D2& r2d2,
+  const ResonanceRange& rRange,
+  const unresolved::EnergyDependentFissionWidths& uRange,
+  double, double ){
 
   output << "Reconstructing unresolved EnergyDependentFissionWidths parameters." 
          << std::endl;
+  reconstructUnresolved( output, r2d2, rRange, uRange );
 }
-*/
 
 template< typename Range >
 static
 void reconstructResonances( 
-     std::ostream& output,
-     Range&,
-     R2D2& r2d2,
-     const ResonanceRange& rRange,
-     const unresolved::EnergyDependent& uRange,
-     double, double ){
+  std::ostream& output,
+  Range&,
+  R2D2& r2d2,
+  const ResonanceRange& rRange,
+  const unresolved::EnergyDependent& uRange,
+  double, double ){
 
   output << "Reconstructing unresolved parameters." 
          << std::endl;
 
-  const auto& MT451 = std::get< 0 >( r2d2.info() );
-  const auto& nMass = CODATA[ constants::neutronMass ];
-  const auto& eCharge = CODATA[ constants::elementaryCharge ];
-
-  auto lru = resonanceReconstruction::rmatrix::fromENDF( 
-    rRange, nMass, eCharge, r2d2.projectile(), r2d2.target() );
-
-  const auto energies = lru.grid();
-  auto crossSections = energies 
-    | ranges::view::transform(
-      [&]( auto&& energy ){ return lru( energy ); }
-      )
-    | ranges::to_vector;
-
-  auto x = energies 
-    | ranges::view::transform( 
-      []( auto&& energy ) -> double { return energy / dimwits::electronVolt; }
-    );
-
-  auto& unresolved = r2d2.unresolved();
-  auto IDs = ranges::view::keys( crossSections.front() );
-  for( auto& id : IDs ){
-
-    auto xs = crossSections
-      | ranges::view::transform( 
-          [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
-      | ranges::to_vector;
-
-    URxn rxn{ MT451.ZA(), MT451.AWR(), uRange.LSSF(), 
-              interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) }
-            };
-    unresolved.emplace( id , std::move( rxn ) );
-  }
+  reconstructUnresolved( output, r2d2, rRange, uRange );
 }
 
 template< typename Range >
 static
 void reconstructResonances( 
-     std::ostream& output,
-     Range& grid, 
-     R2D2& r2d2, 
-     const ResonanceRange& rRange,
-     const resolved::SingleLevelBreitWigner&,
-     double relTol, double absTol){
+  std::ostream& output,
+  Range& grid, 
+  R2D2& r2d2, 
+  const ResonanceRange& rRange,
+  const resolved::SingleLevelBreitWigner&,
+  double relTol, double absTol){
 
   output << "Reconstructing SLBW resonances." << std::endl;
 

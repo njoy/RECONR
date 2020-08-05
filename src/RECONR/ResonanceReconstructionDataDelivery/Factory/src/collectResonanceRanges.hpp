@@ -9,6 +9,9 @@ collectResonanceRanges( const ENDFtk::section::Type< 2, 151 >& mt151 ){
   for( const auto& isotope : mt151.isotopes() ){
     for( const auto& range : isotope.resonanceRanges() ){
       switch ( range.LRU() ) {
+        case 0:
+          // Do nothing
+          break;
         case 1:
           resolved = Range_t{
             std::min( resolved.first, range.lowerEnergy() ),
@@ -23,7 +26,9 @@ collectResonanceRanges( const ENDFtk::section::Type< 2, 151 >& mt151 ){
           break;
         default:
           // A la @whaeck
-          throw std::runtime_error( "You somehow reached unreachable code" );
+          throw std::runtime_error( 
+            fmt::format("You somehow reached unreachable code, LRU={}"
+            "while collecting resonance ranges.", range.LRU() ) );
       } // switch
     } // for resonanceRanges
   } // for isotopes

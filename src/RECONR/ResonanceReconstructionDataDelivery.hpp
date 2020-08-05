@@ -51,6 +51,7 @@ public:
 
   auto& reconstructedResonances() { return this->reconstructedResonances_; }
   auto& unresolved() { return this->reconstructedUnresolved_; }
+  const auto& unresolved() const { return this->reconstructedUnresolved_; }
 
   const Range_t& resolvedRange() const { return this->resolvedRange_; }
   const Range_t& unresolvedRange() const { return this->unresolvedRange_; }

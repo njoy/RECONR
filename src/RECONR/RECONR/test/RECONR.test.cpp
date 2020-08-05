@@ -51,29 +51,6 @@ void printKeys( R&& ref, T&& trial ){
 std::vector< double> XSEnergies(){
 
   std::vector< double > Qvalues{ 322.4648, 3.224648E6 };
-  // std::vector< double > MT1{
-  //   1.0E-5, 
-  //   details::nextMin( 2.0E-5 ), 2.0E-5,
-  //   details::nextMin( 7.5E+5 ), 7.5E+5,
-  //   details::nextMin( 1.9E+7 ), 1.9E+7,
-  //   details::nextMin( 1.95E+7 ),1.95E+7,
-  //   details::nextMin( 2.0E+7 ), 2.0E+7 };
-  // std::vector< double > MT16{
-  //   1e-05,       1.25e-05,    1.5e-05,     2e-05,       
-  //   2.5457e-05,  3.09139e-05, 4.18279e-05, 5.27418e-05, 6.36557e-05,  
-  //   8.54836e-05, 0.000107311, 0.000150967, 0.000194623, 0.000281934,  
-  //   0.000369246, 0.000718492, 0.00141698,  0.00281397,  0.00560794,   
-  //   0.0111959,   0.0223717,   0.0447235,   0.089427,    0.178834,     
-  //   0.357648,    0.715276,    1.43053,     2.86104,     5.72207,      
-  //   11.4441,     22.8882,     45.7764,     91.5528,     183.105,      
-  //   366.211,     732.422,     1464.84,     2929.69,     5859.38,      
-  //   11718.8,     23437.5,     46875,       93750,       187500,       
-  //   375000,      750000,      1.9e+07,     1.95e+07,    2e+07 };
-  // std::vector< double > MT18{ 
-  //   1.0E+5,
-  //   details::nextMin( 1.5E+5 ), 1.5E+5,
-  //   details::nextMin( 7.5E+5 ), 7.5E+5,
-  //   1.9E+7, 1.95E+7, 2.0E+7 };
   std::vector< double > MT102{
     1e-05,        1.0625e-05,   1.125e-05,    1.1875e-05,   1.25e-05,     
     1.3125e-05,   1.375e-05,    1.4375e-05,   1.5e-05,      1.5625e-05,   
@@ -152,7 +129,6 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   return std::make_pair( energies, r2d2 );
 }
 
-/*
 SCENARIO( "Testing creation of RECONR class" ){
   nlohmann::json input{R"({
     "nendf": 20, "npend": 22,
@@ -222,12 +198,12 @@ SCENARIO( "Testing creation of RECONR class" ){
     //                             std::cerr, 
     //                             args ) );
     // } // WHEN
-    WHEN( "processing one ENDF Material in a Tape" ){
-      CHECK_NOTHROW( tRECONR()( Fe56Input, 
-                                std::cout, 
-                                std::cerr, 
-                                args ) );
-    } // WHEN
+    // WHEN( "processing one ENDF Material in a Tape" ){
+    //   CHECK_NOTHROW( tRECONR()( Fe56Input, 
+    //                             std::cout, 
+    //                             std::cerr, 
+    //                             args ) );
+    // } // WHEN
     WHEN( "processing H-1, Fe-56, and U-235" ){
       CHECK_NOTHROW( tRECONR()( inputWithU235, 
                                 std::cout, 
@@ -248,11 +224,10 @@ SCENARIO( "Testing creation of RECONR class" ){
 
   } // WHEN
 } // SCENARIO
-*/
 
 #include "RECONR/RECONR/test/combineReconstructed.hpp"
-// #include "RECONR/RECONR/test/evaluatedData.hpp"
-// #include "RECONR/RECONR/test/linearization.hpp"
-// #include "RECONR/RECONR/test/resonanceReconstruction.hpp"
+#include "RECONR/RECONR/test/evaluatedData.hpp"
+#include "RECONR/RECONR/test/linearization.hpp"
+#include "RECONR/RECONR/test/resonanceReconstruction.hpp"
 // #include "RECONR/RECONR/test/summateReactions.hpp"
 // #include "RECONR/RECONR/test/unionization.hpp"
