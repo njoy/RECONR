@@ -187,6 +187,19 @@ SCENARIO( "Testing creation of RECONR class" ){
       }
     ]
   })"_json};
+  nlohmann::json fastU235{R"({
+    "nendf": 20, "npend": 25,
+    "tlabel": "Modern RECONR Testing",
+    "sequence": [
+      {
+        "mat": 9228, "ncards": 2, "ngrid": 0,
+        "err": 0.1, "tempr": 0.0, "errmax": 2.1, "errint": 8E-7,
+        "cards": [ "Material 9228 processed with modern RECONR",
+                    "For testing purposes only." ],
+        "enode": [ ]
+      }
+    ]
+  })"_json};
 
   GIVEN( "a JSON object, and extra arguments" ){
 
@@ -204,8 +217,14 @@ SCENARIO( "Testing creation of RECONR class" ){
     //                             std::cerr, 
     //                             args ) );
     // } // WHEN
-    WHEN( "processing H-1, Fe-56, and U-235" ){
-      CHECK_NOTHROW( tRECONR()( inputWithU235, 
+    // WHEN( "processing H-1, Fe-56, and U-235" ){
+    //   CHECK_NOTHROW( tRECONR()( inputWithU235, 
+    //                             std::cout, 
+    //                             std::cerr, 
+    //                             args ) );
+    // } // WHEN
+    WHEN( "processing U-235 with large tolerances" ){
+      CHECK_NOTHROW( tRECONR()( fastU235, 
                                 std::cout, 
                                 std::cerr, 
                                 args ) );
@@ -225,9 +244,9 @@ SCENARIO( "Testing creation of RECONR class" ){
   } // WHEN
 } // SCENARIO
 
-#include "RECONR/RECONR/test/combineReconstructed.hpp"
-#include "RECONR/RECONR/test/evaluatedData.hpp"
-#include "RECONR/RECONR/test/linearization.hpp"
-#include "RECONR/RECONR/test/resonanceReconstruction.hpp"
+// #include "RECONR/RECONR/test/combineReconstructed.hpp"
+// #include "RECONR/RECONR/test/evaluatedData.hpp"
+// #include "RECONR/RECONR/test/linearization.hpp"
+// #include "RECONR/RECONR/test/resonanceReconstruction.hpp"
 // #include "RECONR/RECONR/test/summateReactions.hpp"
 // #include "RECONR/RECONR/test/unionization.hpp"

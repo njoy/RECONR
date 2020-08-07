@@ -26,9 +26,10 @@ mf2( const int& MAT,
   const auto& proj = data.projectile();
   const auto& target = data.target();
 
-  ReactionID eID{ proj, target, elementary::ReactionType{ 2 } };
-  ReactionID fID{ proj, target, elementary::ReactionType{ 19 } };
-  ReactionID cID{ proj, target, elementary::ReactionType{ 102 } };
+  ReactionID tID{ proj, target, elementary::ReactionType{ "total" } };
+  ReactionID eID{ proj, target, elementary::ReactionType{ "elastic" } };
+  ReactionID fID{ proj, target, elementary::ReactionType{ "fission" } };
+  ReactionID cID{ proj, target, elementary::ReactionType{ "capture" } };
 
   
   auto eRxn = unresolved.at( eID );
@@ -36,6 +37,8 @@ mf2( const int& MAT,
 
   std::vector< double > elastic = 
       eRxn.template crossSections< XSPair >().second;
+  std::vector< double > total = 
+      unresolved.at( tID ).template crossSections< XSPair >().second;
   std::vector< double > capture = 
       unresolved.at( cID ).template crossSections< XSPair >().second;
   std::vector< double > fission;
@@ -45,21 +48,14 @@ mf2( const int& MAT,
     fission = std::vector< double >( energies.size(), 0.0 );
   }
 
-  std::vector< double > total = ranges::view::zip_with(
-      []( auto&& e, auto&& c, auto&& f ){ return e + c + f; },
-      elastic, capture, fission
-  );
-  
-  std::vector< double > cwTotal( energies.size(), 0.0 );
-
   ENDFtk::section::Type< 2, 152 > mt152{
     static_cast< double >( eRxn.ZA() ), eRxn.AWR(), eRxn.LSSF(), 2, 0.0, 
     utility::copy( energies ),
-    std::move( total ),
+    utility::copy( total ),
     utility::copy( elastic ),
     utility::copy( fission ),
     utility::copy( capture ),
-    std::move( cwTotal )
+    std::move( total )
   };
 
   return ENDFtk::file::Type< 2 >{ std::move( mt151 ), std::move( mt152 ) };

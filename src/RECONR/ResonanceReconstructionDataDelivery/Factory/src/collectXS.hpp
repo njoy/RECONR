@@ -24,7 +24,7 @@ XSMap_t collectXS( const ENDFMaterial_t& material,
     auto MF3 = material.fileNumber( 3 ).parse< 3 >();
     for( auto& section : MF3.sections() ){
       auto MT = section.MT();
-      if( ENDFtk::isRedundant( MT ) ){
+      if( ENDFtk::isRedundant( MT ) and ( MT != 1 ) ){
         auto redundants = ENDFtk::redundantReactions.at( MT )
           | ranges::view::filter(
             [&]( auto&& MT ){ return MF3.hasSection( MT ); } );

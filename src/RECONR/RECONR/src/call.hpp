@@ -52,10 +52,11 @@ void operator()( const nlohmann::json& njoyArgs,
       "number of points in final unionized grid    = {:10d}\n", eSize )
            << std::endl;
 
-    // Sum reactions
+    this->combineUnresolved( output, error, data, energies );
     this->reconstructCrossSections( output, error, data, energies );
     this->combineReconstructed( output, error, data, energies );
     this->summateReactions( output, error, data, energies );
+    this->summateUnresolved( output, error, data );
     this->summateProductions( output, error, data, energies );
 
     // Remove leading zeros

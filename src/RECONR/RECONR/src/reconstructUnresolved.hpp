@@ -13,7 +13,8 @@ void reconstructUnresolved(
   auto lru = resonanceReconstruction::rmatrix::fromENDF( 
     rRange, nMass, eCharge, r2d2.projectile(), r2d2.target() );
 
-  const auto energies = lru.grid();
+  auto energies = lru.grid();
+
   auto crossSections = energies 
     | ranges::view::transform( [&]( auto&& energy ){ return lru( energy ); } )
     | ranges::to_vector;

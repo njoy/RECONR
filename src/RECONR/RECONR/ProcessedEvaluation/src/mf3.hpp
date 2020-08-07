@@ -19,6 +19,10 @@ mf3( const int& MAT, const R2D2& data ){
 
   for( auto& [ ID, rx ] : data.reactions() ){ 
     auto mt = elementary::toEndfReactionNumber( ID );
+
+    // We'll take care of this in the summations
+    if( mt == 1 ){ continue; }
+
     addSection( mt, rx );
   }
 
