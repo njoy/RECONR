@@ -38,6 +38,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
     THEN( "the keys can be verified" ){
       std::vector< njoy::RECONR::ReactionID > refReactions{ 
+        ReactionID{ projectile, target, ReactionType{ 1 } },
         ReactionID{ projectile, target, ReactionType{ 2 } },
         ReactionID{ projectile, target, ReactionType{ 18 } },
         ReactionID{ projectile, target, ReactionType{ 51 } },
@@ -143,6 +144,7 @@ SCENARIO( "Testing combineReconstructed" ){
     const auto& reconstructed = r2d2.reconstructedResonances();
 
     tRECONR::combineReconstructed( std::cout, std::cout, r2d2, energies );
+
     const auto& unresolved = r2d2.unresolved();
 
     auto sizeEnergies = ranges::distance( energies );
@@ -150,6 +152,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
     THEN( "the keys can be verified" ){
       std::vector< njoy::RECONR::ReactionID > refReactions{ 
+        ReactionID{ projectile, target, ReactionType{ 1 } },
         ReactionID{ projectile, target, ReactionType{ 2 } },
         ReactionID{ projectile, target, ReactionType{ 18 } },
         ReactionID{ projectile, target, ReactionType{ 51 } },
@@ -183,11 +186,16 @@ SCENARIO( "Testing combineReconstructed" ){
     THEN( "combined elastic cross section can be verified" ){
       ReactionID elastic{ projectile, target, ReactionType{ 2 } };
 
-      details::checkRanges( 
-        reactions.at( elastic ).template crossSections< RPair >().second,
-        unresolved.at( elastic ).template crossSections< RPair >().second
-      );
-      
+      auto rx = preReactions.at( elastic ).
+          template crossSections< RPair >().second;
+      auto rn = energies | ranges::view::transform( 
+          reconstructed.at( elastic ).front() )
+          | ranges::to_vector;
+
+      std::vector< double > refXS = sumRanges( rx, rn );
+
+      auto reaction = reactions.at( elastic );
+      details::checkRanges( refXS, reaction.crossSections< RPair >().second );
     } // THEN
     THEN( "combined fission cross section can be verified" ){
       ReactionID fissionT{ projectile, target, ReactionType{ 18 } };
@@ -208,10 +216,16 @@ SCENARIO( "Testing combineReconstructed" ){
     THEN( "combined capture cross section can be verified" ){
       ReactionID capture{ projectile, target, ReactionType{ 102 } };
 
-      details::checkRanges( 
-        reactions.at( capture ).template crossSections< RPair >().second,
-        unresolved.at( capture ).template crossSections< RPair >().second
-      );
+      auto rx = preReactions.at( capture ).
+          template crossSections< RPair >().second;
+      auto rn = energies | ranges::view::transform( 
+          reconstructed.at( capture ).front() )
+          | ranges::to_vector;
+
+      std::vector< double > refXS = sumRanges( rx, rn );
+
+      auto reaction = reactions.at( capture );
+      details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       
     } // THEN
     
@@ -249,6 +263,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
     THEN( "the keys can be verified" ){
       std::vector< njoy::RECONR::ReactionID > refReactions{ 
+        ReactionID{ projectile, target, ReactionType{ 1 } },
         ReactionID{ projectile, target, ReactionType{ 2 } },
         ReactionID{ projectile, target, ReactionType{ 18 } },
         ReactionID{ projectile, target, ReactionType{ 51 } },

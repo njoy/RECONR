@@ -220,8 +220,8 @@ void reconstructResonances( std::ostream& output,
                             double relTol, double absTol ){
   auto g = grid | ranges::view::transform(
     []( auto&& v )->dimwits::Quantity< dimwits::ElectronVolt >
-      { return v*dimwits::electronVolt; }
-  );
+      { return v*dimwits::electronVolt; } )
+    | ranges::to_vector;
 
   std::visit( 
     [&]( auto&& arg ){ 

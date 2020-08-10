@@ -315,10 +315,10 @@ SCENARIO( "Testing the resonance reconstruction" ){
     auto fID = ReactionID{ proj, target, ReactionType{ 19 } };
     auto cID = ReactionID{ proj, target, ReactionType{ 102 } };
 
-    std::vector< double > grid{ 1e-05, 7788, 51520, 53590, 550000 };
+    std::vector< double > grid{ 1e-05, 77.88, 515.2, 535.9, 5500 };
     
     WHEN( "the resonances are reconstructed" ){
-      tRECONR::reconstructResonances( std::cout, grid, r2d2, 1E-1, 1E-3 );
+      tRECONR::reconstructResonances( std::cout, grid, r2d2, 1E-1, 1E-5 );
 
       auto reconstructed = r2d2.reconstructedResonances();
 
@@ -329,12 +329,12 @@ SCENARIO( "Testing the resonance reconstruction" ){
 
       REQUIRE( ranges::equal( refIDs, IDs ) );
 
-      std::vector< double > refE{ 1e-05, 7788, 51520, 53590, 550000 };
+      std::vector< double > refE{ 1e-05, 77.88, 515.2, 535.9, 5500 };
       std::map< njoy::RECONR::ReactionID, std::vector< double > > refXS{
         { cID, 
-          { 69.0745, 0.424143, 1.12865, 3.75695, 3.04552e-07 } },
+          { 69.0744, 0.0252528, 0.0110307, 0.0108772, 0.0328557} },
         { eID,
-          { 1.19111, 342.429, 57.3075, 49.6444, 3.8478 } }
+          { 1.19112, 1.15993, 0.981226, 0.97263, 5.15011 } }
       };
 
       for( const auto& id : IDs ){

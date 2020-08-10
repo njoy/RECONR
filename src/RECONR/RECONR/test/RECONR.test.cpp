@@ -205,24 +205,24 @@ SCENARIO( "Testing creation of RECONR class" ){
 
     auto args = nlohmann::json::object();
 
-    // WHEN( "a RECONR object is called" ){
-    //   CHECK_NOTHROW( tRECONR()( input, 
-    //                             std::cout, 
-    //                             std::cerr, 
-    //                             args ) );
-    // } // WHEN
-    // WHEN( "processing one ENDF Material in a Tape" ){
-    //   CHECK_NOTHROW( tRECONR()( Fe56Input, 
-    //                             std::cout, 
-    //                             std::cerr, 
-    //                             args ) );
-    // } // WHEN
-    // WHEN( "processing H-1, Fe-56, and U-235" ){
-    //   CHECK_NOTHROW( tRECONR()( inputWithU235, 
-    //                             std::cout, 
-    //                             std::cerr, 
-    //                             args ) );
-    // } // WHEN
+    WHEN( "a RECONR object is called" ){
+      CHECK_NOTHROW( tRECONR()( input, 
+                                std::cout, 
+                                std::cerr, 
+                                args ) );
+    } // WHEN
+    WHEN( "processing one ENDF Material in a Tape" ){
+      CHECK_NOTHROW( tRECONR()( Fe56Input, 
+                                std::cout, 
+                                std::cerr, 
+                                args ) );
+    } // WHEN
+    WHEN( "processing H-1, Fe-56, and U-235" ){
+      CHECK_NOTHROW( tRECONR()( inputWithU235, 
+                                std::cout, 
+                                std::cerr, 
+                                args ) );
+    } // WHEN
     WHEN( "processing U-235 with large tolerances" ){
       CHECK_NOTHROW( tRECONR()( fastU235, 
                                 std::cout, 
@@ -244,9 +244,9 @@ SCENARIO( "Testing creation of RECONR class" ){
   } // WHEN
 } // SCENARIO
 
-// #include "RECONR/RECONR/test/combineReconstructed.hpp"
-// #include "RECONR/RECONR/test/evaluatedData.hpp"
-// #include "RECONR/RECONR/test/linearization.hpp"
-// #include "RECONR/RECONR/test/resonanceReconstruction.hpp"
-// #include "RECONR/RECONR/test/summateReactions.hpp"
-// #include "RECONR/RECONR/test/unionization.hpp"
+#include "RECONR/RECONR/test/combineReconstructed.hpp"
+#include "RECONR/RECONR/test/evaluatedData.hpp"
+#include "RECONR/RECONR/test/linearization.hpp"
+#include "RECONR/RECONR/test/resonanceReconstruction.hpp"
+#include "RECONR/RECONR/test/summateReactions.hpp"
+#include "RECONR/RECONR/test/unionization.hpp"

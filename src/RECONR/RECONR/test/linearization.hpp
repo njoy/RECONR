@@ -18,6 +18,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       using NID = NucleusID;
 
       std::vector< njoy::RECONR::ReactionID > refKeys{ 
+        ReactionID{ projectile, target, ReactionType{ 1 } },
         ReactionID{ projectile, target, ReactionType{ 2 } },
         ReactionID{ projectile, target, ReactionType{ 18 } },
         ReactionID{ projectile, target, ReactionType{ 51 } },
