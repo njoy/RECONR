@@ -27,7 +27,7 @@ FetchContent_Declare( constants
 
 FetchContent_Declare( resonanceReconstruction
     GIT_REPOSITORY  http://github.com/njoy/resonanceReconstruction
-    GIT_TAG         origin/feature/lrf7
+    GIT_TAG         origin/master
     )
 
 FetchContent_Declare( Log
