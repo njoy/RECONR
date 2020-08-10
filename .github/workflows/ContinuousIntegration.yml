@@ -20,11 +20,13 @@ jobs:
       run: |
         which ${{matrix.cxx}} 
         ${{matrix.cxx}} --version
+        which gfortran
+        gfortran --version
     - uses: actions/checkout@v2
     - name: mkdir bin
       run: mkdir bin 
     - name: cmake
-      run: cmake -D CMAKE_CXX_COMPILER=`which ${{matrix.cxx}}` -D CMAKE_BUILD_TYPE=${{matrix.build_type}} ..  
+      run: cmake -D CMAKE_Fortran_COMPILER=`which gfortran` -D CMAKE_CXX_COMPILER=`which ${{matrix.cxx}}` -D CMAKE_BUILD_TYPE=${{matrix.build_type}} ..  
       working-directory: ./bin
     - name: make
       run: make
