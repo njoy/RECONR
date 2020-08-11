@@ -45,7 +45,10 @@ void printKeys( R&& ref, T&& trial ){
   njoy::Log::info( "" );
   njoy::Log::info( "{:25s} {:25s}", "ref", "trial" );
   for( const auto& [r, t] : ranges::view::zip( ref, trial ) ){
-    njoy::Log::info( "{:25s} {:25s}", r.symbol(), t.symbol() );
+    auto rMT = elementary::toEndfReactionNumber( r );
+    auto tMT = elementary::toEndfReactionNumber( t );
+    njoy::Log::info( "{:3} {:25s} {:3} {:25s}", rMT, r.symbol(), 
+                                                tMT, t.symbol() );
   }
 }
 std::vector< double> XSEnergies(){
@@ -145,7 +148,6 @@ void printSummations( const njoy::RECONR::R2D2& data ){
   }
 }
 
-/*
 SCENARIO( "Testing creation of RECONR class" ){
   nlohmann::json input{R"({
     "nendf": 20, "npend": 22,
@@ -257,10 +259,9 @@ SCENARIO( "Testing creation of RECONR class" ){
     })"_json };
 
     CHECK_THROWS( tRECONR()( std::cout, std::cerr, modern ) );
-
   } // WHEN
+
 } // SCENARIO
-*/
 
 #include "RECONR/RECONR/test/combineReconstructed.hpp"
 #include "RECONR/RECONR/test/evaluatedData.hpp"

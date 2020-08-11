@@ -49,12 +49,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         CHECK( ranges::equal( refSummations, smKeys ) );
 
-        njoy::Log::info( "------------------------------" );
-        njoy::Log::info( "SpecialCase Reactions" );
-        printReactions( r2d2 );
-        njoy::Log::info( "------------------------------" );
-        njoy::Log::info( "SpecialCase Summations" );
-        printSummations( r2d2 );
+        printKeys( refSummations, smKeys );
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
@@ -168,13 +163,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         CHECK( ranges::equal( refSummations, smKeys ) );
 
-
-        njoy::Log::info( "------------------------------" );
-        njoy::Log::info( "SLBW Reactions" );
-        printReactions( r2d2 );
-        njoy::Log::info( "------------------------------" );
-        njoy::Log::info( "SLBW Summations" );
-        printSummations( r2d2 );
+        printKeys( refSummations, smKeys );
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
@@ -359,6 +348,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         CHECK( ranges::equal( refSummations, smKeys ) );
 
+        printKeys( refSummations, smKeys );
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
@@ -472,6 +462,7 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         CHECK( ranges::equal( refSummations, smKeys ) );
 
+        printKeys( refSummations, smKeys );
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };

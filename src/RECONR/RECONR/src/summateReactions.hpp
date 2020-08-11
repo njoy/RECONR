@@ -32,11 +32,7 @@ void summateReactions( std::ostream& output,
     return IDs;
   };
 
-  // Sum redundant cross sections
-  output << "Summing redundant cross sections\n";
-  for( auto& [ MT, redundantMTs ] : 
-       ranges::view::reverse( ENDFtk::redundantReactions ) ){
-
+  auto sumRedundants = [&]( auto&& MT, auto&& redundantMTs ){
     output << fmt::format( "MT: {}", MT ) << std::endl;
 
     std::vector< elementary::ReactionID > redundants;
@@ -53,7 +49,7 @@ void summateReactions( std::ostream& output,
       }
     } else if( MT == 3 ){
       // MT=3 not allowed for incident neutrons
-      if( proj == neutron ){ continue; }
+      if( proj == neutron ){ return; }
 
     } else if( MT == 4 ){
       if( proj == neutron ){
@@ -69,9 +65,25 @@ void summateReactions( std::ostream& output,
       redundants = transform( redundantMTs );
     }
 
+    /*
+    auto printKeys = [&]( auto&& keys ){
+      for( const auto& key : keys ){
+        auto mt = elementary::toEndfReactionNumber( key );
+        Log::info( "\t{:3}  {:20s}", mt, key.symbol() );
+      }
+    };
+    auto rkeys = ranges::view::keys( reactions );
+    auto skeys = ranges::view::keys( summations );
+    Log::info( "rkeys:" );
+    printKeys( rkeys );
+    Log::info( "skeys:" );
+    printKeys( skeys );
+    */
+
     std::vector< std::vector< double > > partials;
     for( const auto& id : redundants ){
       auto mt = elementary::toEndfReactionNumber( id );
+      // output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
     
       std::vector< double > partial;
       if ( summations.count( id ) > 0 ) {
@@ -80,9 +92,9 @@ void summateReactions( std::ostream& output,
       } else if( reactions.count( id ) > 0 ){
         output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
         partial = reactions.at( id ).template crossSections< XSPair >().second;
-      } else { continue; } // no existing partial
+      } // else { return; } // no existing partial
 
-      partials.push_back( partial );
+      if( not partial.empty() ){ partials.push_back( partial ); }
       
     } // for id
 
@@ -93,5 +105,19 @@ void summateReactions( std::ostream& output,
         elementary::fromEndfReactionNumber( proj, target, MT ),
         Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
     }
+  };
+
+  // Sum redundant cross sections
+  output << "Summing redundant cross sections\n";
+  for( auto& [ MT, redundantMTs ] : 
+       ranges::view::reverse( ENDFtk::redundantReactions ) ){
+
+    // We have to do these at the end
+    if( ( MT == 1 ) or ( MT == 3 ) or ( MT == 27 ) ){ continue; }
+    sumRedundants( MT, redundantMTs );
   } // for MT
+
+  sumRedundants( 27, ENDFtk::redundantReactions.at( 27 ) );
+  sumRedundants( 3, ENDFtk::redundantReactions.at( 3 ) );
+  sumRedundants( 1, ENDFtk::redundantReactions.at( 1 ) );
 }
