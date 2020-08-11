@@ -104,9 +104,10 @@ std::vector< double > sumRanges( const Ranges&... ranges ){
 }
 
 // Linearize and reconstruct resonances
-auto lin_recon( std::string formalism, double absTol, double relTol ){
+auto lin_recon( std::string formalism, double absTol, double relTol, 
+                int LSSF = 0 ){
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
-  auto material = details::ENDFMaterial( formalism );
+  auto material = details::ENDFMaterial( formalism, LSSF );
   auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
 
   tRECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
@@ -129,6 +130,22 @@ auto lin_recon( std::string formalism, double absTol, double relTol ){
   return std::make_pair( energies, r2d2 );
 }
 
+void printReactions( const njoy::RECONR::R2D2& data ){
+  for( const auto& [ ID, reaction ] : data.reactions() ){
+    auto mt = elementary::toEndfReactionNumber( ID );
+    details::printV( fmt::format( "{}: MT={}", ID.symbol(), mt ),
+                     reaction.crossSections< njoy::RECONR::XSPair >().second );
+  }
+}
+void printSummations( const njoy::RECONR::R2D2& data ){
+  for( const auto& [ ID, reaction ] : data.summations() ){
+    auto mt = elementary::toEndfReactionNumber( ID );
+    details::printV( fmt::format( "{}: MT={}", ID.symbol(), mt ),
+                     reaction.crossSections< njoy::RECONR::XSPair >().second );
+  }
+}
+
+/*
 SCENARIO( "Testing creation of RECONR class" ){
   nlohmann::json input{R"({
     "nendf": 20, "npend": 22,
@@ -243,6 +260,7 @@ SCENARIO( "Testing creation of RECONR class" ){
 
   } // WHEN
 } // SCENARIO
+*/
 
 #include "RECONR/RECONR/test/combineReconstructed.hpp"
 #include "RECONR/RECONR/test/evaluatedData.hpp"

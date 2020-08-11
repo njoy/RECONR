@@ -5,6 +5,125 @@ SCENARIO( "Testing the summation of cross sections" ){
   using RPair = njoy::RECONR::XSPair;
   using PPair = njoy::RECONR::PPair;
 
+  GIVEN( "a SpecialCase object" ){
+    auto [energies, r2d2] = lin_recon( "SpecialCase", absTol, relTol );
+    auto sizeEnergies = ranges::distance( energies );
+
+    WHEN( "cross sections have been summated" ){
+      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
+
+      auto projectile = r2d2.projectile();
+      auto target = r2d2.target();
+
+      auto reactions = r2d2.reactions();
+      auto summations = r2d2.summations();
+
+      THEN( "the reactions can be summed up and checked" ){
+        std::vector< njoy::RECONR::ReactionID > refReactions{ 
+          ReactionID{ projectile, target, ReactionType{ 1 } },
+          ReactionID{ projectile, target, ReactionType{ 2 } },
+          ReactionID{ projectile, target, ReactionType{ 18 } },
+          ReactionID{ projectile, target, ReactionType{ 51 } },
+          ReactionID{ projectile, target, ReactionType{ 52 } },
+          ReactionID{ projectile, target, ReactionType{ 102 } },
+          ReactionID{ projectile, target, ReactionType{ 875 } },
+          ReactionID{ projectile, target, ReactionType{ 876 } },
+          ReactionID{ projectile, target, ReactionType{ 877 } }
+        };
+        auto rxKeys = ranges::view::keys( reactions ) | ranges::to_vector;
+        std::sort( refReactions.begin(), refReactions.end() );
+        std::sort( rxKeys.begin(), rxKeys.end() );
+
+        CHECK( ranges::equal( refReactions, rxKeys ) );
+
+        std::vector< njoy::RECONR::ReactionID > refSummations{ 
+          ReactionID{ projectile, target, ReactionType{ 1 } },
+          ReactionID{ projectile, target, ReactionType{ 4 } },
+          ReactionID{ projectile, target, ReactionType{ 16 } },
+          ReactionID{ projectile, target, ReactionType{ 27 } },
+          ReactionID{ projectile, target, ReactionType{ 101 } }
+        };
+        auto smKeys = ranges::view::keys( summations ) | ranges::to_vector;
+        std::sort( refSummations.begin(), refSummations.end() );
+        std::sort( smKeys.begin(), smKeys.end() );
+
+        CHECK( ranges::equal( refSummations, smKeys ) );
+
+        njoy::Log::info( "------------------------------" );
+        njoy::Log::info( "SpecialCase Reactions" );
+        printReactions( r2d2 );
+        njoy::Log::info( "------------------------------" );
+        njoy::Log::info( "SpecialCase Summations" );
+        printSummations( r2d2 );
+      } // THEN
+      THEN( "MT = 1 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
+
+        auto mt2 = ReactionID{ projectile, target, ReactionType{ 2 } };
+        auto mt4 = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt16 = ReactionID{ projectile, target, ReactionType{ 16 } };
+        auto mt27 = ReactionID{ projectile, target, ReactionType{ 27 } };
+        // Don't need 101 because it is included in 27
+
+        std::vector< double  > refXS = sumRanges(
+          reactions.at(  mt2   ).template crossSections< RPair >().second,
+          summations.at( mt4   ).template crossSections< RPair >().second,
+          summations.at( mt16  ).template crossSections< RPair >().second,
+          summations.at( mt27  ).template crossSections< RPair >().second
+        );
+
+        auto reaction = summations.at( ID );
+        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
+      } // THEN
+      THEN( "MT = 4 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 4 } };
+        auto mt51 = ReactionID{ projectile, target, ReactionType{ 51 } };
+        auto mt52 = ReactionID{ projectile, target, ReactionType{ 52 } };
+        std::vector< double > refXS = sumRanges( 
+            reactions.at( mt51 ).template crossSections< RPair >().second, 
+            reactions.at( mt52 ).template crossSections< RPair >().second );
+
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
+
+      } // THEN
+      THEN( "MT = 16 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 16 } };
+        auto mt875 = ReactionID{ projectile, target, ReactionType{ 875 } };
+        auto mt876 = ReactionID{ projectile, target, ReactionType{ 876 } };
+        auto mt877 = ReactionID{ projectile, target, ReactionType{ 877 } };
+        std::vector< double > refXS = sumRanges( 
+            reactions.at( mt875 ).template crossSections< RPair >().second, 
+            reactions.at( mt876 ).template crossSections< RPair >().second, 
+            reactions.at( mt877 ).template crossSections< RPair >().second );
+
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
+      } // THEN
+      THEN( "MT = 27 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 27 } };
+        auto mt18 = ReactionID{ projectile, target, ReactionType{ 18 } };
+        auto mt101 = ReactionID{ projectile, target, ReactionType{ 101 } };
+        std::vector< double > refXS = sumRanges( 
+          reactions.at( mt18 ).template crossSections< RPair >().second, 
+          summations.at( mt101 ).template crossSections< RPair >().second 
+        );
+
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
+      } // THEN
+      THEN( "MT = 101 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 101 } };
+        auto mt102 = ReactionID{ projectile, target, ReactionType{ 102 } };
+        std::vector< double > refXS = sumRanges( 
+          reactions.at( mt102 ).template crossSections< RPair >().second 
+        );
+
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
+      } // THEN
+    } // WHEN
+  } // GIVEN
   GIVEN( "an SLBW object" ){
     auto [energies, r2d2] = lin_recon( "SLBW", absTol, relTol );
     auto sizeEnergies = ranges::distance( energies );
@@ -49,6 +168,13 @@ SCENARIO( "Testing the summation of cross sections" ){
 
         CHECK( ranges::equal( refSummations, smKeys ) );
 
+
+        njoy::Log::info( "------------------------------" );
+        njoy::Log::info( "SLBW Reactions" );
+        printReactions( r2d2 );
+        njoy::Log::info( "------------------------------" );
+        njoy::Log::info( "SLBW Summations" );
+        printSummations( r2d2 );
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };
@@ -72,9 +198,9 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto mt51 = ReactionID{ projectile, target, ReactionType{ 51 } };
         auto mt52 = ReactionID{ projectile, target, ReactionType{ 52 } };
         std::vector< double > refXS = sumRanges( 
-            reactions.at( mt51 ).template crossSections< RPair >().second, 
-            reactions.at( mt52 ).template crossSections< RPair >().second );
-        zeroXS( energies, refXS, 1E5, 2E7 );
+          reactions.at( mt51 ).template crossSections< RPair >().second, 
+          reactions.at( mt52 ).template crossSections< RPair >().second
+        );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
@@ -82,27 +208,38 @@ SCENARIO( "Testing the summation of cross sections" ){
       } // THEN
       THEN( "MT = 16 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 16 } };
-        std::vector< double > refXS( sizeEnergies, 1.5 );
-        zeroXS( energies, refXS, 1E5, 2E7 );
+        auto mt875 = ReactionID{ projectile, target, ReactionType{ 875 } };
+        auto mt876 = ReactionID{ projectile, target, ReactionType{ 876 } };
+        auto mt877 = ReactionID{ projectile, target, ReactionType{ 877 } };
+        std::vector< double > refXS = sumRanges( 
+            reactions.at( mt875 ).template crossSections< RPair >().second, 
+            reactions.at( mt876 ).template crossSections< RPair >().second, 
+            reactions.at( mt877 ).template crossSections< RPair >().second );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
-      THEN( "MT = 51 can be tested" ){ 
-        auto ID = ReactionID{ projectile, target, ReactionType{ 51 } };
-        std::vector< double > refXS( sizeEnergies, 51.0 );
-        zeroXS( energies, refXS, 1E5, 2E7 );
+      THEN( "MT = 27 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 27 } };
+        auto mt18 = ReactionID{ projectile, target, ReactionType{ 18 } };
+        auto mt101 = ReactionID{ projectile, target, ReactionType{ 101 } };
+        std::vector< double > refXS = sumRanges( 
+          reactions.at( mt18 ).template crossSections< RPair >().second, 
+          summations.at( mt101 ).template crossSections< RPair >().second 
+        );
 
-        auto reaction = reactions.at( ID );
-        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
-      THEN( "MT = 52 can be tested" ){ 
-        auto ID = ReactionID{ projectile, target, ReactionType{ 52 } };
-        std::vector< double > refXS( sizeEnergies, 52.0 );
-        zeroXS( energies, refXS, 1E5, 2E7 );
+      THEN( "MT = 101 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 101 } };
+        auto mt102 = ReactionID{ projectile, target, ReactionType{ 102 } };
+        std::vector< double > refXS = sumRanges( 
+          reactions.at( mt102 ).template crossSections< RPair >().second 
+        );
 
-        auto reaction = reactions.at( ID );
-        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
     } // WHEN
     WHEN( "productions have been linearized and summarized" ){
@@ -230,6 +367,8 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto mt4 = ReactionID{ projectile, target, ReactionType{ 4 } };
         auto mt16 = ReactionID{ projectile, target, ReactionType{ 16 } };
         auto mt27 = ReactionID{ projectile, target, ReactionType{ 27 } };
+        // Don't need 101 because it is included in 27
+
         std::vector< double  > refXS = sumRanges(
           reactions.at(  mt2   ).template crossSections< RPair >().second,
           summations.at( mt4   ).template crossSections< RPair >().second,
@@ -240,15 +379,13 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto reaction = summations.at( ID );
         details::checkRanges( refXS, reaction.crossSections< RPair >().second );
       } // THEN
-      THEN( "MT = 4 can be tested" ){
+      THEN( "MT = 4 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 4 } };
         auto mt51 = ReactionID{ projectile, target, ReactionType{ 51 } };
         auto mt52 = ReactionID{ projectile, target, ReactionType{ 52 } };
-        std::vector< double > refXS = sumRanges(
-          reactions.at( mt51 ).template crossSections< RPair >().second, 
-          reactions.at( mt52 ).template crossSections< RPair >().second
-        );
-        zeroXS( energies, refXS, 1E5, 2E7 );
+        std::vector< double > refXS = sumRanges( 
+            reactions.at( mt51 ).template crossSections< RPair >().second, 
+            reactions.at( mt52 ).template crossSections< RPair >().second );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
@@ -259,29 +396,35 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto mt875 = ReactionID{ projectile, target, ReactionType{ 875 } };
         auto mt876 = ReactionID{ projectile, target, ReactionType{ 876 } };
         auto mt877 = ReactionID{ projectile, target, ReactionType{ 877 } };
-        std::vector< double > refXS = sumRanges(
-          reactions.at( mt875 ).template crossSections< RPair >().second,
-          reactions.at( mt876 ).template crossSections< RPair >().second,
-          reactions.at( mt877 ).template crossSections< RPair >().second );
+        std::vector< double > refXS = sumRanges( 
+            reactions.at( mt875 ).template crossSections< RPair >().second, 
+            reactions.at( mt876 ).template crossSections< RPair >().second, 
+            reactions.at( mt877 ).template crossSections< RPair >().second );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
-      THEN( "MT = 51 can be tested" ){ 
-        auto ID = ReactionID{ projectile, target, ReactionType{ 51 } };
-        std::vector< double > refXS( sizeEnergies, 51.0 );
-        zeroXS( energies, refXS, 1E5, 2E7 );
+      THEN( "MT = 27 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 27 } };
+        auto mt18 = ReactionID{ projectile, target, ReactionType{ 18 } };
+        auto mt101 = ReactionID{ projectile, target, ReactionType{ 101 } };
+        std::vector< double > refXS = sumRanges( 
+          reactions.at( mt18 ).template crossSections< RPair >().second, 
+          summations.at( mt101 ).template crossSections< RPair >().second 
+        );
 
-        auto reaction = reactions.at( ID );
-        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
-      THEN( "MT = 52 can be tested" ){ 
-        auto ID = ReactionID{ projectile, target, ReactionType{ 52 } };
-        std::vector< double > refXS( sizeEnergies, 52.0 );
-        zeroXS( energies, refXS, 1E5, 2E7 );
+      THEN( "MT = 101 can be tested" ){ 
+        auto ID = ReactionID{ projectile, target, ReactionType{ 101 } };
+        auto mt102 = ReactionID{ projectile, target, ReactionType{ 102 } };
+        std::vector< double > refXS = sumRanges( 
+          reactions.at( mt102 ).template crossSections< RPair >().second 
+        );
 
-        auto reaction = reactions.at( ID );
-        details::checkRanges( refXS, reaction.crossSections< RPair >().second );
+        auto reaction = summations.at( ID );
+        CHECK( refXS == reaction.crossSections< RPair >().second );
       } // THEN
     } // WHEN
   } // GIVEN
@@ -337,6 +480,8 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto mt4 = ReactionID{ projectile, target, ReactionType{ 4 } };
         auto mt16 = ReactionID{ projectile, target, ReactionType{ 16 } };
         auto mt27 = ReactionID{ projectile, target, ReactionType{ 27 } };
+        // Don't need 101 because it is included in 27
+
         std::vector< double  > refXS = sumRanges(
           reactions.at(  mt2   ).template crossSections< RPair >().second,
           summations.at( mt4   ).template crossSections< RPair >().second,
@@ -352,10 +497,8 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto mt51 = ReactionID{ projectile, target, ReactionType{ 51 } };
         auto mt52 = ReactionID{ projectile, target, ReactionType{ 52 } };
         std::vector< double > refXS = sumRanges( 
-          reactions.at( mt51 ).template crossSections< RPair >().second, 
-          reactions.at( mt52 ).template crossSections< RPair >().second
-        );
-        // zeroXS( energies, refXS, 1E5, 2E7 );
+            reactions.at( mt51 ).template crossSections< RPair >().second, 
+            reactions.at( mt52 ).template crossSections< RPair >().second );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
@@ -367,14 +510,12 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto mt876 = ReactionID{ projectile, target, ReactionType{ 876 } };
         auto mt877 = ReactionID{ projectile, target, ReactionType{ 877 } };
         std::vector< double > refXS = sumRanges( 
-          reactions.at( mt875 ).template crossSections< RPair >().second, 
-          reactions.at( mt876 ).template crossSections< RPair >().second, 
-          reactions.at( mt877 ).template crossSections< RPair >().second
-        );
+            reactions.at( mt875 ).template crossSections< RPair >().second, 
+            reactions.at( mt876 ).template crossSections< RPair >().second, 
+            reactions.at( mt877 ).template crossSections< RPair >().second );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
-
       } // THEN
       THEN( "MT = 27 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 27 } };
@@ -382,23 +523,21 @@ SCENARIO( "Testing the summation of cross sections" ){
         auto mt101 = ReactionID{ projectile, target, ReactionType{ 101 } };
         std::vector< double > refXS = sumRanges( 
           reactions.at( mt18 ).template crossSections< RPair >().second, 
-          summations.at( mt101 ).template crossSections< RPair >().second
+          summations.at( mt101 ).template crossSections< RPair >().second 
         );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
-
       } // THEN
       THEN( "MT = 101 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 101 } };
         auto mt102 = ReactionID{ projectile, target, ReactionType{ 102 } };
         std::vector< double > refXS = sumRanges( 
-          reactions.at( mt102 ).template crossSections< RPair >().second
+          reactions.at( mt102 ).template crossSections< RPair >().second 
         );
 
         auto reaction = summations.at( ID );
         CHECK( refXS == reaction.crossSections< RPair >().second );
-
       } // THEN
     } // WHEN
   } // GIVEN

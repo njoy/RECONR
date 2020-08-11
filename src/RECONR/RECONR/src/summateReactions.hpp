@@ -29,13 +29,15 @@ void summateReactions( std::ostream& output,
         continue;
       }
     }
-
     return IDs;
   };
+
   // Sum redundant cross sections
   output << "Summing redundant cross sections\n";
   for( auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
+
+    output << fmt::format( "MT: {}", MT ) << std::endl;
 
     std::vector< elementary::ReactionID > redundants;
     if( MT == 1 ){
@@ -51,9 +53,8 @@ void summateReactions( std::ostream& output,
       }
     } else if( MT == 3 ){
       // MT=3 not allowed for incident neutrons
-      if( proj == neutron ){
-        continue;
-      }
+      if( proj == neutron ){ continue; }
+
     } else if( MT == 4 ){
       if( proj == neutron ){
         redundants = transform(
@@ -62,15 +63,22 @@ void summateReactions( std::ostream& output,
             | ranges::view::filter( []( auto&& mt ){ return mt != 50; } )
         );
       }
-    } else { redundants = transform( redundantMTs ); }
+    }
+
+    if( ranges::distance( redundants ) == 0 ){
+      redundants = transform( redundantMTs );
+    }
 
     std::vector< std::vector< double > > partials;
     for( const auto& id : redundants ){
+      auto mt = elementary::toEndfReactionNumber( id );
     
       std::vector< double > partial;
       if ( summations.count( id ) > 0 ) {
+        output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
         partial = summations.at( id ).template crossSections< XSPair >().second;
       } else if( reactions.count( id ) > 0 ){
+        output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
         partial = reactions.at( id ).template crossSections< XSPair >().second;
       } else { continue; } // no existing partial
 
