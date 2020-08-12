@@ -65,25 +65,9 @@ void summateReactions( std::ostream& output,
       redundants = transform( redundantMTs );
     }
 
-    /*
-    auto printKeys = [&]( auto&& keys ){
-      for( const auto& key : keys ){
-        auto mt = elementary::toEndfReactionNumber( key );
-        Log::info( "\t{:3}  {:20s}", mt, key.symbol() );
-      }
-    };
-    auto rkeys = ranges::view::keys( reactions );
-    auto skeys = ranges::view::keys( summations );
-    Log::info( "rkeys:" );
-    printKeys( rkeys );
-    Log::info( "skeys:" );
-    printKeys( skeys );
-    */
-
     std::vector< std::vector< double > > partials;
     for( const auto& id : redundants ){
       auto mt = elementary::toEndfReactionNumber( id );
-      // output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
     
       std::vector< double > partial;
       if ( summations.count( id ) > 0 ) {

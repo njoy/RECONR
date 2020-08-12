@@ -27,9 +27,10 @@ void combineUnresolved( std::ostream& output,
 
   output << "\nAdding reconstructed unresolved cross sections to background\n";
   for( const auto& ID : ranges::view::keys( unresolved ) ){
+    auto mt = elementary::toEndfReactionNumber( ID );
 
     auto addUnresolved = [&]( const ReactionID& rxnID ){
-      output << fmt::format( "\t{:s}\n", rxnID.symbol() );
+      output << fmt::format( "\t{:3} {:s}\n", mt, rxnID.symbol() );
       auto& unres = unresolved.at( ID );
       auto& reaction = reactions.at( rxnID );
       const auto& rxn = reaction.crossSections< interp::LinearTable >();

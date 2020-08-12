@@ -10,7 +10,8 @@ void reconstructCrossSections( std::ostream& output,
   // Perhaps this could be more efficient by only reconstructing those things
   // that are used, but I doubt that is the limiting factor here
   for( auto& [ ID, reaction ] : r2d2.reactions() ){
-    output << fmt::format( "\t{:s}\n", ID.symbol() );
+    auto mt = elementary::toEndfReactionNumber( ID );
+    output << fmt::format( "\t{:3} {:s}\n", mt, ID.symbol() );
     
     auto barns =  energies 
       | ranges::view::transform( 

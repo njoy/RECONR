@@ -1,8 +1,16 @@
 std::optional< ENDFtk::file::Type< 13 > >
-mf13( const int& MAT, const R2D2& data ){
+mf13( std::ostream& output, std::ostream& error,
+      const int& MAT, const R2D2& data ){
 
+  const auto& productions = data.photonProductions();
+  if( productions.empty() ){ return std::nullopt; }
+
+  output << "Preparing MF=13 data." << std::endl;
   std::vector< ENDFtk::section::Type< 13 > > sections;
+
   for( auto& [ ID, production ] : data.photonProductions() ){
+    auto mt = elementary::toEndfReactionNumber( ID );
+    output << fmt::format( "\t{:3} {:s}\n", mt, ID.symbol() );
 
     auto prods = production.template productions< PPair >();
     std::vector< long > boundaries{ static_cast< long >( prods.size() ) };
@@ -28,10 +36,6 @@ mf13( const int& MAT, const R2D2& data ){
     
   }
 
-  if( sections.empty() ){
-    return std::nullopt;
-  } else{
-    return ENDFtk::file::Type< 13 >{ std::move( sections ) };
-  }
+  return ENDFtk::file::Type< 13 >{ std::move( sections ) };
 
 }

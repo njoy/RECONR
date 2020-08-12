@@ -22,10 +22,12 @@ void combineReconstructed( std::ostream& output,
   double eH{ 1E10 };
   output << "\nAdding reconstructed cross sections to background for IDs:\n";
   for( const auto& ID : ranges::view::keys( reconstructed ) ){
+    auto mt = elementary::toEndfReactionNumber( ID );
+
     std::vector< std::vector< double >  > partials;
 
     auto addReconstructed = [&]( const ReactionID& rxnID ){
-      output << fmt::format( "\t{:s}\n", rxnID.symbol() );
+      output << fmt::format( "\t{:3} {:s}\n", mt, ID.symbol() );
       const auto& recon = reconstructed.at( ID );
       auto& reaction = reactions.at( rxnID );
       auto& part = reaction.template crossSections< XSPair >().second;
