@@ -1,9 +1,8 @@
 ENDFtk::file::Type< 2 >
-mf2( std::ostream& output, std::ostream& error,
-     const int& MAT, const R2D2& data ){
+mf2( const Logger& logger, const int& MAT, const R2D2& data ){
 
-  output << "Preparing MF=2 data." << std::endl;
-  output << "MT=151" << std::endl;
+  logger.first << "Preparing MF=2 data." << std::endl;
+  logger.first << "MT=151" << std::endl;
   // MT151
   // We're going to assume that everything we see only has one resolved range
   auto params = std::get< 0 >( data.resonanceParameters() );
@@ -25,7 +24,7 @@ mf2( std::ostream& output, std::ostream& error,
     return ENDFtk::file::Type< 2 >{ std::move( mt151 ) };
   }
 
-  output << "MT=152" << std::endl;
+  logger.first << "MT=152" << std::endl;
   const auto& proj = data.projectile();
   const auto& target = data.target();
 
@@ -44,7 +43,7 @@ mf2( std::ostream& output, std::ostream& error,
 
   auto getUXS = [&]( std::string name, auto&& ID ) -> std::vector< double >{
     try {
-      output << fmt::format( "\t{}: {:s}\n", name,  ID.symbol() );
+      logger.first << fmt::format( "\t{}: {:s}\n", name,  ID.symbol() );
       return unresolved.at( ID ).template crossSections< XSPair >().second;
     } catch( std::out_of_range& ){
       Log::error( "Unable to extract " + name + " unresolved cross section." );

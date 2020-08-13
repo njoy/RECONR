@@ -10,7 +10,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     auto sizeEnergies = ranges::distance( energies );
 
     WHEN( "cross sections have been summated" ){
-      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
+      tRECONR::summateReactions( logger, r2d2, energies );
 
       auto projectile = r2d2.projectile();
       auto target = r2d2.target();
@@ -124,7 +124,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     auto sizeEnergies = ranges::distance( energies );
 
     WHEN( "cross sections have been summated" ){
-      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
+      tRECONR::summateReactions( logger, r2d2, energies );
 
       auto projectile = r2d2.projectile();
       auto target = r2d2.target();
@@ -233,7 +233,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     } // WHEN
     WHEN( "productions have been linearized and summarized" ){
       
-      tRECONR::summateProductions( std::cout, std::cout, r2d2, energies );
+      tRECONR::summateProductions( logger, r2d2, energies );
 
       auto& productions = r2d2.photonProductions();
 
@@ -309,7 +309,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     auto sizeEnergies = ranges::distance( energies );
 
     WHEN( "cross sections have been summated" ){
-      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
+      tRECONR::summateReactions( logger, r2d2, energies );
 
       auto projectile = r2d2.projectile();
       auto target = r2d2.target();
@@ -423,7 +423,7 @@ SCENARIO( "Testing the summation of cross sections" ){
     auto sizeEnergies = ranges::distance( energies );
 
     WHEN( "cross sections have been summated" ){
-      tRECONR::summateReactions( std::cout, std::cout, r2d2, energies );
+      tRECONR::summateReactions( logger, r2d2, energies );
 
       auto projectile = r2d2.projectile();
       auto target = r2d2.target();

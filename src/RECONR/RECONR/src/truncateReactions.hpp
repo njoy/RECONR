@@ -23,9 +23,9 @@ truncate( X&& x, Y&& y ){
 }
 
 static
-void truncateReactions( std::ostream& output, R2D2& r2d2 ){
+void truncateReactions( const Logger& logger, R2D2& r2d2 ){
 
-  output << "\nTruncating leading zeros of reconstructed reactions." 
+  logger.first << "\nTruncating leading zeros of reconstructed reactions." 
          << std::endl;
 
   auto trunc = [&]( auto&& reactions ){

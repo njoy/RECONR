@@ -1,7 +1,7 @@
 template< typename U >
 static
 void reconstructUnresolved(
-  std::ostream& output,
+  const Logger&,
   R2D2& r2d2,
   const ResonanceRange& rRange,
   const U& uRange ){

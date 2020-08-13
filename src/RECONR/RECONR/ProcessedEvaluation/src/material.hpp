@@ -1,18 +1,17 @@
-void material( std::ostream& output, 
-               std::ostream& error,
+void material( const Logger& logger,
                const Tape_t&, 
                const int& MAT,
                const R2D2& data,
                const nlohmann::json& sequence )  {
 
-  output << "Preparing data to be written to PENDF file." << std::endl;
+  logger.first << "Preparing data to be written to PENDF file." << std::endl;
 
-  auto MF2  = this->mf2( output, error, MAT, data );
-  auto MF3  = this->mf3( output, error, MAT, data );
-  auto MF13 = this->mf13( output, error, MAT, data );
-  auto MF1  = this->mf1( output, error, MAT, sequence, MF2, MF3, MF13 );
+  auto MF2  = this->mf2( logger, MAT, data );
+  auto MF3  = this->mf3( logger, MAT, data );
+  auto MF13 = this->mf13( logger, MAT, data );
+  auto MF1  = this->mf1( logger, MAT, sequence, MF2, MF3, MF13 );
 
-  output << "\nWriting PENDF data to file." << std::endl;
+  logger.first << "\nWriting PENDF data to file." << std::endl;
   MF1.print( this->ipendf, MAT, 1 );
   ENDFtk::FEND( MAT ).print( this->ipendf );
 
@@ -24,14 +23,13 @@ void material( std::ostream& output,
   ENDFtk::MEND().print( this->ipendf );
 }
 
-void material( std::ostream& output, 
-               std::ostream& error,
+void material( const Logger& logger,
                int& MAT, 
                const R2D2& data,
                const nlohmann::json& sequence){
   std::visit(
     [&]( auto&& eval ){ 
-      return this->material( output, error, eval, MAT, data, sequence ); },
+      return this->material( logger, eval, MAT, data, sequence ); },
     this->evaluated
   );
 }

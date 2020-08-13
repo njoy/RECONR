@@ -13,25 +13,25 @@ SCENARIO( "Testing combineReconstructed" ){
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();
 
-    tRECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
+    tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
     auto refGrid = tRECONR::unionizeEnergyGrid(
-      std::cout, 
+      logger, 
       r2d2.reactions(), 
       r2d2.photonProductions(), 
       r2d2.resonanceReferenceGrid(),
       userSupplied );
 
-    tRECONR::reconstructResonances( std::cout, refGrid, r2d2, relTol, absTol );
+    tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
     auto energies = tRECONR::unionizeEnergyGrid(
-      std::cout, refGrid, r2d2.reconstructedResonances() );
+      logger, refGrid, r2d2.reconstructedResonances() );
 
-    tRECONR::reconstructCrossSections( std::cout, std::cout, r2d2, energies );
+    tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
     const auto preReactions = r2d2.reactions();
     auto& reconstructed = r2d2.reconstructedResonances();
 
-    tRECONR::combineReconstructed( std::cout, std::cout, r2d2, energies );
+    tRECONR::combineReconstructed( logger, r2d2, energies );
 
     auto sizeEnergies = ranges::distance( energies );
     auto& reactions = r2d2.reactions();
@@ -125,25 +125,25 @@ SCENARIO( "Testing combineReconstructed" ){
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();
 
-    tRECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
+    tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
     auto refGrid = tRECONR::unionizeEnergyGrid(
-      std::cout, 
+      logger, 
       r2d2.reactions(), 
       r2d2.photonProductions(), 
       r2d2.resonanceReferenceGrid(),
       userSupplied );
 
-    tRECONR::reconstructResonances( std::cout, refGrid, r2d2, relTol, absTol );
+    tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
     auto energies = tRECONR::unionizeEnergyGrid(
-      std::cout, refGrid, r2d2.reconstructedResonances() );
+      logger, refGrid, r2d2.reconstructedResonances() );
 
-    tRECONR::reconstructCrossSections( std::cout, std::cout, r2d2, energies );
+    tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
     const auto preReactions = r2d2.reactions();
     const auto& reconstructed = r2d2.reconstructedResonances();
 
-    tRECONR::combineReconstructed( std::cout, std::cout, r2d2, energies );
+    tRECONR::combineReconstructed( logger, r2d2, energies );
 
     const auto& unresolved = r2d2.unresolved();
 
@@ -238,25 +238,25 @@ SCENARIO( "Testing combineReconstructed" ){
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();
 
-    tRECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
+    tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
     auto refGrid = tRECONR::unionizeEnergyGrid(
-      std::cout, 
+      logger, 
       r2d2.reactions(), 
       r2d2.photonProductions(), 
       r2d2.resonanceReferenceGrid(),
       userSupplied );
 
-    tRECONR::reconstructResonances( std::cout, refGrid, r2d2, relTol, absTol );
+    tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
     auto energies = tRECONR::unionizeEnergyGrid(
-      std::cout, refGrid, r2d2.reconstructedResonances() );
+      logger, refGrid, r2d2.reconstructedResonances() );
 
-    tRECONR::reconstructCrossSections( std::cout, std::cout, r2d2, energies );
+    tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
     const auto preReactions = r2d2.reactions();
     auto& reconstructed = r2d2.reconstructedResonances();
 
-    tRECONR::combineReconstructed( std::cout, std::cout, r2d2, energies );
+    tRECONR::combineReconstructed( logger, r2d2, energies );
 
     auto sizeEnergies = ranges::distance( energies );
     auto& reactions = r2d2.reactions();

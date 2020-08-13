@@ -1,8 +1,7 @@
 
 template< typename Range >
 static
-void combineUnresolved( std::ostream& output,
-                        std::ostream& error,
+void combineUnresolved( const Logger& logger,
                         R2D2& r2d2,
                         const Range& energies ){
   auto& reactions = r2d2.reactions();
@@ -12,7 +11,8 @@ void combineUnresolved( std::ostream& output,
 
   if( unresolved.empty() ){ return; }
 
-  output << "Combining unresolved resonances with background." << std::endl;
+  logger.first << "Combining unresolved resonances with background." 
+               << std::endl;
 
   const auto& [ uID, uRxn ] = *( unresolved.begin() );
   const auto& uEnergies = uRxn.crossSections< interp::LinearLinear >().x();
@@ -25,12 +25,13 @@ void combineUnresolved( std::ostream& output,
   const ReactionID fission{ 
     proj, target, elementary::ReactionType{ "fission" } };
 
-  output << "\nAdding reconstructed unresolved cross sections to background\n";
+  logger.first 
+    << "\nAdding reconstructed unresolved cross sections to background\n";
   for( const auto& ID : ranges::view::keys( unresolved ) ){
     auto mt = elementary::toEndfReactionNumber( ID );
 
     auto addUnresolved = [&]( const ReactionID& rxnID ){
-      output << fmt::format( "\t{:3} {:s}\n", mt, rxnID.symbol() );
+      logger.first << fmt::format( "\t{:3} {:s}\n", mt, rxnID.symbol() );
       auto& unres = unresolved.at( ID );
       auto& reaction = reactions.at( rxnID );
       const auto& rxn = reaction.crossSections< interp::LinearTable >();
@@ -65,7 +66,7 @@ void combineUnresolved( std::ostream& output,
             [&]( auto&& e ){ return table( e ) + rxn( e ); } )
           | ranges::to_vector;
 
-        std::vector< interp::Variant > XS{
+        std::vector< interp::LinearLinear > XS{
           interp::LinearLinear{ energies | ranges::to_vector, std::move( y ) }
         };
         reaction.crossSections( std::move( XS ) );
@@ -111,5 +112,5 @@ void combineUnresolved( std::ostream& output,
     };
     unresolved.emplace( tID, std::move( uTotal ) );
   }
-  output << std::endl;
+  logger.first << std::endl;
 }

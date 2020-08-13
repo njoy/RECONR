@@ -9,8 +9,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     WHEN( "the cross sections are linearized" ){
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      tRECONR::linearizeXS( 
-        std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
 
       auto reactions = r2d2.reactions();
 
@@ -33,10 +32,12 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       std::sort( keys.begin(), keys.end() );
       CHECK( ranges::equal( refKeys, keys ) );
 
-      auto skeys = keys | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
-          | ranges::to_vector;
-      auto sref = refKeys | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
-          | ranges::to_vector;
+      auto skeys = keys 
+        | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
+        | ranges::to_vector;
+      auto sref = refKeys 
+        | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
+        | ranges::to_vector;
       
       using Rxn_t = njoy::RECONR::interp::LinearTable;
       // njoy::RECONR::ReactionID MT;

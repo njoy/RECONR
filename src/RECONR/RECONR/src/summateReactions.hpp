@@ -1,8 +1,7 @@
 // For incident neutrons
 template< typename Range >
 static
-void summateReactions( std::ostream& output,
-                       std::ostream& error,
+void summateReactions( const Logger& logger,
                        R2D2& r2d2,
                        const Range& energies ){
 
@@ -33,7 +32,7 @@ void summateReactions( std::ostream& output,
   };
 
   auto sumRedundants = [&]( auto&& MT, auto&& redundantMTs ){
-    output << fmt::format( "MT: {}", MT ) << std::endl;
+    logger.first << fmt::format( "MT: {}", MT ) << std::endl;
 
     std::vector< elementary::ReactionID > redundants;
     if( MT == 1 ){
@@ -71,10 +70,12 @@ void summateReactions( std::ostream& output,
     
       std::vector< double > partial;
       if ( summations.count( id ) > 0 ) {
-        output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
+        logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) 
+                     << std::endl;
         partial = summations.at( id ).template crossSections< XSPair >().second;
       } else if( reactions.count( id ) > 0 ){
-        output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
+        logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) 
+                     << std::endl;
         partial = reactions.at( id ).template crossSections< XSPair >().second;
       } // else { return; } // no existing partial
 
@@ -92,7 +93,7 @@ void summateReactions( std::ostream& output,
   };
 
   // Sum redundant cross sections
-  output << "Summing redundant cross sections\n";
+  logger.first << "Summing redundant cross sections\n";
   for( auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
 

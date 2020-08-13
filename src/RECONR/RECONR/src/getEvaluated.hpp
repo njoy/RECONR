@@ -1,7 +1,8 @@
 static
-Format_t getEvaluated( std::ostream& output, std::string filename ){
+Format_t getEvaluated( const Logger& logger, std::string filename ){
 
-  output << fmt::format( "\nReading evaluated data from file: {}", filename )
+  logger.first << fmt::format( 
+      "\nReading evaluated data from file: {}", filename )
          << std::endl;
   try {
     auto evaluated = njoy::utility::slurpFileToMemory( filename );

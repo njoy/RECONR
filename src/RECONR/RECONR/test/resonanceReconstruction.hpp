@@ -15,7 +15,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
     };
 
     WHEN( "the resonances are reconstructed" ){
-      tRECONR::reconstructResonances( std::cout, refGrid, r2d2, 1E-1, 1E-3 );
+      tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
 
       THEN( "the linearized reconstruction can be verified" ){
         auto reconstructed = r2d2.reconstructedResonances();
@@ -151,7 +151,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
       };
 
     WHEN( "the resonances are reconstructed" ){
-      tRECONR::reconstructResonances( std::cout, refGrid, r2d2, 1E-1, 1E-3 );
+      tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
 
       THEN( "the linearized reconstruction can be verified" ){
         auto reconstructed = r2d2.reconstructedResonances();
@@ -318,7 +318,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
     std::vector< double > grid{ 1e-05, 77.88, 515.2, 535.9, 5500 };
     
     WHEN( "the resonances are reconstructed" ){
-      tRECONR::reconstructResonances( std::cout, grid, r2d2, 1E-1, 1E-5 );
+      tRECONR::reconstructResonances( logger, grid, r2d2, 1E-1, 1E-5 );
 
       auto reconstructed = r2d2.reconstructedResonances();
 

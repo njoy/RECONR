@@ -10,7 +10,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      tRECONR::linearizeXS( std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid{
@@ -38,7 +38,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         };
     
         auto trial = tRECONR::unionizeEnergyGrid( 
-          std::cout, 
+          logger, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
@@ -53,8 +53,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      tRECONR::linearizeXS(
-        std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid { 
@@ -85,7 +84,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         };
     
         auto trial = tRECONR::unionizeEnergyGrid( 
-          std::cout, 
+          logger, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
@@ -100,8 +99,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      tRECONR::linearizeXS( 
-        std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
     
       THEN( "the energygrid can be unionized" ){
         std::vector< double > refGrid { 
@@ -127,7 +125,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         };
     
         auto trial = tRECONR::unionizeEnergyGrid( 
-          std::cout, 
+          logger, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
@@ -145,17 +143,15 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      tRECONR::linearizeXS(
-        std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
       auto refGrid = tRECONR::unionizeEnergyGrid( 
-          std::cout, 
+          logger, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
       auto energies = refGrid;
-      tRECONR::reconstructResonances(
-        std::cout, refGrid, r2d2, 1E-1, 1E-3 );
+      tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
     
       THEN( "the reconstructed energygrid can be unionized" ){
 
@@ -170,7 +166,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         refGrid = ranges::view::unique( refGrid );
 
         auto trial = tRECONR::unionizeEnergyGrid( 
-          std::cout, 
+          logger, 
           energies,
           r2d2.reconstructedResonances() );
 
@@ -183,17 +179,15 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      tRECONR::linearizeXS( 
-        std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
       auto refGrid = tRECONR::unionizeEnergyGrid( 
-          std::cout, 
+          logger, 
           r2d2.reactions(), 
           r2d2.photonProductions(), 
           r2d2.resonanceReferenceGrid(),
           userSupplied );
       auto energies = refGrid;
-      tRECONR::reconstructResonances(
-        std::cout, refGrid, r2d2, 1E-1, 1E-3 );
+      tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
     
       THEN( "the reconstructed energygrid can be unionized" ){
 
@@ -208,7 +202,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         refGrid = ranges::view::unique( refGrid );
 
         auto trial = tRECONR::unionizeEnergyGrid( 
-          std::cout, 
+          logger, 
           energies,
           r2d2.reconstructedResonances() );
 

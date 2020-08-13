@@ -1,4 +1,4 @@
-auto mf1( std::ostream& output, std::ostream& error,
+auto mf1( const Logger& logger,
           const int& MAT, const nlohmann::json& sequence,
           const ENDFtk::file::Type< 2 >&  mf2,
           const ENDFtk::file::Type< 3 >&  mf3,
@@ -6,7 +6,7 @@ auto mf1( std::ostream& output, std::ostream& error,
          ){
   using namespace njoy::ENDFtk::literals;
 
-  output << "Preparing MF=1 data." << std::endl;
+  logger.first << "Preparing MF=1 data." << std::endl;
 
   auto eval = std::get< 0 >( this->evaluated );
   const auto mt = eval.materialNumber( MAT ).front()
