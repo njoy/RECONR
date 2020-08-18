@@ -12,7 +12,7 @@ SCENARIO( "Testing the the collection of cross sections" ){
       using NID = NucleusID;
 
       std::vector< njoy::RECONR::ReactionID > IDs{ 
-        // ReactionID{ proj, target, ReactionType{ 1 } },
+        ReactionID{ proj, target, ReactionType{ 1 } },
         ReactionID{ proj, target, ReactionType{ 2 } },
         // ReactionID{ proj, target, ReactionType{ 16 } },
         ReactionID{ proj, target, ReactionType{ 18 } },

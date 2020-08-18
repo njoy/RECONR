@@ -78,7 +78,7 @@ SCENARIO( "Testing the collection of resonance parameter data" ){
             resParams );
 
         CHECK( 1E-5 == Approx( rRange.first ).epsilon( 1E-7 ) );
-        CHECK( 5.5E5 == rRange.second );
+        CHECK( 5.5E3 == rRange.second );
         CHECK( 1.5E4 == uRange.first );
         CHECK( 1.0E5 == uRange.second );
         

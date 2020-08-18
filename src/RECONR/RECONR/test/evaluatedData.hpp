@@ -1,7 +1,6 @@
 SCENARIO( "Getting evaluated data" ){
   WHEN( "Getting an existant ENDF Tape" ){
-    auto evaluatedData = tRECONR::getEvaluated(
-      logger, "tape20" );
+    auto evaluatedData = tRECONR::getEvaluated( logger, "tape20" );
 
     auto tape = std::get< 0 >( evaluatedData );
 

@@ -2,10 +2,10 @@ class ReferenceGrid {
   #include "RECONR/ReferenceGrid/meta.hpp"
 
   static double nudgeDown( const double value ){
-    return std::nextafter( value, -std::numeric_limits< double >::infinity() );
+    return value*(1 + 1E-7);
   }
   static double nudgeUp( const double value ){
-    return std::nextafter( value, std::numeric_limits< double >::infinity() );
+    return value*(1-1E-7);
   }
 
 protected:

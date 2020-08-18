@@ -18,7 +18,7 @@ operator()(
                                    + resonance.GG()
                                    + resonance.GFA()
                                    + resonance.GFB() );
-  return {{ energy - halfWidth, energy, energy + halfWidth }};
+  return { { energy - halfWidth, energy, energy + halfWidth } };
 }
 
 template< typename ResolvedLvalue,
@@ -37,21 +37,18 @@ auto operator()( const Range& range,
 
   energies.push_back( lowerEnergy );
 
-  {
-    auto resonances = range.lValues() | ranges::view::for_each( *this );
-    RANGES_FOR( auto resonance, resonances ){
-      ranges::action::push_back( energies,
-        resonance
-        | ranges::view::filter
-          ( [=]( const auto energy )
-            { return lowerEnergy < energy and energy < upperEnergy; } 
-          ) 
-      );
-    }
+  auto resonances = range.lValues() | ranges::view::for_each( *this );
+  RANGES_FOR( auto resonance, resonances ){
+    ranges::action::push_back( energies,
+      resonance
+      | ranges::view::filter
+        ( [=]( const auto energy )
+          { return lowerEnergy < energy and energy < upperEnergy; } 
+        ) 
+    );
   }
 
   energies.push_back( upperEnergy );
-  energies.push_back( nudgeUp( upperEnergy ) );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
@@ -80,7 +77,6 @@ auto operator()( const resolved::RMatrixLimited& rml,
   }
 
   energies.push_back( upperEnergy );
-  energies.push_back( nudgeUp( upperEnergy ) );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
@@ -102,7 +98,6 @@ auto operator()( const unresolved::CaseA&,
                                std::log( upperEnergy / lowerEnergy ) ) );
   energies.push_back( lowerEnergy );
   fill( lowerEnergy, upperEnergy, energies );
-  energies.push_back( nudgeUp( upperEnergy ) );
   return energies;
 }
 
@@ -123,7 +118,6 @@ auto operator()( const unresolved::CaseB& caseB,
   }
 
   fill( energies.back(), upperEnergy, energies );
-  energies.push_back( nudgeUp( upperEnergy ) );
   return energies;
 }
 
@@ -180,7 +174,6 @@ auto operator()( const unresolved::CaseC& caseC,
   for( const auto energy : firstPass | ranges::view::drop_exactly(1) ){
     fill( energies.back(), energy, energies );
   }
-  energies.push_back( nudgeUp( upperEnergy ) );
 
   return energies;
 }
@@ -188,7 +181,7 @@ auto operator()( const unresolved::CaseC& caseC,
 std::vector< double >
 operator()( const SpecialCase&,
             const double& lowerEnergy, const double& upperEnergy  ) const {
-  return { lowerEnergy, upperEnergy, nudgeUp( upperEnergy ) };
+  return { lowerEnergy, upperEnergy };
 
 }
 

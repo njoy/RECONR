@@ -5,16 +5,14 @@ SCENARIO( "Extracting the reference grid" ){
 
     const std::vector< double > resonanceEnergies { 
       0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5,
-      nextafter( 7.5 )
+      nextafter( 7.5 ),
+      1.5E4, 17906.6, 20000, 23875.5, 28502.1, 30000, 35813.3, 40000, 47751.1, 
+      50000, 59688.8, 60000, 70000, 80000, 90000, 100000, 100000, 100000
     };
     RP::Isotope iso = isotope();
 
     auto trial = referenceGrid( iso );
-
-    CHECK( ranges::distance( resonanceEnergies ) == ranges::distance( trial ) );
-    for(const auto& [ref, tri]: ranges::view::zip( resonanceEnergies, trial ) ){
-      CHECK( ref == Approx( tri ) );
-    }
+    details::checkRanges( resonanceEnergies, trial );
     
   } // GIVEN
 
@@ -119,7 +117,7 @@ SCENARIO( "Extracting the reference grid" ){
 
     const auto grid = referenceGrid( rml, lowerEnergy, upperEnergy );
 
-    CHECK( reference == grid );
+    details::checkRanges( reference, grid );
   } // GIVEN
 
   GIVEN( "a \"special case\" region" ){
@@ -144,8 +142,6 @@ SCENARIO( "Extracting the reference grid" ){
     };
     auto energies = referenceGrid( ca, 2.3E4, 1E5 );
 
-    // njoy::Log::info( "refEnergies: {}", refEnergies | ranges::view::all );
-    // njoy::Log::info( "   Energies: {}", energies | ranges::view::all );
     RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
       auto [ ref, trial ] = en;
       CHECK( ref == Approx( trial ) );

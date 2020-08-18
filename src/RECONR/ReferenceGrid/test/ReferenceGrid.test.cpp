@@ -4,6 +4,8 @@
 
 #include "RECONR.hpp"
 
+#include "RECONR/details/printV.hpp"
+#include "RECONR/details/checkRanges.hpp"
 #include "RECONR/details/simpleENDFTestString.hpp"
 
 namespace RP = njoy::ENDFtk::resonanceParameters;
