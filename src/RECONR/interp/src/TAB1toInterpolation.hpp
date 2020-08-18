@@ -21,29 +21,22 @@ TAB1toInterpolation( const S& section ){
   int take = right;
 
   // Do the first one
-  cs.emplace_back(
-    makeInterpolationTable( energies, barns, drop, take, interpolants[ 0 ] )
-  );
+  auto table = 
+    makeInterpolationTable( energies, barns, drop, take, interpolants[ 0 ] );
+  cs.emplace_back( std::move( table ) );
 
   // Do the rest
-  for( const auto& params : 
+  for( const auto& [INT, NBT] : 
       ranges::view::zip( interpolants, boundaries ) 
         | ranges::view::drop_exactly( 1 ) ){
 
     left = right;
-    right = std::get< 1 >( params );
-    take = right - left;
-    drop = left;
+    right = NBT;
+    take = right - left + 1;
+    drop = left - 1;
 
-    // interpolation needs to have double points
-    if( energies[ left ] != energies[ left + 1] ){
-      drop -= 1;
-      take +=1;
-    }
-    cs.emplace_back(
-      makeInterpolationTable( 
-          energies, barns, drop, take, std::get< 0 >( params ) )
-    );
+    auto table = makeInterpolationTable( energies, barns, drop, take, INT );
+    cs.emplace_back( std::move( table ) );
   }
 
   return cs;

@@ -15,6 +15,9 @@ void linearizeXS( const Logger& logger,
 
   logger.first << "\nLinearizing cross sections." << std::endl;
   for( auto& [ id, reaction ] : reactions ){
+    auto mt = elementary::toEndfReactionNumber( id );
+    logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
+
     std::vector< interp::LinearLinear > linearized{};
 
     for( const auto& law : 
@@ -37,6 +40,8 @@ void linearizeXS( const Logger& logger,
 
   logger.first << "\nLinearizing photon productions." << std::endl;
   for( auto & [ id, reaction ] : reactions ){
+    auto mt = elementary::toEndfReactionNumber( id );
+    logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
     std::vector< PPForms > linearized{};
 
     for( const auto& production : 
