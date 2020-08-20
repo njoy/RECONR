@@ -123,10 +123,31 @@ void reconstructResonances(
 
   logger.first << "Reconstructing Reich-Moore resonances." << std::endl;
 
-  auto bw = resonanceReconstruction::reichMoore::Apply{}(
-      rRange, linearize( grid, relTol, absTol ) );
+  const auto& nMass = CODATA[ constants::neutronMass ];
+  const auto& eCharge = CODATA[ constants::elementaryCharge ];
 
-  storeBWReconstruction( bw, r2d2 );
+  auto rml = resonanceReconstruction::rmatrix::fromENDF( 
+    rRange, nMass, eCharge, r2d2.projectile(), r2d2.target() );
+
+  auto [ energies, crossSections ] = linearize( grid, rml, relTol, absTol );
+  // Remove units from x
+  auto x = energies 
+    | ranges::view::transform( 
+      []( auto&& energy ) -> double { return energy / dimwits::electronVolt; }
+    );
+
+  auto& reconstructed = r2d2.reconstructedResonances();
+  auto IDs = ranges::view::keys( crossSections.front() );
+  for( auto& id : IDs ){
+
+    auto xs = crossSections
+      | ranges::view::transform( 
+          [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
+      | ranges::to_vector;
+
+    reconstructed[ id ].push_back(
+      interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) } );
+  }
 
 }
 
