@@ -31,7 +31,12 @@ operator()( const ResolvedLvalue& lValue ) const {
 // Resolved resolved resonance ranges
 template< typename Range, if_< hasLvalues< Range > > = true >
 auto operator()( const Range& range,
-                 const double& lowerEnergy, const double& upperEnergy  ) const {
+                 const ResonanceRange& rRange,
+                 const elementary::ParticleID&,
+                 const elementary::ParticleID& ) const {
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
+
   std::vector< double > energies;
   energies.reserve( 12 * range.lValues().size() );
 
@@ -60,27 +65,35 @@ auto operator()( const Range& range,
 }
 
 auto operator()( const resolved::RMatrixLimited& rml,
-                 const double& lowerEnergy, const double& upperEnergy  ) const {
+                 const ResonanceRange& rRange,
+                 const elementary::ParticleID& target,
+                 const elementary::ParticleID& proj ) const {
+
+  auto eV = dimwits::electronVolt;
+  auto lowerEnergy = rRange.EL()*eV;
+  auto upperEnergy = rRange.EH()*eV;
+
+  const auto& nMass = CODATA[ constants::neutronMass ];
+  const auto& eCharge = CODATA[ constants::elementaryCharge ];
+
+  auto grid = resonanceReconstruction::rmatrix::fromENDF( 
+    rRange, nMass, eCharge, proj, target ).grid();
+
   std::vector< double > energies;
 
-  energies.push_back( lowerEnergy );
+  energies.push_back( lowerEnergy/eV );
+  ranges::action::push_back( energies, 
+    grid
+    | ranges::view::filter(
+        [&]( auto&& energy ){
+          return ( lowerEnergy < energy ) and ( energy  < upperEnergy ); }
+      )
+    | ranges::view::transform( 
+        [&]( auto&& energy ){ return energy/eV; } )
+  );
 
-  auto groups = rml.spinGroups();
-  for( const auto& group : rml.spinGroups() ){
-    if( group.numberResonances() ){
-      ranges::action::push_back( energies, 
-        group.parameters().resonanceEnergies()
-        | ranges::view::filter(
-            [=]( auto&& energy ){
-              return ( lowerEnergy < energy ) and ( energy < upperEnergy );
-            }
-          )
-      );
-    }
-  }
-
-  energies.push_back( upperEnergy );
-  energies.push_back( nudgeUp( upperEnergy ) );
+  energies.push_back( upperEnergy/eV );
+  energies.push_back( nudgeUp( upperEnergy/eV ) );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
@@ -91,7 +104,12 @@ auto operator()( const resolved::RMatrixLimited& rml,
 };
 
 auto operator()( const unresolved::CaseA&,
-                 const double& lowerEnergy, const double& upperEnergy  ) const {
+                 const ResonanceRange& rRange,
+                 const elementary::ParticleID&,
+                 const elementary::ParticleID& ) const {
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
+
   std::vector< double > energies;
   /*
    * log( EH / EL ) / log( 10^(1/13) )
@@ -107,7 +125,12 @@ auto operator()( const unresolved::CaseA&,
 }
 
 auto operator()( const unresolved::CaseB& caseB,
-                 const double& lowerEnergy, const double& upperEnergy  ) const {
+                 const ResonanceRange& rRange,
+                 const elementary::ParticleID&,
+                 const elementary::ParticleID& ) const {
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
+
   std::vector< double > energies;
   energies.reserve( 8 * std::ceil( std::log( upperEnergy / lowerEnergy ) ) );
   energies.push_back( lowerEnergy );
@@ -138,7 +161,9 @@ operator()( const UnresolvedLvalue& lValue ) const {
 }
 
 auto operator()( const unresolved::CaseC& caseC,
-            const double& lowerEnergy, const double& upperEnergy  ) const {
+                 const ResonanceRange& rRange,
+                 const elementary::ParticleID&,
+                 const elementary::ParticleID& ) const {
   std::vector< double > energies;
 
   /* Case C is composed of Lvalues which are in turn composed of Jvalues 
@@ -152,6 +177,8 @@ auto operator()( const unresolved::CaseC& caseC,
    * In the first pass, we begin by extracting all energy values within the
    * range of the unresolved region, sorting them, and removing duplicates.
    */
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
   std::vector< double > firstPass;
   firstPass.push_back( lowerEnergy );
   {
@@ -187,27 +214,32 @@ auto operator()( const unresolved::CaseC& caseC,
 
 std::vector< double >
 operator()( const SpecialCase&,
-            const double& lowerEnergy, const double& upperEnergy  ) const {
-  return { lowerEnergy, upperEnergy, nudgeUp( upperEnergy ) };
+            const ResonanceRange& rRange,
+            const elementary::ParticleID&,
+            const elementary::ParticleID& ) const {
+  return { rRange.EL(), rRange.EH(), nudgeUp( rRange.EH() ) };
 
 }
 
 template< typename... TS >
 auto operator()( const std::variant< TS... >& range_variant, 
-                 const double& lowerEnergy, const double& upperEnergy  ) const {
+                 const ResonanceRange& rRange,
+                 const elementary::ParticleID& target,
+                 const elementary::ParticleID& proj ) const {
   return std::visit( 
-    [&]( auto&& arg ){ return (*this)( arg, lowerEnergy, upperEnergy ); },
+    [&]( auto&& arg ){ return (*this)( arg, rRange, target, proj ); },
     range_variant
   );
 }
 
-auto operator()( const Isotope& isotope ) const {
+auto operator()( const Isotope& isotope,
+                 const elementary::ParticleID& target,
+                 const elementary::ParticleID& proj ) const {
   auto grids =
     isotope.resonanceRanges()
     | ranges::view::transform( 
-        [&]( auto&& range ){
-          return (*this)( range.parameters(), 
-                          range.EL(), this->nudgeDown( range.EH() ) );
+        [&]( auto&& range ){ 
+          return (*this)( range.parameters(), range, target, proj ); 
         }
       )
     | ranges::to_vector;

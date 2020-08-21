@@ -15,7 +15,8 @@ ResonanceReconstructionDataDelivery(
     photonProductions_( std::move( pProductions ) ),
     resonanceParameters_( std::move( resonanceParameters ) ),
     resonanceReferenceGrid_( 
-      getResonanceReferenceGrid( this->resonanceParameters_ ) ),
+      getResonanceReferenceGrid( this->resonanceParameters_, 
+                                 this->target_, this->projectile_  ) ),
     resolvedRange_( std::move( resRanges.first ) ),
     unresolvedRange_( std::move( resRanges.second ) )
   { } catch( ... ){
