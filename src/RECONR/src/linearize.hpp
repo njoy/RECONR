@@ -109,7 +109,9 @@ linearize( const Range& grid, double relTol, double absTol ){
       if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
         return true; }
       // Limit of ENDF-6 precision
-      if( xRight/xLeft < 1E-7 ){ return true; }
+    auto ratio = 1.0 - ( xLeft.value/xRight.value );
+      if( ratio < 1E-7 ){ return true; }
+
       auto cDiff = trial - reference;
 
       double eRelDiff = std::abs( cDiff.elastic/reference.elastic );
@@ -121,6 +123,8 @@ linearize( const Range& grid, double relTol, double absTol ){
                                 std::abs( cDiff.capture.value ) } );
       double reldiff = std::max( { eRelDiff, fRelDiff, cRelDiff } );
 
+      Log::info( "diff: {:12.4G}, rdiff: {:12.4G}, absTol: {}, relTol: {}", 
+                diff, reldiff, absTol, relTol );
       return ( diff < absTol ) or ( reldiff < relTol );
 
     };
@@ -153,9 +157,10 @@ linearize( const Range& grid,
     decltype( lXS ) midXS;
     for( const auto& id : IDs ){
       auto y = 0.5*( lXS.at( id ) + rXS.at( id ) );
+
       midXS.emplace( id, std::move( y ) );
     }
-    return std::make_pair( midEnergy, lXS );
+    return std::make_pair( midEnergy, midXS );
   };
 
   auto criterion = [ & ]( auto&& trial, auto&& reference,
@@ -167,19 +172,27 @@ linearize( const Range& grid,
     if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
       return true;
     }
+    // Limit of ENDF-6 precision
+    auto ratio = 1.0 - ( xLeft.value/xRight.value );
+    if( ratio < 1E-7 ){ return true; }
 
-//     // Limit of ENDF-6 precision
-//     if( xRight/xLeft < 1E-7 ){ return true; }
-
+    Log::info( "----------------------------------" );
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
-      auto t = reference.at( id );
+      Log::info( "id: {}", id.symbol() );
+      auto t = trial.at( id );
       auto r = reference.at( id );
 
       auto diff = std::abs( t - r );
-      if( diff.value > absTol ){ return false; }
-      if( diff/r > relTol ){ return false; }
+      auto rdiff = diff/r;
+
+      Log::info( "diff: {:.4G}, rdiff: {:.4G}, absTol: {}, relTol: {}", 
+                diff.value, rdiff.value, absTol, relTol );
+      if( ( diff.value >= absTol ) and ( rdiff >= relTol ) ){ 
+        return false;
+      }
     }
+    Log::info( "----------------------------------" );
     return true;
   };
 
