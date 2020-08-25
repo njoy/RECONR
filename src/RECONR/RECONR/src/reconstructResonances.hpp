@@ -158,15 +158,12 @@ void reconstructResonances(
   auto& reconstructed = r2d2.reconstructedResonances();
   auto IDs = ranges::view::keys( crossSections.front() );
   for( auto& id : IDs ){
-    Log::info( "id: {}", id.symbol() );
 
     auto xs = crossSections
       | ranges::view::transform( 
           [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
       | ranges::to_vector;
     if( elementary::toEndfReactionNumber( id ) == 601 ){
-      Log::info( "en: {}", x | ranges::view::all );
-      Log::info( "xs: {}", xs | ranges::view::all );
     }
 
     reconstructed[ id ].push_back(
