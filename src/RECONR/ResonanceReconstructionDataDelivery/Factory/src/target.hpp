@@ -1,8 +1,13 @@
 static
 elementary::ParticleID target( 
     const ENDFtk::section::Type< 1, 451 >& info ){
-  return elementary::ParticleID{
-    elementary::NuclideID{ info.ZA(), info.LIS() } };
+
+  const auto ZA = info.ZA();
+  if( ZA == 1 ){
+    return elementary::ParticleID{ "n" };
+  } else{
+    return elementary::ParticleID{ elementary::NuclideID{ ZA, info.LIS() } };
+  }
 }
 
 static

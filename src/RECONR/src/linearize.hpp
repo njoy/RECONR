@@ -109,7 +109,7 @@ linearize( const Range& grid, double relTol, double absTol ){
       if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
         return true; }
       // Limit of ENDF-6 precision
-    auto ratio = 1.0 - ( xLeft.value/xRight.value );
+      auto ratio = 1.0 - ( xLeft.value/xRight.value );
       if( ratio < 1E-7 ){ return true; }
 
       auto cDiff = trial - reference;
@@ -123,8 +123,6 @@ linearize( const Range& grid, double relTol, double absTol ){
                                 std::abs( cDiff.capture.value ) } );
       double reldiff = std::max( { eRelDiff, fRelDiff, cRelDiff } );
 
-      Log::info( "diff: {:12.4G}, rdiff: {:12.4G}, absTol: {}, relTol: {}", 
-                diff, reldiff, absTol, relTol );
       return ( diff < absTol ) or ( reldiff < relTol );
 
     };
@@ -176,9 +174,6 @@ linearize( const Range& grid,
     auto ratio = 1.0 - ( xLeft.value/xRight.value );
     if( ratio < 1E-7 ){ return true; }
 
-    Log::info( "-begin---------------------------------" );
-    Log::info( "left: {:20.8G}, right: {:20.8G}, absTol: {}, relTol: {}", 
-               xLeft.value, xRight.value, absTol, relTol );
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
       auto t = trial.at( id );
@@ -187,14 +182,10 @@ linearize( const Range& grid,
       auto diff = std::abs( t - r );
       auto rdiff = diff/r;
 
-      Log::info( "id: {:20}, refr: {:20.4G}, trial: {:12.4G}, "
-                 "diff: {:12.4G}, rdiff: {:12.4G}, ", 
-                id.symbol(), t.value, r.value, diff.value, rdiff.value );
       if( ( diff.value >= absTol ) and ( rdiff >= relTol ) ){ 
         return false;
       }
     }
-    Log::info( "-end---------------------------------" );
     return true;
   };
 
