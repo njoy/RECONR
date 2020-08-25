@@ -163,11 +163,11 @@ linearize( const Range& grid,
     return std::make_pair( midEnergy, midXS );
   };
 
+  constexpr double infinity = std::numeric_limits< double >::infinity();
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-    constexpr double infinity = std::numeric_limits< double >::infinity();
 
     if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
       return true;
@@ -176,23 +176,25 @@ linearize( const Range& grid,
     auto ratio = 1.0 - ( xLeft.value/xRight.value );
     if( ratio < 1E-7 ){ return true; }
 
-    Log::info( "----------------------------------" );
+    Log::info( "-begin---------------------------------" );
+    Log::info( "left: {:20.8G}, right: {:20.8G}, absTol: {}, relTol: {}", 
+               xLeft.value, xRight.value, absTol, relTol );
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
-      Log::info( "id: {}", id.symbol() );
       auto t = trial.at( id );
       auto r = reference.at( id );
 
       auto diff = std::abs( t - r );
       auto rdiff = diff/r;
 
-      Log::info( "diff: {:.4G}, rdiff: {:.4G}, absTol: {}, relTol: {}", 
-                diff.value, rdiff.value, absTol, relTol );
+      Log::info( "id: {:20}, refr: {:20.4G}, trial: {:12.4G}, "
+                 "diff: {:12.4G}, rdiff: {:12.4G}, ", 
+                id.symbol(), t.value, r.value, diff.value, rdiff.value );
       if( ( diff.value >= absTol ) and ( rdiff >= relTol ) ){ 
         return false;
       }
     }
-    Log::info( "----------------------------------" );
+    Log::info( "-end---------------------------------" );
     return true;
   };
 
