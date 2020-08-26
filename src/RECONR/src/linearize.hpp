@@ -46,8 +46,7 @@ linearize( const interp::Histogram& histo, double, double ){
   std::vector< double > x{ hx.front() };
 
   for( auto& ene : hx | ranges::view::drop_exactly( 1 ) ){
-    // sigfig( 16, -1 )
-    x.push_back( std::nextafter( ene, std::numeric_limits< double >::min( ) ) );
+    x.push_back( sigfig( ene, -1E-7 ) );
     x.push_back( ene );
   }
 

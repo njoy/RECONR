@@ -6,7 +6,7 @@ R2D2 findR2D2( const Logger& logger,
          << std::endl;
   try {
     auto material = tape.materialNumber( sequence[ "mat" ] ).front();
-    return R2D2::Factory()( material );
+    return R2D2::Factory()( logger, material );
 
   } catch( ... ){
     Log::info( "Error while extracting material from ENDF Tape." );

@@ -9,6 +9,7 @@
  * I didn't want to write this, but it is just needed in so many places to be
  * conformant with Legacy NJOY
  */
-constexpr double sigfig( const double value, const double nudge = 1E-7 ){
+template< typename V >
+constexpr V sigfig( const V& value, const double nudge = 1E-8 ){
   return value*( 1 + nudge );
 }

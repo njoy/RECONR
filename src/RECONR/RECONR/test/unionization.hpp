@@ -6,7 +6,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
       auto material = details::ENDFMaterial( "SLBW" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -49,7 +49,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
       auto material = details::ENDFMaterial( "RM" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -95,7 +95,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (RML) object" ){
       auto material = details::ENDFMaterial( "RML" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -139,7 +139,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
   WHEN( "resonances have been reconstructed" ){
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (SLBW) object" ){
       auto material = details::ENDFMaterial( "SLBW" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
@@ -175,7 +175,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
     } // GIVEN
     GIVEN( "a linearized ResonanceReconstructionDataDelivery (RM) object" ){
       auto material = details::ENDFMaterial( "RM" );
-      auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+      auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
     
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design

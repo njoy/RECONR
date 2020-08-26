@@ -31,7 +31,7 @@ public:
   using RECONR::combineReconstructed;
 };
 
-njoy::RECONR::RECONR::Logger logger{ std::cout, std::cerr };
+njoy::RECONR::Logger logger{ std::cout, std::cerr };
 
 template< typename K >
 void printKeys( K& keys ){
@@ -113,7 +113,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol,
                 int LSSF = 0 ){
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
   auto material = details::ENDFMaterial( formalism, LSSF );
-  auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+  auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
   tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
   auto refGrid = tRECONR::unionizeEnergyGrid(

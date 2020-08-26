@@ -34,8 +34,8 @@ auto operator()( const Range& range,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = rRange.EL();
-  auto upperEnergy = rRange.EH();
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
 
   std::vector< double > energies;
   energies.reserve( 12 * range.lValues().size() );
@@ -54,7 +54,6 @@ auto operator()( const Range& range,
   }
 
   energies.push_back( upperEnergy );
-  energies.push_back( nudgeUp( upperEnergy ) );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
@@ -70,8 +69,8 @@ auto operator()( const resolved::RMatrixLimited& rml,
                  const elementary::ParticleID& proj ) const {
 
   auto eV = dimwits::electronVolt;
-  auto lowerEnergy = rRange.EL()*eV;
-  auto upperEnergy = rRange.EH()*eV;
+  auto lowerEnergy = sigfig( rRange.EL()*eV, -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH()*eV, 1E-8 );
 
   const auto& nMass = CODATA[ constants::neutronMass ];
   const auto& eCharge = CODATA[ constants::elementaryCharge ];
@@ -93,7 +92,6 @@ auto operator()( const resolved::RMatrixLimited& rml,
   );
 
   energies.push_back( upperEnergy/eV );
-  energies.push_back( nudgeUp( upperEnergy/eV ) );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
@@ -107,8 +105,8 @@ auto operator()( const unresolved::CaseA&,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = rRange.EL();
-  auto upperEnergy = rRange.EH();
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
 
   std::vector< double > energies;
   /*
@@ -120,7 +118,7 @@ auto operator()( const unresolved::CaseA&,
                                std::log( upperEnergy / lowerEnergy ) ) );
   energies.push_back( lowerEnergy );
   fill( lowerEnergy, upperEnergy, energies );
-  energies.push_back( nudgeUp( upperEnergy ) );
+  energies.push_back( upperEnergy );
   return energies;
 }
 
@@ -128,8 +126,8 @@ auto operator()( const unresolved::CaseB& caseB,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = rRange.EL();
-  auto upperEnergy = rRange.EH();
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
 
   std::vector< double > energies;
   energies.reserve( 8 * std::ceil( std::log( upperEnergy / lowerEnergy ) ) );
@@ -146,7 +144,7 @@ auto operator()( const unresolved::CaseB& caseB,
   }
 
   fill( energies.back(), upperEnergy, energies );
-  energies.push_back( nudgeUp( upperEnergy ) );
+  energies.push_back( upperEnergy );
   return energies;
 }
 
@@ -177,8 +175,9 @@ auto operator()( const unresolved::CaseC& caseC,
    * In the first pass, we begin by extracting all energy values within the
    * range of the unresolved region, sorting them, and removing duplicates.
    */
-  auto lowerEnergy = rRange.EL();
-  auto upperEnergy = rRange.EH();
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
+
   std::vector< double > firstPass;
   firstPass.push_back( lowerEnergy );
   {
@@ -207,7 +206,7 @@ auto operator()( const unresolved::CaseC& caseC,
   for( const auto energy : firstPass | ranges::view::drop_exactly(1) ){
     fill( energies.back(), energy, energies );
   }
-  energies.push_back( nudgeUp( upperEnergy ) );
+  energies.push_back( upperEnergy );
 
   return energies;
 }
@@ -217,7 +216,7 @@ operator()( const SpecialCase&,
             const ResonanceRange& rRange,
             const elementary::ParticleID&,
             const elementary::ParticleID& ) const {
-  return { rRange.EL(), rRange.EH(), nudgeUp( rRange.EH() ) };
+  return { sigfig( rRange.EL(), -1E-8 ), sigfig( rRange.EH(), 1E-8 ) };
 
 }
 

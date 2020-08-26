@@ -3,7 +3,6 @@ class RECONR{
 public:
   using Tape_t = ENDFtk::syntaxTree::Tape< std::string >;
   using Format_t = std::variant< Tape_t >;
-  using Logger = std::pair< std::ostream&, std::ostream& >;
 
 
 protected:

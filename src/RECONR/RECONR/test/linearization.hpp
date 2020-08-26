@@ -1,7 +1,7 @@
 SCENARIO( "Testing the linearization of collected cross sections" ){
   GIVEN( "an ResonanceReconstructionDataDelivery object" ){
     auto material = details::ENDFMaterial( "SLBW" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();
