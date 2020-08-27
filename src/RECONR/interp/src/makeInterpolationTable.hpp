@@ -5,15 +5,6 @@ Variant makeInterpolationTable( const E& energies, const B& barns,
   auto pE = partition( energies, drop,  take );
   auto pB = partition( barns, drop,  take );
 
-  // Find duplicate energy points and adjust (i.e., sigfig) to avoid
-  // dicontinuities
-  auto dupFound = std::adjacent_find( pE.begin(), pE.end() );
-  while( dupFound != pE.end() ){
-    *dupFound = sigfig( *dupFound, -1E-8 );
-    *( dupFound + 1 ) = sigfig( *( dupFound + 1 ), 1E-8 );
-    dupFound = std::adjacent_find( dupFound + 1, pE.end() );
-  }
-
   switch( LAW ){
     case 1: {
       auto s = ranges::distance( pE );
