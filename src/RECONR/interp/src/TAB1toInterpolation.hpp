@@ -12,18 +12,23 @@ TAB1toInterpolation( const S& section ){
   auto energies = section.energies() | ranges::to_vector;
   auto barns = section.crossSections() | ranges::to_vector;
 
-  /*
   // Find duplicate energy points and adjust (i.e., sigfig) to avoid
   // dicontinuities
   auto dupFound = std::adjacent_find( energies.begin(), energies.end() );
   while( dupFound != energies.end() ){
 
-    *dupFound = sigfig( *dupFound, -1E-8 );
-    *( dupFound + 1 ) = sigfig( *( dupFound + 1 ), 1E-8 );
+    auto value = *dupFound;
+    *dupFound = sigfig( value, -1E-7 );
+    int i = 1;
+    while( *( dupFound + i ) == value ){
+      *( dupFound + i ) = sigfig( value, -1E-7 );
+      i += 1;
+    }
+    *( dupFound + i ) = sigfig( value, 1E-7 );
 
-    dupFound = std::adjacent_find( dupFound + 1, energies.end() );
+
+    dupFound = std::adjacent_find( dupFound + i, energies.end() );
   }
-  */
 
 
   auto interpolants = section.interpolants();
