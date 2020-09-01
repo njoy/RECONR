@@ -34,8 +34,8 @@ auto operator()( const Range& range,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
 
   std::vector< double > energies;
   energies.reserve( 12 * range.lValues().size() );
@@ -69,8 +69,8 @@ auto operator()( const resolved::RMatrixLimited& rml,
                  const elementary::ParticleID& proj ) const {
 
   auto eV = dimwits::electronVolt;
-  auto lowerEnergy = sigfig( rRange.EL()*eV, 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH()*eV, -1E-7 );
+  auto lowerEnergy = sigfig( rRange.EL()*eV, -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH()*eV, 1E-8 );
 
   const auto& nMass = CODATA[ constants::neutronMass ];
   const auto& eCharge = CODATA[ constants::elementaryCharge ];
@@ -105,8 +105,8 @@ auto operator()( const unresolved::CaseA&,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
 
   std::vector< double > energies;
   /*
@@ -126,8 +126,8 @@ auto operator()( const unresolved::CaseB& caseB,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
 
   std::vector< double > energies;
   energies.reserve( 8 * std::ceil( std::log( upperEnergy / lowerEnergy ) ) );
@@ -175,8 +175,8 @@ auto operator()( const unresolved::CaseC& caseC,
    * In the first pass, we begin by extracting all energy values within the
    * range of the unresolved region, sorting them, and removing duplicates.
    */
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-8 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-8 );
 
   std::vector< double > firstPass;
   firstPass.push_back( lowerEnergy );
@@ -216,7 +216,7 @@ operator()( const SpecialCase&,
             const ResonanceRange& rRange,
             const elementary::ParticleID&,
             const elementary::ParticleID& ) const {
-  return { sigfig( rRange.EL(), 1E-7 ), sigfig( rRange.EH(), -1E-7 ) };
+  return { sigfig( rRange.EL(), -1E-8 ), sigfig( rRange.EH(), 1E-8 ) };
 
 }
 
