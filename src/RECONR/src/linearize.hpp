@@ -41,19 +41,8 @@ inline
 interp::LinearLinear
 linearize( const interp::Histogram& histo, double, double ){
 
-  auto hx = histo.x();
-  auto hy = histo.y();
-  std::vector< double > x{ hx.front() };
-
-  for( auto& ene : hx | ranges::view::drop_exactly( 1 ) ){
-    // sigfig( 16, -1 )
-    x.push_back( std::nextafter( ene, std::numeric_limits< double >::min( ) ) );
-    x.push_back( ene );
-  }
-
-  auto y = x | ranges::view::transform( histo ) | ranges::to_vector;
-
-  return interp::LinearLinear{ std::move( x ), std::move( y ) };
+  return interp::LinearLinear{ utility::copy( histo.x() ),
+                               utility::copy( histo.y() ) };
 }
 
 inline

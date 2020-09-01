@@ -24,7 +24,9 @@ namespace RECONR {
 using namespace ENDFtk::resonanceParameters;
 
 using ReactionID = elementary::ReactionID;
+using Logger = std::pair< std::ostream&, std::ostream& >;
 
+#include "RECONR/src/sigfig.hpp"
 #include "RECONR/interp.hpp"
 
 // For Reaction

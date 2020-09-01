@@ -10,16 +10,10 @@ Variant makeInterpolationTable( const E& energies, const B& barns,
       auto s = ranges::distance( pE );
       for( int i=1; i < s-1; i++ ){
         auto& right = pE[ i ];
-        if( pE[ i-1 ] == right ){
-          // sigfig
-          right = std::nextafter( 
-            right, std::numeric_limits< double >::infinity() );
-        }
+
+        if( pE[ i-1 ] == right ){ right = sigfig( right, 1E-8 ); }
       }
-      if( pE[ s-2 ] == pE.back() ){
-        pE[ s-2 ] = std::nextafter( pE[ s-2 ], 
-                                    std::numeric_limits< double >::min() );
-      }
+      if( pE[ s-2 ] == pE.back() ){ pE[ s-2 ] = sigfig( pE[ s-2 ], -1E-8 ); }
       return Variant( HogHog( std::move( pE ), std::move( pB ) ) );
       break;
     }

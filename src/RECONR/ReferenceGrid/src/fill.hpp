@@ -18,5 +18,4 @@ static void fill( const double lowerBound,
           ) 
         );
   }
-  buffer.push_back( upperBound );
 }

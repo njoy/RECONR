@@ -8,7 +8,7 @@ SCENARIO( "Testing combineReconstructed" ){
   GIVEN( "an SLBW object" ){
     std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "SLBW", 1 );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();
@@ -120,7 +120,7 @@ SCENARIO( "Testing combineReconstructed" ){
   GIVEN( "an RM object" ){
     std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "RM", 0 );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();
@@ -233,7 +233,7 @@ SCENARIO( "Testing combineReconstructed" ){
   GIVEN( "an RML object" ){
     std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "RML", 1 );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();

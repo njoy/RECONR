@@ -1,7 +1,7 @@
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW", true );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto proj = r2d2.projectile();
     auto target = r2d2.target();
@@ -133,7 +133,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   GIVEN( "an RM R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RM" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto proj = r2d2.projectile();
     auto target = r2d2.target();
@@ -302,7 +302,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   GIVEN( "an RML R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RML" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto proj = r2d2.projectile();
     auto target = r2d2.target();
