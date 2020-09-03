@@ -9,6 +9,9 @@ void combineReconstructed( const Logger& logger,
 
   auto& reactions = r2d2.reactions();
   const auto& reconstructed = r2d2.reconstructedResonances();
+
+  if( reconstructed.empty() ){ return; }
+
   const auto& proj = r2d2.projectile();
   const auto& target = r2d2.target();
 

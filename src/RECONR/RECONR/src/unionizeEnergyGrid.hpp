@@ -17,7 +17,6 @@ auto unionizeEnergyGrid( const Logger& logger,
   for( const auto& [ID, reaction] : reactions ){
     grid |= ranges::action::push_back( 
       reaction.crossSections< interp::LinearTable >().x() );
-    grid |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 
   for( const auto& [ ID, reaction ] : ppReactions ){
@@ -29,6 +28,7 @@ auto unionizeEnergyGrid( const Logger& logger,
   ranges::sort( grid );
 
   return grid 
+    | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
     | ranges::view::unique 
     | ranges::to_vector;
 }
@@ -52,6 +52,7 @@ auto unionizeEnergyGrid( const Logger& logger,
   ranges::sort( grid );
 
   return grid 
+    | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
     | ranges::view::unique 
     | ranges::to_vector;
 }
