@@ -3,5 +3,5 @@ reconr
  'A point-wise ENDF file (PENDF)' / Card 2
  2631                             / Card 3
  0.001                            / Card 4
- 0                                / Card3
+ 0                                / Terminate RECONR execution
 stop

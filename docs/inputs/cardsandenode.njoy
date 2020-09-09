@@ -1,0 +1,10 @@
+reconr
+ 20 30                            / Card 1
+ 'A point-wise ENDF file (PENDF)' / Card 2
+ 2631 2  3                        / Card 3
+ 0.001                            / Card 4
+ 'Material 2631 processed '       / Card 5.1
+ 'with modern RECONR'             / Card 5.2
+ 1.0, 2.0, 3.0                    / Card 6
+ 0                                / Terminate RECONR execution
+stop
