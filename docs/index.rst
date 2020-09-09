@@ -11,6 +11,7 @@ Modern RECONR Module
    :caption: Contents:
 
    running
+   CodeDescription/index.rst
 
 This is the documentation for the modern RECONR module [#adapted]_. 
 

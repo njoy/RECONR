@@ -9,7 +9,8 @@ Input Description
 RECONR follows the same rules  as all the other modules. Please see the more `general information <https://docs.njoy21.io/LegacyInputs.html>`_ about NJOY inputs if unfamiliar.
 RECONR input is given in six different cards. Each card has one or more arguments and is (optionally) ended with the forward slash: ``/``.
 
-**Note:** The input for modern RECONR is the same as for Legacy RECONR, but we don't use all of the arguments. We list here only the required arguments. If other arguments are given, they are silently ignored.
+.. note::
+   The input for modern RECONR is the same as for Legacy RECONR, but modern RECONR use all of the arguments. Listed here are only the required arguments. If other arguments are given, they are silently ignored.
 
 Card 1
 ------
