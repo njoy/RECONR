@@ -3,13 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to RECONR's documentation!
-==================================
+Modern RECONR Module
+====================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   running
+
+This is the documentation for the modern RECONR module [#adapted]_. 
+
+
+
+.. [#adapted] Much of this documentation was taken from the `NJOY2016 manual <https://github.com/njoy/NJOY2016-manual>`_ and adapted as needed for the modern module in NJOY21.
 
 
 Indices and tables

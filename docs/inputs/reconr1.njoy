@@ -1,0 +1,7 @@
+reconr
+ 20 30                            / Card 1
+ 'A point-wise ENDF file (PENDF)' / Card 2
+ 2631                             / Card 3
+ 0.001                            / Card 4
+ 0                                / Card3
+stop

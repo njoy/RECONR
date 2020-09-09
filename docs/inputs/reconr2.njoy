@@ -1,0 +1,15 @@
+reconr
+ -40 -41
+ 'A PENDF file with multiple materials' /
+ 125 1 0                    / Card3 #1
+ 0.001                      / Card4 #1
+ 'H1 from ENDF/B-VII.1'     / Card5 #1
+ 2631 1                     / Card3 #2
+ 0.001                      / Card4 #2
+ 'Fe-56 from ENDF/B-VII.1'  / Card5 #2
+ 9228 2 0                   / Card3 #3
+ 0.001                      / Card4 #4
+ 'U-235 from ENDF/B-VII.1'  / Card5 #4.1
+ 'Another TEXT Record    '  / Card5 #4.2
+ 0                          / End RECONR
+stop
