@@ -5,17 +5,17 @@
 
 Modern RECONR Module
 ====================
+The RECONR module is used to reconstruct resonance cross sections from resonance parameters and to reconstruct cross sections from ENDF nonlinear interpolations schemes. The output is written as a pointwise-ENDF (PENDF) file with all cross sections on a unionized energy grid suitable for linear interpolation to within a specified tolerance. Redundant reactions are reconstructed to be exactly equal to the sum of their reconstructed and linearized parts at all energies. 
+
+This is the documentation for the modern RECONR module [#adapted]_. Please see the following pages for more information.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   What.rst
    running
    CodeDescription/index.rst
-
-This is the documentation for the modern RECONR module [#adapted]_. 
-
-
 
 .. [#adapted] Much of this documentation was taken from the `NJOY2016 manual <https://github.com/njoy/NJOY2016-manual>`_ and adapted as needed for the modern module in NJOY21.
 
@@ -24,5 +24,4 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

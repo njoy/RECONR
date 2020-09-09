@@ -38,7 +38,7 @@ The arguments to ``operator()`` are:
 
 The call operator is analogous to the ``reconr`` subroutine in Legacy NJOY. It then makes a series of calls to other methods to perform all the calculations that are performed.
 
-The data needed to perform the operations done in RECONR is contained in a ``ResonanceReconstructionDataDelivery`` :doc:`R2D2` object. After the input evaluation file is read in, the data is passed to the ``ResonanceReconstructionDataDelivery`` constructor to:
+The data needed to perform the operations done in RECONR is contained in a ``ResonanceReconstructionDataDelivery`` :doc:`R2D2` object. After the input evaluation file is read in with the ``getEvaluated`` function, the data is passed to the ``ResonanceReconstructionDataDelivery`` constructor to:
 
 .. toctree::
    :maxdepth: 2
