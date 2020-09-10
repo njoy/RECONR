@@ -1,37 +1,18 @@
 
 /*
- * This function will take an ENDF section that behaves like an TAB1
+ * This function will take an ENDF section that behaves like an TAB1.
+ *
+ * It also checks to see if the first energy point is 
  */
 template< typename S >
 std::vector< Variant >
-TAB1toInterpolation( const S& section ){
+TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
 
   std::vector< Variant > cs;
 
   // We have to convert to a vector to "own" the data
   auto energies = section.energies() | ranges::to_vector;
   auto barns = section.crossSections() | ranges::to_vector;
-
-  /*
-  // Find duplicate energy points and adjust (i.e., sigfig) to avoid
-  // dicontinuities
-  auto dupFound = std::adjacent_find( energies.begin(), energies.end() );
-  while( dupFound != energies.end() ){
-
-    auto value = *dupFound;
-    *dupFound = sigfig( value, -1E-7 );
-    int i = 1;
-    while( *( dupFound + i ) == value ){
-      *( dupFound + i ) = sigfig( value, -1E-7 );
-      i += 1;
-    }
-    *( dupFound + i ) = sigfig( value, 1E-7 );
-
-
-    dupFound = std::adjacent_find( dupFound + i, energies.end() );
-  }
-  */
-
 
   auto interpolants = section.interpolants();
   auto boundaries = section.boundaries();
@@ -40,6 +21,20 @@ TAB1toInterpolation( const S& section ){
   int drop = 0;
   int take = right;
 
+  if( threshold != 0.0 ){
+    auto energy = energies.begin();
+    if( *energy < threshold ){
+      auto sigfigged = sigfig( threshold, 1E-7 );
+      Log::info( "Changed threshold from {:13.6e} to {:13.6e} for mt {:3}",
+                 *energy, sigfigged, MT );
+      *energy = sigfigged;
+
+      while( *(energy+1) < *(energy) ){
+        *(energy+1) = sigfig( *energy, 1E-7 );
+        energy++;
+      }
+    }
+  }
   // Do the first one
   auto table = 
     makeInterpolationTable( energies, barns, drop, take, interpolants[ 0 ] );

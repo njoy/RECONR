@@ -48,8 +48,6 @@ SCENARIO( "Testing the summation of cross sections" ){
         std::sort( smKeys.begin(), smKeys.end() );
 
         CHECK( ranges::equal( refSummations, smKeys ) );
-
-        printKeys( refSummations, smKeys );
       } // THEN
       THEN( "MT = 1 can be tested" ){ 
         auto ID = ReactionID{ projectile, target, ReactionType{ 1 } };

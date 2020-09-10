@@ -57,14 +57,10 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         auto lXS = reaction.crossSections< Rxn_t >();
         auto energies = lXS.x() | ranges::to_vector;
         auto barns = lXS.y() | ranges::to_vector;
-        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
-        for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
-        }
-        for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
-        }
+        Log::info( "MT=18 energies: {}", energies | ranges::view::all );
+        Log::info( "MT=18 barns: {}", barns | ranges::view::all );
+        details::checkRanges( refE, energies );
+        details::checkRanges( refB, barns );
       }
       THEN( "we can check MT=102" ){
         ReactionID reactionID{ projectile, target, ReactionType{ 102 } };
