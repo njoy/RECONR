@@ -149,7 +149,6 @@ void printSummations( const njoy::RECONR::R2D2& data ){
   }
 }
 
-/*
 SCENARIO( "Testing creation of RECONR class" ){
   nlohmann::json input{R"({
     "nendf": 20, "npend": 22,
@@ -264,7 +263,6 @@ SCENARIO( "Testing creation of RECONR class" ){
   } // WHEN
 
 } // SCENARIO
-*/
 
 #include "RECONR/RECONR/test/combineReconstructed.hpp"
 #include "RECONR/RECONR/test/evaluatedData.hpp"
