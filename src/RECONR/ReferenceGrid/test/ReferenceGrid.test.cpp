@@ -10,6 +10,8 @@
 
 namespace RP = njoy::ENDFtk::resonanceParameters;
 
+using namespace njoy;
+
 class TestReferenceGrid: public njoy::RECONR::ReferenceGrid{
 public:
   using ReferenceGrid::fill;
@@ -21,13 +23,18 @@ static double nextafter( const double value ){
 
 std::string specialCaseString(){
   return
-    " 5.000000-1 1.276553+0          0          0          0          0 125 2151     \n";
+    " 1.001000+3 9.991673-1          0          0          1          0 125 2151    1\n"
+    " 1.001000+3 1.000000+0          0          0          1          0 125 2151    2\n"
+    " 1.000000-5 1.000000+5          0          0          0          0 125 2151    3\n"
+    " 5.000000-1 1.276553+0          0          0          0          0 125 2151    4\n"
+    " 0.000000+0 0.000000+0          0          0          0          0 125 2  099999\n";
+    // " 5.000000-1 1.276553+0          0          0          0          0 125 2151     \n";
 }
 
 std::string caseAString(){
   return
       // base
-    // " 2.300000+4 1.000000+5          2          1          0          05655 2151\n"
+    " 2.300000+4 1.000000+5          2          1          0          05655 2151\n"
     // range CONT
     " 0.000000+0 6.233000-1          0          0          3          05655 2151     \n"
     // L=0 LIST                                                                      
@@ -205,36 +212,33 @@ RP::resolved::SLBW breitWigner(){
       MT151.isotopes().front().resonanceRanges().front().parameters() );
 }
 
-RP::resolved::ReichMoore reichMoore(){
+njoy::RECONR::ResonanceRange reichMoore(){
 
   auto material = details::ENDFMaterial( "RM" );
   auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
 
-  return std::get< RP::resolved::ReichMoore >(
-      MT151.isotopes().front().resonanceRanges().front().parameters() );
+  return MT151.isotopes().front().resonanceRanges().front();
 }
 
-RP::resolved::RMatrixLimited rMatrixLimited(){
+njoy::ENDFtk::resonanceParameters::ResonanceRange rMatrixLimited(){
 
   auto material = details::ENDFMaterial( "RML" );
   auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
 
-  return std::get< RP::resolved::RMatrixLimited >(
-      MT151.isotopes().front().resonanceRanges().front().parameters() );
+  return MT151.isotopes().front().resonanceRanges().front();
 }
 
-RP::SpecialCase specialCase(){
-  int MAT = 125;
-  int MF = 2;
-  int MT = 151;
+njoy::RECONR::ResonanceRange specialCase(){
   long ln = 0;
 
   auto scs = specialCaseString();
   auto begin = scs.begin();
   auto end = scs.end();
 
-  // RP::resolved::BreitWignerReichMooreBase base( 1.0, 2.0, 0, 0, 0, 0 );
-  return RP::SpecialCase( begin, end, ln, MAT, MF, MT );
+  njoy::ENDFtk::HeadRecord head{ begin, end, ln };
+  njoy::ENDFtk::section::Type< 2, 151 > mt151{ head, begin, end, ln, 125 };
+
+  return mt151.isotopes().front().resonanceRanges().front();
 }
 
 RP::unresolved::EnergyIndependent caseA(){
@@ -278,4 +282,4 @@ RP::unresolved::EnergyDependent caseC(){
 }
 
 #include "RECONR/ReferenceGrid/test/call.hpp"
-#include "RECONR/ReferenceGrid/test/fill.hpp"
+// #include "RECONR/ReferenceGrid/test/fill.hpp"

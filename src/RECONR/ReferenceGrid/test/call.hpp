@@ -1,17 +1,19 @@
 SCENARIO( "Extracting the reference grid" ){
   using namespace njoy::RECONR;
 
+  njoy::elementary::ParticleID proj{ "n" };
+  njoy::elementary::ParticleID target{ "fe56" };
   GIVEN( "an Isotope" ){
 
     const std::vector< double > resonanceEnergies { 
-      0.00001, 0.9860692, 1.0253, 1.0645308, 2.9860692, 3.0253, 3.0645308, 7.5,
-      nextafter( 7.5 ),
-      1.5E4, 17906.6, 20000, 23875.5, 28502.1, 30000, 35813.3, 40000, 47751.1, 
-      50000, 59688.8, 60000, 70000, 80000, 90000, 100000, 100000, 100000
+      1e-05,    0.986069,  1.0253,   1.06453,  2.98607,  
+      3.0253,   3.06453,   7.5,      15000,    17906.6,  
+      21376.5,  25518.8,   30463.8,  36366.9,  43414,    
+      51826.6,  61869.4,   73858.2,  88170.2,  100000
     };
     RP::Isotope iso = isotope();
 
-    auto trial = referenceGrid( iso );
+    auto trial = referenceGrid( iso, target, proj );
     details::checkRanges( resonanceEnergies, trial );
     
   } // GIVEN
@@ -28,12 +30,15 @@ SCENARIO( "Extracting the reference grid" ){
          resonanceEnergy,
          resonanceEnergy + 0.5 * resonanceWidth }};
 
-    const auto trial = referenceGrid(resonance);
+    const auto trial = referenceGrid( resonance );
     CHECK( reference == trial );
   }
 
   GIVEN( "a Reich-Moore resolved region" ){
-    RP::resolved::ReichMoore rm = reichMoore();
+    RP::ResonanceRange rm = reichMoore();
+    auto& parameters = std::get< 
+      njoy::ENDFtk::resonanceParameters::resolved::ReichMoore >( 
+        rm.parameters() );
 
     const std::vector< double > resonanceEnergies { 
       -1.000000E+2, -9.000000E+1, -4.297600E+0, -3.493400E+0,
@@ -42,7 +47,7 @@ SCENARIO( "Extracting the reference grid" ){
        3.156600E+0,  3.620800E+0,  4.850800E+0,  5.449700E+0 };
 
     GIVEN( "an l-value" ){
-      const auto lValue = rm.lValues().front();
+      const auto lValue = parameters.lValues().front();
 
       GIVEN( "a resonance" ){
         const auto resonance = lValue.resonances().front();
@@ -59,7 +64,7 @@ SCENARIO( "Extracting the reference grid" ){
                resonanceEnergy,                           // resonance peak
                resonanceEnergy + 0.5 * resonanceWidth }}; // right full-width half-max
 
-          const auto trial = referenceGrid(resonance);
+          const auto trial = referenceGrid( resonance );
           CHECK( reference == trial );
         }
       }
@@ -85,7 +90,7 @@ SCENARIO( "Extracting the reference grid" ){
     THEN( "the reference grid..." ){
       double lowerEnergy{ 9.8596E-1 };
       double upperEnergy{ 5.5 };
-      const auto grid = referenceGrid( rm, lowerEnergy, upperEnergy );
+      const auto grid = referenceGrid( parameters, rm, target, proj );
 
       SECTION("will be sorted"){
         CHECK( ranges::is_sorted( grid ) );
@@ -103,35 +108,37 @@ SCENARIO( "Extracting the reference grid" ){
   }
 
   GIVEN( "a RMatrixLimited resolved region" ){
-    RP::resolved::RMatrixLimited rml = rMatrixLimited();
+    RP::ResonanceRange rml = rMatrixLimited();
+    auto& parameters = std::get<
+      njoy::ENDFtk::resonanceParameters::resolved::RMatrixLimited >( 
+        rml.parameters() );
+
     
     std::vector< double > reference{
-      -1.223300e+6, 7.788000e+3, 5.152000e+4, 5.359000e+4 };
+      1e-05,   7193.6,   7788,     8382.4,  51511.8,  
+      51520,   51528.2,  53580.8,  53590,   53599.2,  
+      550000
+    };
 
-    double lowerEnergy{ -1.9E6 };
-    double upperEnergy{ 5.5E5 };
-
-    reference.insert( reference.cbegin(), lowerEnergy );
-    reference.insert( reference.cend(), upperEnergy );
-    reference.insert( reference.cend(), nextafter( upperEnergy ) );
-
-    const auto grid = referenceGrid( rml, lowerEnergy, upperEnergy );
+    const auto grid = referenceGrid( parameters, rml, target, proj );
 
     details::checkRanges( reference, grid );
   } // GIVEN
 
-  GIVEN( "a \"special case\" region" ){
-    RP::SpecialCase sc = specialCase();
+  GIVEN( "a SpecialCase region" ){
+    RP::ResonanceRange sc = specialCase();
+    auto& parameters = std::get< 
+      njoy::ENDFtk::resonanceParameters::SpecialCase >( sc.parameters() );
 
     THEN( "the boundaries of the region will be extracted" ){
-      std::vector<double> grid = referenceGrid( sc, 0.5, 1.276553 );
-      CHECK( grid.size() == 3 );
-      CHECK( grid[ 0 ] == 0.5 );
-      CHECK( grid[ 1 ] == Approx( 1.276553 ) );
-      CHECK( grid[ 2 ] == Approx( 1.276553 ) );
+      auto grid = referenceGrid( parameters, sc, target, proj );
+      CHECK( grid.size() == 2 );
+      CHECK( grid[ 0 ] == Approx( 1E-5 ) );
+      CHECK( grid[ 1 ] == Approx( 1E+5 ) );
     }
   }
 
+  /*
   GIVEN( "a Case A unresolved region" ){
     RP::unresolved::EnergyIndependent ca = caseA();
 
@@ -140,7 +147,7 @@ SCENARIO( "Extracting the reference grid" ){
       46.7111052810E3, 55.7626263930E3, 66.5681208680E3, 79.4674677760E3,
       94.8664068070E3, 100E3 
     };
-    auto energies = referenceGrid( ca, 2.3E4, 1E5 );
+    auto energies = referenceGrid( ca, target, proj );
 
     RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
       auto [ ref, trial ] = en;
@@ -158,7 +165,7 @@ SCENARIO( "Extracting the reference grid" ){
       2.0E4, 2.38755328E4, 2.5E4, 2.9844416E4,
       3.0E4, 3.5E4, 4.0E4
     };
-    auto energies = referenceGrid( cb, 5.7E3, 4.0E4 );
+    auto energies = referenceGrid( cb, target, proj );
 
     RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
       auto [ ref, trial ] = en;
@@ -184,7 +191,7 @@ SCENARIO( "Extracting the reference grid" ){
       8.0E+4, 9.550213134E4,
       1.0E+5,
     };
-    auto energies = referenceGrid( cc, 6.0E3, 1.0E5 );
+    auto energies = referenceGrid( cc, target, proj );
 
     RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
       auto ref = std::get< 0 >( en );
@@ -192,5 +199,6 @@ SCENARIO( "Extracting the reference grid" ){
       CHECK( ref == Approx( trial ) );
     }
   }
+  */
 }
 

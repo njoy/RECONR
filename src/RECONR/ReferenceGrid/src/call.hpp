@@ -69,8 +69,8 @@ auto operator()( const resolved::RMatrixLimited& rml,
                  const elementary::ParticleID& proj ) const {
 
   auto eV = dimwits::electronVolt;
-  auto lowerEnergy = sigfig( rRange.EL()*eV, -1E-7 );
-  auto upperEnergy = sigfig( rRange.EH()*eV, 1E-7 );
+  auto lowerEnergy = sigfig( rRange.EL(), -1E-7 );
+  auto upperEnergy = sigfig( rRange.EH(), 1E-7 );
 
   const auto& nMass = CODATA[ constants::neutronMass ];
   const auto& eCharge = CODATA[ constants::elementaryCharge ];
@@ -80,18 +80,14 @@ auto operator()( const resolved::RMatrixLimited& rml,
 
   std::vector< double > energies;
 
-  energies.push_back( lowerEnergy/eV );
+  energies.push_back( lowerEnergy );
   ranges::action::push_back( energies, 
     grid
-    | ranges::view::filter(
-        [&]( auto&& energy ){
-          return ( lowerEnergy < energy ) and ( energy  < upperEnergy ); }
-      )
     | ranges::view::transform( 
         [&]( auto&& energy ){ return energy/eV; } )
   );
 
-  energies.push_back( upperEnergy/eV );
+  energies.push_back( upperEnergy );
 
   if ( not ranges::is_sorted( energies ) ){
     std::sort( energies.begin(), energies.end() );
