@@ -2,14 +2,14 @@
  * This method is used *before* resonances are reconstructed
  */
 static
-auto unionizeEnergyGrid( std::ostream& output,
+auto unionizeEnergyGrid( const Logger& logger,
                          const R2D2::XSMap_t& reactions,
                          const R2D2::PPMap_t& ppReactions,
                          const std::vector< double >& resonanceGrid,
                          const std::vector< double >& user ){
 
   std::vector< double > grid{ resonanceGrid.begin(), resonanceGrid.end() };
-  output << 
+  logger.first << 
     "\nGenerating unionized energy grid prior to reconstructing resonances"
          << std::endl;
   grid |= ranges::action::push_back( user );
@@ -17,7 +17,6 @@ auto unionizeEnergyGrid( std::ostream& output,
   for( const auto& [ID, reaction] : reactions ){
     grid |= ranges::action::push_back( 
       reaction.crossSections< interp::LinearTable >().x() );
-    grid |= ranges::action::push_back( std::abs( reaction.reactionQValue() ) );
   }
 
   for( const auto& [ ID, reaction ] : ppReactions ){
@@ -29,6 +28,7 @@ auto unionizeEnergyGrid( std::ostream& output,
   ranges::sort( grid );
 
   return grid 
+    | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
     | ranges::view::unique 
     | ranges::to_vector;
 }
@@ -37,10 +37,10 @@ auto unionizeEnergyGrid( std::ostream& output,
  * This method is used *after* resonances are reconstructed
  */
 static
-auto unionizeEnergyGrid( std::ostream& output, 
+auto unionizeEnergyGrid( const Logger& logger,
                          std::vector< double >& grid,
                          const R2D2::ReconMap_t& resonances ){
-  output << 
+  logger.first << 
     "\nGenerating unionized energy grid after reconstructing resonances"
          << std::endl;
 
@@ -52,6 +52,7 @@ auto unionizeEnergyGrid( std::ostream& output,
   ranges::sort( grid );
 
   return grid 
+    | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
     | ranges::view::unique 
     | ranges::to_vector;
 }

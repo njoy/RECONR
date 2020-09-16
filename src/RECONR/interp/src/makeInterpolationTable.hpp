@@ -7,6 +7,13 @@ Variant makeInterpolationTable( const E& energies, const B& barns,
 
   switch( LAW ){
     case 1: {
+      auto s = ranges::distance( pE );
+      for( int i=1; i < s-1; i++ ){
+        auto& right = pE[ i ];
+
+        if( pE[ i-1 ] == right ){ right = sigfig( right, 1E-8 ); }
+      }
+      if( pE[ s-2 ] == pE.back() ){ pE[ s-2 ] = sigfig( pE[ s-2 ], -1E-8 ); }
       return Variant( HogHog( std::move( pE ), std::move( pB ) ) );
       break;
     }

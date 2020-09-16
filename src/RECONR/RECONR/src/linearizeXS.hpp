@@ -1,22 +1,23 @@
 static
-void linearizeXS( std::ostream& output,
+void linearizeXS( const Logger& logger, 
                   ResonanceReconstructionDataDelivery& r2d2, 
                   double relTol, double absTol ){
 
-  output << "\nLinearizing cross sections." << std::endl;
-
-  linearizeXS( output, r2d2.reactions(), relTol, absTol );
-  linearizeXS( output, r2d2.photonProductions(), relTol, absTol );
+  linearizeXS( logger, r2d2.reactions(), relTol, absTol );
+  linearizeXS( logger, r2d2.photonProductions(), relTol, absTol );
                                              
-
 }
 
 static
-void linearizeXS( std::ostream& output,
+void linearizeXS( const Logger& logger,
                   R2D2::XSMap_t& reactions, 
                   double relTol, double absTol ){
 
+  logger.first << "\nLinearizing cross sections." << std::endl;
   for( auto& [ id, reaction ] : reactions ){
+    auto mt = elementary::toEndfReactionNumber( id );
+    logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
+
     std::vector< interp::LinearLinear > linearized{};
 
     for( const auto& law : 
@@ -33,11 +34,14 @@ void linearizeXS( std::ostream& output,
 }
 
 static
-void linearizeXS( std::ostream& output,
+void linearizeXS( const Logger& logger,
                   R2D2::PPMap_t& reactions, 
                   double relTol, double absTol ){
 
+  logger.first << "\nLinearizing photon productions." << std::endl;
   for( auto & [ id, reaction ] : reactions ){
+    auto mt = elementary::toEndfReactionNumber( id );
+    logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
     std::vector< PPForms > linearized{};
 
     for( const auto& production : 

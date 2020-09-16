@@ -14,10 +14,8 @@ static void fill( const double lowerBound,
             return state; }
         )
         | ranges::view::take_while ( 
-            [ = ]( auto energy ){ 
-            return energy < upperBound; } 
+            [ = ]( auto energy ){ return energy < upperBound; } 
           ) 
         );
   }
-  buffer.push_back( upperBound );
 }

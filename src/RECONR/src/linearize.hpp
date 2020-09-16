@@ -39,22 +39,23 @@ linearize2( const LAW & law, double relTol, double absTol ){
 
 inline
 interp::LinearLinear
-linearize( const interp::Histogram& histo, double, double ){
+linearize( const interp::Histogram& histo, double r, double a ){
 
-  auto hx = histo.x();
-  auto hy = histo.y();
-  std::vector< double > x{ hx.front() };
+  return linearize2( histo, r, a );
+  // auto hx = histo.x();
+  // auto hy = histo.y();
+  // std::vector< double > x{ hx.front() };
 
-  for( auto& ene : hx | ranges::view::drop_exactly( 1 ) ){
-    // sigfig( 16, -1 )
-    x.push_back( 
-      std::nextafter( ene, std::numeric_limits< double >::min( ) ) );
-    x.push_back( ene );
-  }
+  // for( auto& ene : hx | ranges::view::drop_exactly( 1 ) ){
+  //   // sigfig( 16, -1 )
+  //   x.push_back( sigfig( ene, -1E-7 ) );
+  //   x.push_back( ene );
+  // }
+  // std::sort( x.begin(), x.end() );
 
-  auto y = x | ranges::view::transform( histo ) | ranges::to_vector;
+  // auto y = x | ranges::view::transform( histo ) | ranges::to_vector;
 
-  return interp::LinearLinear{ std::move( x ), std::move( y ) };
+  // return interp::LinearLinear{ std::move( x ), std::move( y ) };
 }
 
 inline
@@ -110,7 +111,9 @@ linearize( const Range& grid, double relTol, double absTol ){
       if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
         return true; }
       // Limit of ENDF-6 precision
-      if( xRight/xLeft < 1E-7 ){ return true; }
+      auto ratio = 1.0 - ( xLeft.value/xRight.value );
+      if( ratio < 1E-7 ){ return true; }
+
       auto cDiff = trial - reference;
 
       double eRelDiff = std::abs( cDiff.elastic/reference.elastic );
@@ -154,32 +157,36 @@ linearize( const Range& grid,
     decltype( lXS ) midXS;
     for( const auto& id : IDs ){
       auto y = 0.5*( lXS.at( id ) + rXS.at( id ) );
+
       midXS.emplace( id, std::move( y ) );
     }
-    return std::make_pair( midEnergy, lXS );
+    return std::make_pair( midEnergy, midXS );
   };
 
+  constexpr double infinity = std::numeric_limits< double >::infinity();
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-    constexpr double infinity = std::numeric_limits< double >::infinity();
 
     if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
       return true;
     }
-
-//     // Limit of ENDF-6 precision
-//     if( xRight/xLeft < 1E-7 ){ return true; }
+    // Limit of ENDF-6 precision
+    auto ratio = 1.0 - ( xLeft.value/xRight.value );
+    if( ratio < 1E-7 ){ return true; }
 
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
-      auto t = reference.at( id );
+      auto t = trial.at( id );
       auto r = reference.at( id );
 
       auto diff = std::abs( t - r );
-      if( diff.value > absTol ){ return false; }
-      if( diff/r > relTol ){ return false; }
+      auto rdiff = diff/r;
+
+      if( ( diff.value >= absTol ) and ( rdiff >= relTol ) ){ 
+        return false;
+      }
     }
     return true;
   };

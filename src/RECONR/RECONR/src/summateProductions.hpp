@@ -1,10 +1,9 @@
 // For Photon production reactions
 template< typename Range >
 static
-void summateProductions( std::ostream& output,
-                        std::ostream& error,
-                        R2D2& data,
-                        const Range& energies ){
+void summateProductions( const Logger& logger,
+                         R2D2& data,
+                         const Range& energies ){
 
   auto& productions = data.photonProductions();
 
@@ -12,11 +11,11 @@ void summateProductions( std::ostream& output,
     return;
   }
 
-  output << 
+  logger.first << 
     "\nSumming photon production cross sections on unionized energy grid"
     " for IDs: \n";
   for( auto& [ ID, production ] : productions ){
-    output << fmt::format( "\t{:20s} ", ID.symbol() );
+    logger.first << fmt::format( "\t{:20s} ", ID.symbol() );
 
     std::vector< std::vector< double > > partials;
     for( const auto& partial : 
@@ -38,6 +37,6 @@ void summateProductions( std::ostream& output,
 
     production.productions( std::move( pairs ) );
   }
-  output << std::endl;
+  logger.first << std::endl;
 }
 

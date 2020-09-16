@@ -31,6 +31,8 @@ public:
   using RECONR::combineReconstructed;
 };
 
+njoy::RECONR::Logger logger{ std::cout, std::cerr };
+
 template< typename K >
 void printKeys( K& keys ){
   njoy::Log::info( "" );
@@ -111,24 +113,23 @@ auto lin_recon( std::string formalism, double absTol, double relTol,
                 int LSSF = 0 ){
   std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
   auto material = details::ENDFMaterial( formalism, LSSF );
-  auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+  auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
-  tRECONR::linearizeXS( std::cout, r2d2, absTol, relTol);
+  tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
   auto refGrid = tRECONR::unionizeEnergyGrid(
-    std::cout, 
+    logger, 
     r2d2.reactions(), 
     r2d2.photonProductions(), 
     r2d2.resonanceReferenceGrid(),
     userSupplied );
 
-  tRECONR::reconstructResonances( 
-    std::cout, refGrid, r2d2, relTol, absTol );
+  tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
   auto energies = tRECONR::unionizeEnergyGrid(
-    std::cout, refGrid, r2d2.reconstructedResonances() );
+    logger, refGrid, r2d2.reconstructedResonances() );
 
-  tRECONR::reconstructCrossSections( std::cout, std::cout, r2d2, energies );
-  tRECONR::combineReconstructed( std::cout, std::cout, r2d2, energies );
+  tRECONR::reconstructCrossSections( logger, r2d2, energies );
+  tRECONR::combineReconstructed( logger, r2d2, energies );
 
   return std::make_pair( energies, r2d2 );
 }

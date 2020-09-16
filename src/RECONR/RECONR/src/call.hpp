@@ -3,13 +3,15 @@ void operator()( const nlohmann::json& njoyArgs,
                  std::ostream& error,
                  const nlohmann::json& ){
 
+  Logger logger{ output, error };
+
   output << "Input arguments:\n" << njoyArgs.dump( 2 ) << std::endl;
   std::string inputFilename = "tape" + 
     std::to_string( njoyArgs[ "nendf" ].get< int >() );
   auto outputFilename = "tape" + 
     std::to_string( njoyArgs[ "npend" ].get< int >() );
 
-  auto evaluatedData = getEvaluated( output, inputFilename );
+  auto evaluatedData = getEvaluated( logger, inputFilename );
 
   ProcessedEvaluation pendf( evaluatedData, outputFilename );
   pendf.header( njoyArgs[ "tlabel" ].get< std::string >() );
@@ -21,12 +23,12 @@ void operator()( const nlohmann::json& njoyArgs,
 
     auto err = sequence[ "err" ];
 
-    auto data = this->findR2D2( output, sequence, evaluatedData );
-    this->linearizeXS( output, data, err, this->absoluteTolerance );
+    auto data = this->findR2D2( logger, sequence, evaluatedData );
+    this->linearizeXS( logger, data, err, this->absoluteTolerance );
 
     // Get unionized energy grid
     std::vector< double > enode = sequence.at( "enode" );
-    auto grid = this->unionizeEnergyGrid( output, 
+    auto grid = this->unionizeEnergyGrid( logger, 
                                           data.reactions(), 
                                           data.photonProductions(),
                                           data.resonanceReferenceGrid(),
@@ -41,29 +43,28 @@ void operator()( const nlohmann::json& njoyArgs,
 
     // Reconstruct resonances
     this->reconstructResonances( 
-      output, grid, data, err, this->absoluteTolerance );
+      logger, grid, data, err, this->absoluteTolerance );
     // Recalculate linearized cross sections
-    auto energies = this->unionizeEnergyGrid( output, 
-                                              grid,
-                                              data.reconstructedResonances() );
+    auto energies = this->unionizeEnergyGrid( 
+      logger, grid, data.reconstructedResonances() );
     auto eSize = ranges::distance( energies );
 
     output <<  fmt::format(
       "number of points in final unionized grid    = {:10d}\n", eSize )
            << std::endl;
 
-    this->combineUnresolved( output, error, data, energies );
-    this->reconstructCrossSections( output, error, data, energies );
-    this->combineReconstructed( output, error, data, energies );
-    this->summateReactions( output, error, data, energies );
-    this->summateUnresolved( output, error, data );
-    this->summateProductions( output, error, data, energies );
+    this->combineUnresolved( logger, data, energies );
+    this->reconstructCrossSections( logger, data, energies );
+    this->combineReconstructed( logger, data, energies );
+    this->summateReactions( logger, data, energies );
+    this->summateUnresolved( logger, data );
+    this->summateProductions( logger, data, energies );
 
     // Remove leading zeros
-    this->truncateReactions( output, data );
+    this->truncateReactions( logger, data );
 
-    output << "Writing processed data to file." << std::endl;
-    pendf.material( MAT, data, sequence );
+    output << "\nWriting processed data to file." << std::endl;
+    pendf.material( logger, MAT, data, sequence );
 
   }
 

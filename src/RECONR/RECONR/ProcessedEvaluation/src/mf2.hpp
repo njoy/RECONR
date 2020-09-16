@@ -1,7 +1,8 @@
 ENDFtk::file::Type< 2 >
-mf2( const int& MAT,
-     const R2D2& data ){
+mf2( const Logger& logger, const int& MAT, const R2D2& data ){
 
+  logger.first << "Preparing MF=2 data." << std::endl;
+  logger.first << "MT=151" << std::endl;
   // MT151
   // We're going to assume that everything we see only has one resolved range
   auto params = std::get< 0 >( data.resonanceParameters() );
@@ -23,6 +24,7 @@ mf2( const int& MAT,
     return ENDFtk::file::Type< 2 >{ std::move( mt151 ) };
   }
 
+  logger.first << "MT=152" << std::endl;
   const auto& proj = data.projectile();
   const auto& target = data.target();
 
@@ -31,19 +33,30 @@ mf2( const int& MAT,
   ReactionID fID{ proj, target, elementary::ReactionType{ "fission" } };
   ReactionID cID{ proj, target, elementary::ReactionType{ "capture" } };
 
-  
+  if( unresolved.count( eID ) == 0 ){
+    Log::error( "Can't find unresolved elastic reaction." );
+    throw std::exception();
+  }
   auto eRxn = unresolved.at( eID );
-  auto& energies = eRxn.template crossSections< XSPair >().first;
+  auto energies = eRxn.template crossSections< XSPair >().first;
+  std::vector< double > total, elastic, capture, fission;
 
-  std::vector< double > elastic = 
-      eRxn.template crossSections< XSPair >().second;
-  std::vector< double > total = 
-      unresolved.at( tID ).template crossSections< XSPair >().second;
-  std::vector< double > capture = 
-      unresolved.at( cID ).template crossSections< XSPair >().second;
-  std::vector< double > fission;
+  auto getUXS = [&]( std::string name, auto&& ID ) -> std::vector< double >{
+    try {
+      logger.first << fmt::format( "\t{}: {:s}\n", name,  ID.symbol() );
+      return unresolved.at( ID ).template crossSections< XSPair >().second;
+    } catch( std::out_of_range& ){
+      Log::error( "Unable to extract " + name + " unresolved cross section." );
+      throw;
+    }
+  };
+
+  total   = getUXS( "total", tID );
+  elastic = getUXS( "elastic", eID );
+  capture = getUXS( "capture", cID );
+
   if( unresolved.count( fID ) != 0 ){
-    fission = unresolved.at( fID ).template crossSections< XSPair >().second;
+    fission = getUXS( "fission", fID );
   } else {
     fission = std::vector< double >( energies.size(), 0.0 );
   }

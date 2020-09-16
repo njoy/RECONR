@@ -1,8 +1,7 @@
 // For incident neutrons
 template< typename Range >
 static
-void summateReactions( std::ostream& output,
-                       std::ostream& error,
+void summateReactions( const Logger& logger,
                        R2D2& r2d2,
                        const Range& energies ){
 
@@ -14,10 +13,10 @@ void summateReactions( std::ostream& output,
 
   const elementary::ParticleID neutron{ "n" };
 
-  const auto& reactions = r2d2.reactions();
+  auto& reactions = r2d2.reactions();
   auto& summations = r2d2.summations();
 
-   auto fromENDF = [&]( auto&& mt ) -> elementary::ReactionID { 
+  auto fromENDF = [&]( auto&& mt ) -> elementary::ReactionID { 
     return fromEndfReactionNumber( proj, target, mt ); };
 
   auto transform = [&]( auto&& MTs ){
@@ -33,7 +32,7 @@ void summateReactions( std::ostream& output,
   };
 
   auto sumRedundants = [&]( auto&& MT, auto&& redundantMTs ){
-    output << fmt::format( "MT: {}", MT ) << std::endl;
+    logger.first << fmt::format( "MT: {}", MT ) << std::endl;
 
     std::vector< elementary::ReactionID > redundants;
     if( MT == 1 ){
@@ -65,32 +64,18 @@ void summateReactions( std::ostream& output,
       redundants = transform( redundantMTs );
     }
 
-    /*
-    auto printKeys = [&]( auto&& keys ){
-      for( const auto& key : keys ){
-        auto mt = elementary::toEndfReactionNumber( key );
-        Log::info( "\t{:3}  {:20s}", mt, key.symbol() );
-      }
-    };
-    auto rkeys = ranges::view::keys( reactions );
-    auto skeys = ranges::view::keys( summations );
-    Log::info( "rkeys:" );
-    printKeys( rkeys );
-    Log::info( "skeys:" );
-    printKeys( skeys );
-    */
-
     std::vector< std::vector< double > > partials;
     for( const auto& id : redundants ){
       auto mt = elementary::toEndfReactionNumber( id );
-      // output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
     
       std::vector< double > partial;
       if ( summations.count( id ) > 0 ) {
-        output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
+        logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) 
+                     << std::endl;
         partial = summations.at( id ).template crossSections< XSPair >().second;
       } else if( reactions.count( id ) > 0 ){
-        output << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
+        logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) 
+                     << std::endl;
         partial = reactions.at( id ).template crossSections< XSPair >().second;
       } // else { return; } // no existing partial
 
@@ -99,16 +84,33 @@ void summateReactions( std::ostream& output,
     } // for id
 
     if( partials.size() > 0 ){
-      auto rPair = std::make_pair( utility::copy( energies ), 
-                                  sumPartials( partials ) );
-      summations.emplace(
-        elementary::fromEndfReactionNumber( proj, target, MT ),
-        Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
-    }
-  };
+       auto sumID = elementary::fromEndfReactionNumber( proj, target, MT );
+       auto rPair = std::make_pair( utility::copy( energies ), 
+                                   sumPartials( partials ) );
+       summations.emplace( sumID,
+         Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
+ 
+       /*
+       // Simply move to summations
+       if( ( partials.size() == 1 ) and ( reactions.count( sumID ) > 0 ) ){
+         for( const auto& ID : ranges::view::keys( reactions ) ){
+           auto mt = elementary::toEndfReactionNumber( ID );
+         }
+         auto reaction = reactions.at( sumID );
+         summations.emplace( sumID, std::move( reaction ) );
+         reactions.erase( sumID );
+       } else{
+         auto rPair = std::make_pair( utility::copy( energies ), 
+                                     sumPartials( partials ) );
+         summations.emplace( sumID,
+           Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
+       }
+       */
+     } // partials size
+   }; // sumRedundants
 
   // Sum redundant cross sections
-  output << "Summing redundant cross sections\n";
+  logger.first << "Summing redundant cross sections\n";
   for( auto& [ MT, redundantMTs ] : 
        ranges::view::reverse( ENDFtk::redundantReactions ) ){
 

@@ -1,7 +1,7 @@
 SCENARIO( "Testing the resonance reconstruction" ){
   GIVEN( "an SLBW R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "SLBW", true );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto proj = r2d2.projectile();
     auto target = r2d2.target();
@@ -15,7 +15,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
     };
 
     WHEN( "the resonances are reconstructed" ){
-      tRECONR::reconstructResonances( std::cout, refGrid, r2d2, 1E-1, 1E-3 );
+      tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
 
       THEN( "the linearized reconstruction can be verified" ){
         auto reconstructed = r2d2.reconstructedResonances();
@@ -80,8 +80,6 @@ SCENARIO( "Testing the resonance reconstruction" ){
         std::vector< ReactionID > refKeys{ eID, cID };
         auto keys = ranges::view::keys( unresolved ) | ranges::to_vector;
 
-        printKeys( refKeys, keys );
-
         std::sort( refKeys.begin(), refKeys.end() );
         std::sort( keys.begin(), keys.end() );
         CHECK( ranges::equal( refKeys, keys ) );
@@ -135,7 +133,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   GIVEN( "an RM R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RM" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto proj = r2d2.projectile();
     auto target = r2d2.target();
@@ -151,7 +149,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
       };
 
     WHEN( "the resonances are reconstructed" ){
-      tRECONR::reconstructResonances( std::cout, refGrid, r2d2, 1E-1, 1E-3 );
+      tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
 
       THEN( "the linearized reconstruction can be verified" ){
         auto reconstructed = r2d2.reconstructedResonances();
@@ -251,8 +249,6 @@ SCENARIO( "Testing the resonance reconstruction" ){
         std::vector< ReactionID > refKeys{ eID, cID };
         auto keys = ranges::view::keys( unresolved ) | ranges::to_vector;
 
-        printKeys( refKeys, keys );
-
         std::sort( refKeys.begin(), refKeys.end() );
         std::sort( keys.begin(), keys.end() );
         CHECK( ranges::equal( refKeys, keys ) );
@@ -306,7 +302,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
   } // GIVEN
   GIVEN( "an RML R2D2 object and reference grid" ){
     auto material = details::ENDFMaterial( "RML" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto proj = r2d2.projectile();
     auto target = r2d2.target();
@@ -318,7 +314,7 @@ SCENARIO( "Testing the resonance reconstruction" ){
     std::vector< double > grid{ 1e-05, 77.88, 515.2, 535.9, 5500 };
     
     WHEN( "the resonances are reconstructed" ){
-      tRECONR::reconstructResonances( std::cout, grid, r2d2, 1E-1, 1E-5 );
+      tRECONR::reconstructResonances( logger, grid, r2d2, 1E-1, 1E-5 );
 
       auto reconstructed = r2d2.reconstructedResonances();
 
@@ -329,12 +325,49 @@ SCENARIO( "Testing the resonance reconstruction" ){
 
       REQUIRE( ranges::equal( refIDs, IDs ) );
 
-      std::vector< double > refE{ 1e-05, 77.88, 515.2, 535.9, 5500 };
+      std::vector< double > refE{ 
+        1e-05,        1.9284e-05,   2.8568e-05,   4.71361e-05,  8.42721e-05,  
+        0.000158544,  0.000307089,  0.000604177,  0.00119835,   0.00238671,   
+        0.00476342,   0.00951683,   0.0190237,    0.0380373,    0.0760647,    
+        0.152119,     0.304229,     0.608447,     1.21688,      2.43376,      
+        4.86751,      9.73501,      19.47,        38.94,        77.88,        
+        187.21,       296.54,       515.2,        535.9,        1156.41,      
+        1776.92,      2397.44,      2707.69,      3017.95,      3173.08,      
+        3250.64,      3289.42,      3328.21,      3347.6,       3357.29,      
+        3366.99,      3376.68,      3386.38,      3396.07,      3405.77,      
+        3415.47,      3425.16,      3444.55,      3483.33,      3560.9,       
+        3638.46,      3793.59,      3948.72,      4258.98,      4569.23,      
+        4879.49,      5189.74,      5500
+      };
       std::map< njoy::RECONR::ReactionID, std::vector< double > > refXS{
-        { cID, 
-          { 69.0744, 0.0252528, 0.0110307, 0.0108772, 0.0328557} },
-        { eID,
-          { 1.19112, 1.15993, 0.981226, 0.97263, 5.15011 } }
+        { cID, {
+          69.0744,     49.7415,     40.8674,     31.8156,    23.7944,     
+          17.3477,     12.4648,     8.88659,     6.30993,    4.47114,     
+          3.16489,     2.23909,     1.5837,      1.12,       0.792016,    
+          0.56007,     0.396051,    0.280074,    0.198074,   0.140104,    
+          0.09913,     0.0701831,   0.049751,    0.0353558,  0.0252528,   
+          0.0167582,   0.0137056,   0.0110307,   0.0108772,  0.00884997,  
+          0.00868279,  0.00928503,  0.00982943,  0.0105514,  0.0109877,   
+          0.0112268,   0.011352,    0.0114809,   0.0115469,  0.0115802,   
+          0.0116138,   0.0116477,   0.0116818,   0.0117162,  0.0117508,   
+          0.0117857,   0.0118208,   0.011892,    0.0120374,  0.0123418,   
+          0.0126651,   0.0133734,   0.014174,    0.0161113,  0.0186317,   
+          0.0219723,   0.0265079,   0.0328557 }
+        },
+        { eID, {
+          1.19112,      1.19112,      1.19112,      1.19112,      1.19112,      
+          1.19112,      1.19112,      1.19112,      1.19111,      1.19111,      
+          1.19111,      1.19111,      1.19111,      1.1911,       1.19108,      
+          1.19105,      1.19099,      1.19087,      1.19063,      1.19014,      
+          1.18917,      1.18723,      1.18334,      1.17555,      1.15993,      
+          1.11581,      1.0713,       0.981226,     0.97263,      0.711254,     
+          0.450493,     0.211276,     0.111987,     0.0374512,    0.0134382,    
+          0.00564987,   0.00294592,   0.00109261,   0.000499135,  0.000288264,  
+          0.000135642,  4.20358e-05,  8.22216e-06,  3.49872e-05,  0.000123128,  
+          0.000273451,  0.000486775,  0.00110575,   0.0031369,    0.0105729,    
+          0.0229191,    0.0645751,    0.133241,     0.378896,     0.834026,     
+          1.61942,      2.93878,      5.15011 }
+        }
       };
 
       for( const auto& id : IDs ){
@@ -352,8 +385,6 @@ SCENARIO( "Testing the resonance reconstruction" ){
 
         std::vector< ReactionID > refKeys{ eID, cID };
         auto keys = ranges::view::keys( unresolved ) | ranges::to_vector;
-
-        printKeys( refKeys, keys );
 
         std::sort( refKeys.begin(), refKeys.end() );
         std::sort( keys.begin(), keys.end() );

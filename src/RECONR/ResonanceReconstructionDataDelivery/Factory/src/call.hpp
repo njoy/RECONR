@@ -1,4 +1,5 @@
-ResonanceReconstructionDataDelivery operator()( const Material_t& material ){
+ResonanceReconstructionDataDelivery operator()( const Logger& logger,
+                                                const Material_t& material ){
 
   auto info = Factory::information( material );
   auto target = Factory::target( info );
@@ -10,7 +11,8 @@ ResonanceReconstructionDataDelivery operator()( const Material_t& material ){
     std::move( projectile ),
     std::move( target  ),
     std::move( info ),
-    Factory::collectXS(   material, projectile, target ),
+    Factory::MTs( material ),
+    Factory::collectXS(   logger, material, info, projectile, target ),
     Factory::collectPPXS( material, projectile, target ),
     std::move( resonanceParameters ),
     std::move( resRanges )

@@ -42,10 +42,11 @@ using LinearTable = interpolation::Table<
   interpolation::table::right::interval::IsCompiletimeConstant<Zero>
 >;
 
-auto partition = []( auto&& range, int drop, int take ){
+auto partition = []( auto&& range, int drop, int take ) ->std::vector< double >{
   return range
       | ranges::view::drop_exactly(drop)
-      | ranges::view::take_exactly(take);
+      | ranges::view::take_exactly(take)
+      | ranges::to_vector;
 };
 
 #include "RECONR/interp/src/makeInterpolationTable.hpp"

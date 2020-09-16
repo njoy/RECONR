@@ -2,3 +2,4 @@ bin
 subprojects
 *.pyc
 _build
+bin-llvm/

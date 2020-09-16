@@ -1,7 +1,7 @@
 SCENARIO( "Testing the linearization of collected cross sections" ){
   GIVEN( "an ResonanceReconstructionDataDelivery object" ){
     auto material = details::ENDFMaterial( "SLBW" );
-    auto r2d2 = njoy::RECONR::R2D2::Factory()( material );
+    auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
     auto projectile = r2d2.projectile();
     auto target = r2d2.target();
@@ -9,8 +9,7 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
     WHEN( "the cross sections are linearized" ){
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
-      tRECONR::linearizeXS( 
-        std::cout, r2d2, absTolerance, relTolerance );
+      tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
 
       auto reactions = r2d2.reactions();
 
@@ -33,10 +32,12 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
       std::sort( keys.begin(), keys.end() );
       CHECK( ranges::equal( refKeys, keys ) );
 
-      auto skeys = keys | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
-          | ranges::to_vector;
-      auto sref = refKeys | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
-          | ranges::to_vector;
+      auto skeys = keys 
+        | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
+        | ranges::to_vector;
+      auto sref = refKeys 
+        | ranges::view::transform( []( auto&& k ){ return k.symbol(); } )
+        | ranges::to_vector;
       
       using Rxn_t = njoy::RECONR::interp::LinearTable;
       // njoy::RECONR::ReactionID MT;
@@ -44,26 +45,59 @@ SCENARIO( "Testing the linearization of collected cross sections" ){
         ReactionID reactionID{ projectile, target, ReactionType{ 18 } };
         auto reaction = reactions.at( reactionID );
         std::vector< double > refE{ 
-          1.0E+5,
-          details::nextMin( 1.5E+5 ), 1.5E+5,
-          details::nextMin( 7.5E+5 ), 7.5E+5,
-          1.9E+7, 1.95E+7, 2.0E+7 };
+          100000,  125000,   137500,    143750,  146875,  
+          148438,  149219,   149609,    149805,  149902,  
+          149951,  149976,   149988,    149994,  149997,  
+          149998,  149999,   150000,    150000,  150000,  
+          150000,  150000,   150000,    150000,  150000,  
+          150000,  150000,   150000,    150000,  150000,  
+          150000,  150000,   150000,    150000,  150000,  
+          150000,  150000,   150000,    150000,  150000,  
+          150000,  150000,   150000,    150000,  150000,  
+          150000,  150000,   150000,    150000,  150000,  
+          150000,  150000,   150000,    450000,  600000,  
+          675000,  712500,   731250,    740625,  745312,  
+          747656,  748828,   749414,    749707,  749854,  
+          749927,  749963,   749982,    749991,  749995,  
+          749998,  749999,   749999,    750000,  750000,  
+          750000,  750000,   750000,    750000,  750000,  
+          750000,  750000,   750000,    750000,  750000,  
+          750000,  750000,   750000,    750000,  750000,  
+          750000,  750000,   750000,    750000,  750000,  
+          750000,  750000,   750000,    750000,  750000,  
+          750000,  750000,   750000,    750000,  750000,  
+          750000,  1.9e+07,  1.95e+07,  2e+07
+        };
         std::vector< double > refB{ 
-          1.8E+1      , 1.8E+1      , 
-          1.182897E+1 , 1.182897E+1 , 
-          3.347392E-5, 2.751761E-5, 2.731301E-5, 2.710792E-5 };
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           18,          18,           18,      
+          18,           18,           11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          11.829,       11.829,       11.829,      11.829,       11.829,  
+          3.34739e-05,  2.75176e-05,  2.7313e-05,  2.71079e-05
+        };
 
         auto lXS = reaction.crossSections< Rxn_t >();
         auto energies = lXS.x() | ranges::to_vector;
         auto barns = lXS.y() | ranges::to_vector;
-        CHECK( ranges::distance( refE ) == ranges::distance( energies ) );
-        CHECK( ranges::distance( refB ) == ranges::distance( barns ) );
-        for( const auto& [r, e ] : ranges::view::zip( refE, energies ) ){
-          CHECK( r == Approx( e ).epsilon( 5E-6 ) );
-        }
-        for( const auto& [r, b ] : ranges::view::zip( refB, barns ) ){
-          CHECK( r == Approx( b ).epsilon( 5E-6 ) );
-        }
+        details::checkRanges( refE, energies );
+        details::checkRanges( refB, barns );
       }
       THEN( "we can check MT=102" ){
         ReactionID reactionID{ projectile, target, ReactionType{ 102 } };

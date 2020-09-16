@@ -1,9 +1,12 @@
-auto mf1( const int& MAT, const nlohmann::json& sequence,
+auto mf1( const Logger& logger,
+          const int& MAT, const nlohmann::json& sequence,
           const ENDFtk::file::Type< 2 >&  mf2,
           const ENDFtk::file::Type< 3 >&  mf3,
           const std::optional< ENDFtk::file::Type< 13 > >& mf13
          ){
   using namespace njoy::ENDFtk::literals;
+
+  logger.first << "Preparing MF=1 data." << std::endl;
 
   auto eval = std::get< 0 >( this->evaluated );
   const auto mt = eval.materialNumber( MAT ).front()
@@ -31,7 +34,7 @@ auto mf1( const int& MAT, const nlohmann::json& sequence,
       directory.emplace_back( 13, section.MT(), section.NC(), 0 );
     }
   }
-  //                                   MF,  MT, NC
+  //                                   MF,  MT, | <------- NC -------> |
   directory.emplace( directory.begin(), 1, 451, directory.size() + 1 + 4, 0 );
   long NXC = directory.size();
 
