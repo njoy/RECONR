@@ -138,16 +138,17 @@ SCENARIO( "Extracting the reference grid" ){
     }
   }
 
-  /*
   GIVEN( "a Case A unresolved region" ){
-    RP::unresolved::EnergyIndependent ca = caseA();
+    RP::ResonanceRange ca = caseA();
+    auto& parameters = std::get< 
+      njoy::ENDFtk::resonanceParameters::unresolved::CaseA >( ca.parameters() );
 
     std::vector<double> refEnergies{
       23.0000000000E3, 27.4568627590E3, 32.7773614170E3, 39.1288484370E3,
       46.7111052810E3, 55.7626263930E3, 66.5681208680E3, 79.4674677760E3,
       94.8664068070E3, 100E3 
     };
-    auto energies = referenceGrid( ca, target, proj );
+    auto energies = referenceGrid( parameters, ca, target, proj );
 
     RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
       auto [ ref, trial ] = en;
@@ -156,49 +157,34 @@ SCENARIO( "Extracting the reference grid" ){
   }
 
   GIVEN( "a Case B unresolved region" ){
-    RP::unresolved::EnergyDependentFissionWidths cb = caseB();
+    RP::ResonanceRange cb = caseB();
+    auto& parameters = std::get< 
+      njoy::ENDFtk::resonanceParameters::unresolved::CaseB >( cb.parameters() );
 
     std::vector<double> refEnergies{
-      5.7E3, 6.80453E3, 7.0E3, 8.0E3, 9.0E3, 
-      1.0E4, 1.19377664E4, 1.2E4,
-      1.4E4, 1.6E4, 1.8E4, 
-      2.0E4, 2.38755328E4, 2.5E4, 2.9844416E4,
-      3.0E4, 3.5E4, 4.0E4
+      5700,     6804.53,  8123.08,  9697.15,  11576.2,  
+      13819.4,  16497.3,  19694.1,  23510.4,  28066.1,  
+      33504.7,  39997.1,  40000
     };
-    auto energies = referenceGrid( cb, target, proj );
+    auto energies = referenceGrid( parameters, cb, target, proj );
 
-    RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
-      auto [ ref, trial ] = en;
-      CHECK( ref == Approx( trial ) );
-    }
+    details::checkRanges( refEnergies, energies );
   }
 
   GIVEN( "a Case C unresolved region" ){
-    RP::unresolved::EnergyDependent cc = caseC();
+    RP::ResonanceRange cc = caseC();
+    auto& parameters = std::get< 
+      njoy::ENDFtk::resonanceParameters::unresolved::CaseC >( cc.parameters() );
 
     std::vector<double> refEnergies{
-      6.0E+3,
-      7.0E+3,
-      8.0E+3, 9.55021313E3,
-      1.0E+4, 1.19377664E4, 1.42510267E4,
-      1.5E+4, 1.79066496E4, 2.13765400E4,
-      2.5E+4, 2.98444160E4,
-      3.0E+4, 3.58132993E4,
-      4.0E+4, 4.77510657E4,
-      5.0E+4, 5.96888321E4,
-      6.0E+4,
-      7.0E+4,
-      8.0E+4, 9.550213134E4,
-      1.0E+5,
+      6000,     7162.66,  8550.62,  10207.5,  12185.5,  
+      14546.8,  17365.6,  20730.6,  24747.8,  29543.3,  
+      35268.1,  42102.2,  50260.7,  60000,    71626.6,  
+      85506.2,  100000
     };
-    auto energies = referenceGrid( cc, target, proj );
+    auto energies = referenceGrid( parameters, cc, target, proj );
 
-    RANGES_FOR( auto en, ranges::view::zip( refEnergies, energies ) ){
-      auto ref = std::get< 0 >( en );
-      auto trial = std::get< 1 >( en );
-      CHECK( ref == Approx( trial ) );
-    }
+    details::checkRanges( refEnergies, energies );
   }
-  */
 }
 
