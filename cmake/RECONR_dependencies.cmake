@@ -49,6 +49,7 @@ FetchContent_Declare(json
 FetchContent_GetProperties(json)
 if(NOT json_POPULATED)
   FetchContent_Populate(json)
+  set(JSON_BuildTests OFF CACHE INTERNAL "")
   add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
 endif()
 
