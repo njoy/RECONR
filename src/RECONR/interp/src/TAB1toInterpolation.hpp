@@ -14,6 +14,24 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   auto energies = section.energies() | ranges::to_vector;
   auto barns = section.crossSections() | ranges::to_vector;
 
+  // Find duplicate energy points and adjust (i.e., sigfig) to avoid
+  // dicontinuities
+  auto dupFound = std::adjacent_find( energies.begin(), energies.end() );
+  while( dupFound != energies.end() ){
+
+    auto value = *dupFound;
+    *dupFound = sigfig( value, -1E-7 );
+    int i = 1;
+    while( *( dupFound + i ) == value ){
+      *( dupFound + i ) = sigfig( value, -1E-7 );
+      i += 1;
+    }
+    *( dupFound + i ) = sigfig( value, 1E-7 );
+
+
+    dupFound = std::adjacent_find( dupFound + i, energies.end() );
+  }
+
   auto interpolants = section.interpolants();
   auto boundaries = section.boundaries();
   int left = 0;
