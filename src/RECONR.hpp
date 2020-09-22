@@ -4,6 +4,7 @@
 #include <fstream>
 #include <optional>
 
+#include "Log.hpp"
 #include "nlohmann/json.hpp"
 
 #include "ENDFtk.hpp"
@@ -19,6 +20,11 @@ inline
 auto CODATA = njoy::constants::CODATA2018;
 
 namespace njoy   {
+
+namespace utility{
+#include "RECONR/src/sigfig.hpp"
+} // namespace utility
+
 namespace RECONR {
 
 using namespace ENDFtk::resonanceParameters;
@@ -26,7 +32,6 @@ using namespace ENDFtk::resonanceParameters;
 using ReactionID = elementary::ReactionID;
 using Logger = std::pair< std::ostream&, std::ostream& >;
 
-#include "RECONR/src/sigfig.hpp"
 #include "RECONR/interp.hpp"
 
 // For Reaction
