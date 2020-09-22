@@ -7,6 +7,7 @@
 template< typename S >
 std::vector< Variant >
 TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
+  Log::info( "MT: {}", MT );
 
   std::vector< Variant > cs;
 
@@ -15,22 +16,28 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   auto barns = section.crossSections() | ranges::to_vector;
 
   // Find duplicate energy points and adjust (i.e., sigfig) to avoid
-  // dicontinuities
+  // discontinuities
+  /*
   auto dupFound = std::adjacent_find( energies.begin(), energies.end() );
+  *dupFound = sigfig( *dupFound, -1E-7 );
+  auto& next = *( dupFound + 1 );
+  next = sigfig( next, +1E-7 );
+  */
+  /*
   while( dupFound != energies.end() ){
+    Log::info( "energies: {}", energies | ranges::view::all );
 
     auto value = *dupFound;
     *dupFound = sigfig( value, -1E-7 );
     int i = 1;
     while( *( dupFound + i ) == value ){
-      *( dupFound + i ) = sigfig( value, -1E-7 );
+      *( dupFound + i ) = sigfig( value, +1E-7 );
       i += 1;
     }
-    *( dupFound + i ) = sigfig( value, 1E-7 );
-
 
     dupFound = std::adjacent_find( dupFound + i, energies.end() );
   }
+    */
 
   auto interpolants = section.interpolants();
   auto boundaries = section.boundaries();
@@ -39,6 +46,7 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   int drop = 0;
   int take = right;
 
+  /*
   if( threshold != 0.0 ){
     auto energy = energies.begin();
     if( *energy < threshold ){
@@ -53,6 +61,7 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
       }
     }
   }
+  */
   // Do the first one
   auto table = 
     makeInterpolationTable( energies, barns, drop, take, interpolants[ 0 ] );

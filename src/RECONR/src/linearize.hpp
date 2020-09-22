@@ -7,9 +7,9 @@ linearize2( const LAW & law, double relTol, double absTol ){
 
     constexpr double infinity = std::numeric_limits<double>::infinity();
 
-    if( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
     // Limit of ENDF-6 precision
-    if( xRight/xLeft < 1E-7 ){ return true; }
+    auto ratio = 1.0 - ( xLeft/xRight );
+    if( ratio < 1E-7 ){ return true; }
 
     auto diff = std::abs( trial - reference );
     auto reldiff = (diff/reference);
