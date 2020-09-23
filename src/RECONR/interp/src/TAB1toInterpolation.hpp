@@ -15,30 +15,6 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   auto energies = section.energies() | ranges::to_vector;
   auto barns = section.crossSections() | ranges::to_vector;
 
-  // Find duplicate energy points and adjust (i.e., sigfig) to avoid
-  // discontinuities
-  /*
-  auto dupFound = std::adjacent_find( energies.begin(), energies.end() );
-  *dupFound = sigfig( *dupFound, -1E-7 );
-  auto& next = *( dupFound + 1 );
-  next = sigfig( next, +1E-7 );
-  */
-  /*
-  while( dupFound != energies.end() ){
-    Log::info( "energies: {}", energies | ranges::view::all );
-
-    auto value = *dupFound;
-    *dupFound = sigfig( value, -1E-7 );
-    int i = 1;
-    while( *( dupFound + i ) == value ){
-      *( dupFound + i ) = sigfig( value, +1E-7 );
-      i += 1;
-    }
-
-    dupFound = std::adjacent_find( dupFound + i, energies.end() );
-  }
-    */
-
   auto interpolants = section.interpolants();
   auto boundaries = section.boundaries();
   int left = 0;
@@ -46,22 +22,21 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   int drop = 0;
   int take = right;
 
-  /*
   if( threshold != 0.0 ){
     auto energy = energies.begin();
     if( *energy < threshold ){
-      auto sigfigged = sigfig( threshold, 1E-7 );
+      auto sigfigged = utility::sigfig( threshold, 7, +1 );
       Log::info( "Changed threshold from {:13.6e} to {:13.6e} for mt {:3}",
                  *energy, sigfigged, MT );
       *energy = sigfigged;
 
       while( *(energy+1) < *(energy) ){
-        *(energy+1) = sigfig( *energy, 1E-7 );
+        *(energy+1) = utility::sigfig( *energy, 7, +1 );
         energy++;
       }
     }
   }
-  */
+
   // Do the first one
   auto table = 
     makeInterpolationTable( energies, barns, drop, take, interpolants[ 0 ] );

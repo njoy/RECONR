@@ -20,8 +20,6 @@ void combineReconstructed( const Logger& logger,
   const auto fission = 
     elementary::fromEndfReactionNumber( proj, target, 19 );
 
-  double eL{ 0.0 };
-  double eH{ 1E10 };
   logger.first 
     << "\nAdding reconstructed cross sections to background for IDs:\n";
   for( const auto& ID : ranges::view::keys( reconstructed ) ){

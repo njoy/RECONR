@@ -3,10 +3,12 @@
  */
 static
 auto unionizeEnergyGrid( const Logger& logger,
-                         const R2D2::XSMap_t& reactions,
-                         const R2D2::PPMap_t& ppReactions,
-                         const std::vector< double >& resonanceGrid,
+                         const R2D2& r2d2,
                          const std::vector< double >& user ){
+
+  const auto& reactions = r2d2.reactions();
+  const auto& ppReactions = r2d2.photonProductions();
+  const auto& resonanceGrid = r2d2.resonanceReferenceGrid();
 
   std::vector< double > grid{ resonanceGrid.begin(), resonanceGrid.end() };
   logger.first << 
@@ -29,7 +31,6 @@ auto unionizeEnergyGrid( const Logger& logger,
 
   return grid 
     | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
-    | ranges::view::unique 
     | ranges::to_vector;
 }
 
@@ -51,8 +52,25 @@ auto unionizeEnergyGrid( const Logger& logger,
   }
   ranges::sort( grid );
 
+  // Find duplicate energy points and adjust (i.e., sigfig) to avoid
+  // discontinuities
+  auto dupFound = std::adjacent_find( grid.begin(), grid.end() );
+  while( dupFound != grid.end() ){
+
+    auto value = *dupFound;
+    *dupFound = utility::sigfig( value, 7, -1 );
+    int i = 1;
+    while( *( dupFound + i ) == value ){
+      *( dupFound + i ) = utility::sigfig( value,7, +1 );
+      i += 1;
+    }
+
+    dupFound = std::adjacent_find( dupFound + i, grid.end() );
+  }
+
+  ranges::sort( grid );
   return grid 
     | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
-    | ranges::view::unique 
+    | ranges::view::unique
     | ranges::to_vector;
 }
