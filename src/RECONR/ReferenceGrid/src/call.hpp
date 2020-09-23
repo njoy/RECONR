@@ -215,8 +215,8 @@ operator()( const std::variant< TS... >& range_variant,
 
   auto& el = energies.front();
   auto& eh = energies.back();
-  el = utility::sigfig( el, 7, -1 );
-  eh = utility::sigfig( eh, 7, +1 );
+  // el = utility::sigfig( el, 7, -1 );
+  // eh = utility::sigfig( eh, 7, +1 );
 
   return energies;
 }

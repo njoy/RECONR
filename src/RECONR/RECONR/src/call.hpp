@@ -26,11 +26,6 @@ void operator()( const nlohmann::json& njoyArgs,
     auto data = this->findR2D2( logger, sequence, evaluatedData );
     this->linearizeXS( logger, data, err, this->absoluteTolerance );
 
-    elementary::ReactionID captureID{ data.projectile(), data.target(), 102 };
-    auto capture = data.reactions().at( captureID ).template crossSections< interp::LinearTable >();
-    auto Es = capture.x() | ranges::to_vector;
-    auto Xs = capture.y() | ranges::to_vector;
-
     // Get unionized energy grid
     std::vector< double > enode = sequence.at( "enode" );
     auto grid = this->unionizeEnergyGrid( logger, data, enode );
@@ -58,7 +53,6 @@ void operator()( const nlohmann::json& njoyArgs,
     this->reconstructCrossSections( logger, data, energies );
     this->combineReconstructed( logger, data, energies );
     this->summateReactions( logger, data, energies );
-    auto& captureSum = data.reactions().at( captureID ).template crossSections< XSPair >();
     this->summateUnresolved( logger, data );
     this->summateProductions( logger, data, energies );
 

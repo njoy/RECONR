@@ -7,7 +7,6 @@
 template< typename S >
 std::vector< Variant >
 TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
-  Log::info( "MT: {}", MT );
 
   std::vector< Variant > cs;
 

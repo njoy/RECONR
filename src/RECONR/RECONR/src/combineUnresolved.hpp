@@ -73,11 +73,6 @@ void combineUnresolved( const Logger& logger,
       }
 
       sumUXS = ranges::view::zip_with( std::plus< double >(), unresXS, sumUXS );
-      Log::info( "sumUXS:" );
-      for( int index = 120890; index < 120910; index++ ){
-        Log::info( "{:6} {:15.6E} {:15.6E}", index, energies[index], sumUXS[index] );
-      }
-
       unres.crossSections( 
         std::make_pair( utility::copy( uEnergies ), unresXS ) );
     };
