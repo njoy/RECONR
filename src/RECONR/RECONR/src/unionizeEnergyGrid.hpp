@@ -54,8 +54,15 @@ auto unionizeEnergyGrid( const Logger& logger,
 
   // Find duplicate energy points and adjust (i.e., sigfig) to avoid
   // discontinuities
-  auto dupFound = std::adjacent_find( grid.begin(), grid.end() );
-  while( dupFound != grid.end() ){
+  // We know there are duplicates at the beginning and end. We don't want to
+  // sigfig these values
+  auto begin = std::find_if_not( grid.begin()+1, grid.end(),
+    [&]( auto& E ){ return E == grid.front(); } );
+  auto end = std::find_if_not( grid.rbegin()+1, grid.rend(),
+    [&]( auto& E ){ return E == grid.back(); } );
+
+  auto dupFound = std::adjacent_find( begin, end.base() );
+  while( dupFound != end.base() ){
 
     auto value = *dupFound;
     *dupFound = utility::sigfig( value, 7, -1 );
