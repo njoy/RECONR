@@ -56,13 +56,15 @@ auto unionizeEnergyGrid( const Logger& logger,
   // discontinuities
   // We know there are duplicates at the beginning and end. We don't want to
   // sigfig these values
-  auto begin = std::find_if_not( grid.begin()+1, grid.end(),
-    [&]( auto& E ){ return E == grid.front(); } );
-  auto end = std::find_if_not( grid.rbegin()+1, grid.rend(),
-    [&]( auto& E ){ return E == grid.back(); } );
+  auto front = utility::sigfig( grid.front(), 7, +1 );
+  auto begin = std::find_if( grid.begin()+1, grid.end(),
+    [&]( auto& E ){ return E > front; } );
+  auto back = utility::sigfig( grid.back(), 7, -1 );
+  auto end = std::find_if( grid.rbegin()+1, grid.rend(),
+    [&]( auto& E ){ return E < back; } );
 
-  auto dupFound = std::adjacent_find( begin, end.base() );
-  while( dupFound != end.base() ){
+  auto dupFound = std::adjacent_find( begin, end.base()-1 );
+  while( dupFound <= end.base()-1 ){
 
     auto value = *dupFound;
     *dupFound = utility::sigfig( value, 7, -1 );
@@ -72,7 +74,7 @@ auto unionizeEnergyGrid( const Logger& logger,
       i += 1;
     }
 
-    dupFound = std::adjacent_find( dupFound + i, grid.end() );
+    dupFound = std::adjacent_find( dupFound + i, end.base()-1 );
   }
 
   ranges::sort( grid );
