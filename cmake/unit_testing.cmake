@@ -10,6 +10,7 @@ enable_testing()
 # Unit testing directories
 #######################################################################
 
+add_subdirectory( src/RECONR/test )
 add_subdirectory( src/RECONR/ReferenceGrid/test )
 add_subdirectory( src/RECONR/ResonanceReconstructionDataDelivery/test )
 add_subdirectory( src/RECONR/ResonanceReconstructionDataDelivery/Factory/test )

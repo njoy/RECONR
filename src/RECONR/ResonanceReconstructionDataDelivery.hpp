@@ -17,6 +17,8 @@ private:
 
   Info_t information_;
 
+  std::vector< int > MF3MTs_;
+
   XSMap_t reactions_;
   XSMap_t summations_;
   PPMap_t photonProductions_;
@@ -41,6 +43,8 @@ public:
   auto& target() const { return this->target_; }
 
   auto& info() const { return this->information_; }
+
+  const auto& MF3MTs() const { return this->MF3MTs_; }
 
   XSMap_t& reactions() { return this->reactions_; }
   const XSMap_t& reactions() const { return this->reactions_; }

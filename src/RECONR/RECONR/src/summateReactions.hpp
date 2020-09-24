@@ -13,10 +13,10 @@ void summateReactions( const Logger& logger,
 
   const elementary::ParticleID neutron{ "n" };
 
-  const auto& reactions = r2d2.reactions();
+  auto& reactions = r2d2.reactions();
   auto& summations = r2d2.summations();
 
-   auto fromENDF = [&]( auto&& mt ) -> elementary::ReactionID { 
+  auto fromENDF = [&]( auto&& mt ) -> elementary::ReactionID { 
     return fromEndfReactionNumber( proj, target, mt ); };
 
   auto transform = [&]( auto&& MTs ){
@@ -84,13 +84,30 @@ void summateReactions( const Logger& logger,
     } // for id
 
     if( partials.size() > 0 ){
-      auto rPair = std::make_pair( utility::copy( energies ), 
-                                  sumPartials( partials ) );
-      summations.emplace(
-        elementary::fromEndfReactionNumber( proj, target, MT ),
-        Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
-    }
-  };
+       auto sumID = elementary::fromEndfReactionNumber( proj, target, MT );
+       auto rPair = std::make_pair( utility::copy( energies ), 
+                                   sumPartials( partials ) );
+       summations.emplace( sumID,
+         Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
+ 
+       /*
+       // Simply move to summations
+       if( ( partials.size() == 1 ) and ( reactions.count( sumID ) > 0 ) ){
+         for( const auto& ID : ranges::view::keys( reactions ) ){
+           auto mt = elementary::toEndfReactionNumber( ID );
+         }
+         auto reaction = reactions.at( sumID );
+         summations.emplace( sumID, std::move( reaction ) );
+         reactions.erase( sumID );
+       } else{
+         auto rPair = std::make_pair( utility::copy( energies ), 
+                                     sumPartials( partials ) );
+         summations.emplace( sumID,
+           Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
+       }
+       */
+     } // partials size
+   }; // sumRedundants
 
   // Sum redundant cross sections
   logger.first << "Summing redundant cross sections\n";

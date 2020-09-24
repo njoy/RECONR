@@ -18,12 +18,17 @@ mf3( const Logger& logger, const int& MAT, const R2D2& data ){
                           );
   };
 
+  auto MTs = data.MF3MTs();
+  auto inENDF = [&]( auto&& mt ){ 
+    return ranges::find( MTs, mt ) != MTs.end(); };
+
   logger.first << "MF=3 reactions: " << std::endl;
   for( auto& [ ID, rx ] : data.reactions() ){ 
     auto mt = elementary::toEndfReactionNumber( ID );
 
     // We'll take care of this in the summations
     if( mt == 1 ){ continue; }
+    if( not inENDF( mt ) ){ continue; }
 
     logger.first << fmt::format( "\t{:3} {:s}\n", mt, ID.symbol() );
 

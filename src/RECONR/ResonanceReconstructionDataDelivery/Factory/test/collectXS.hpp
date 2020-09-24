@@ -1,12 +1,14 @@
 SCENARIO( "Testing the the collection of cross sections" ){
   GIVEN( "an ENDF Material" ){
     auto material = details::ENDFMaterial( "SLBW", false );
+    auto info = TFactory::information( material );
 
     WHEN( "the resonance reconstruction data is extracted" ){
       
       ParticleID proj{ "n" };
       ParticleID target{ "fe56" };
-      auto reactions = TFactory::collectXS( material, proj, target );
+      auto reactions = TFactory::collectXS( logger, material, info, 
+                                            proj, target );
 
       using PID = ParticleID;
       using NID = NucleusID;

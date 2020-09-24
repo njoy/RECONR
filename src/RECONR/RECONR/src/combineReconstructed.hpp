@@ -9,6 +9,9 @@ void combineReconstructed( const Logger& logger,
 
   auto& reactions = r2d2.reactions();
   const auto& reconstructed = r2d2.reconstructedResonances();
+
+  if( reconstructed.empty() ){ return; }
+
   const auto& proj = r2d2.projectile();
   const auto& target = r2d2.target();
 
@@ -17,8 +20,6 @@ void combineReconstructed( const Logger& logger,
   const auto fission = 
     elementary::fromEndfReactionNumber( proj, target, 19 );
 
-  double eL{ 0.0 };
-  double eH{ 1E10 };
   logger.first 
     << "\nAdding reconstructed cross sections to background for IDs:\n";
   for( const auto& ID : ranges::view::keys( reconstructed ) ){

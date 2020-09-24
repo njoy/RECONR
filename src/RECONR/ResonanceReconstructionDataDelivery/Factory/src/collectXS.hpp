@@ -1,11 +1,12 @@
 static
 XSMap_t collectXS( const Logger& logger,
                    const Material_t& material, 
+                   const Info_t& info,
                    const elementary::ParticleID& projectile,
                    const elementary::ParticleID& target ){
   return std::visit( 
     [&](auto&& arg ){ 
-      return Factory::collectXS( logger, arg, projectile, target ); },
+      return Factory::collectXS( logger, arg, info, projectile, target ); },
     material 
   );
 }
@@ -13,6 +14,7 @@ XSMap_t collectXS( const Logger& logger,
 static
 XSMap_t collectXS( const Logger& logger, 
                    const ENDFMaterial_t& material,
+                   const Info_t& info,
                    const elementary::ParticleID& projectile,
                    const elementary::ParticleID& target ){
   XSMap_t xs{};
@@ -25,6 +27,8 @@ XSMap_t collectXS( const Logger& logger,
 
   logger.first << fmt::format( 
     "\nCollecting cross section data (MF=3) from an ENDF file\n" );
+
+
   auto MF3 = material.fileNumber( 3 ).parse< 3 >();
   for( auto& section : MF3.sections() ){
     auto MT = section.MT();
@@ -45,13 +49,19 @@ XSMap_t collectXS( const Logger& logger,
       if( ranges::distance( redundants ) > 0 ){ continue; }
     }
   
+    const auto awi = std::get< 0 >( info ).projectileAtomicMassRatio();
+    auto QValue = section.reactionQValue();
+    auto atomicWeightRatio = section.atomicWeightRatio();
+    auto thresh = -QValue*( atomicWeightRatio + awi )/atomicWeightRatio;
+    auto threshold = ( awi == 0.0 ) ? 0.0 : std::max( 0.0, thresh );
+
     Reaction reaction{ 
       section.ZA(),
-      section.AWR(),
+      atomicWeightRatio,
       section.QM(),
-      section.QI(),
+      QValue,
       section.LR(),
-      interp::TAB1toInterpolation( section ) };
+      interp::TAB1toInterpolation( section, section.MT(), threshold ) };
   
     xs.insert( 
       std::make_pair( std::move( reactionID ), std::move( reaction ) ) );

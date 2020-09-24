@@ -34,13 +34,11 @@ auto operator()( const Range& range,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
 
   std::vector< double > energies;
   energies.reserve( 12 * range.lValues().size() );
-
-  energies.push_back( lowerEnergy );
 
   auto resonances = range.lValues() | ranges::view::for_each( *this );
   RANGES_FOR( auto resonance, resonances ){
@@ -52,14 +50,6 @@ auto operator()( const Range& range,
         ) 
     );
   }
-
-  energies.push_back( upperEnergy );
-
-  if ( not ranges::is_sorted( energies ) ){
-    std::sort( energies.begin(), energies.end() );
-  }
-
-  energies |= ranges::action::unique;
   return energies;
 }
 
@@ -69,8 +59,8 @@ auto operator()( const resolved::RMatrixLimited& rml,
                  const elementary::ParticleID& proj ) const {
 
   auto eV = dimwits::electronVolt;
-  auto lowerEnergy = sigfig( rRange.EL()*eV, 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH()*eV, -1E-7 );
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
 
   const auto& nMass = CODATA[ constants::neutronMass ];
   const auto& eCharge = CODATA[ constants::elementaryCharge ];
@@ -80,24 +70,12 @@ auto operator()( const resolved::RMatrixLimited& rml,
 
   std::vector< double > energies;
 
-  energies.push_back( lowerEnergy/eV );
   ranges::action::push_back( energies, 
     grid
-    | ranges::view::filter(
-        [&]( auto&& energy ){
-          return ( lowerEnergy < energy ) and ( energy  < upperEnergy ); }
-      )
     | ranges::view::transform( 
         [&]( auto&& energy ){ return energy/eV; } )
   );
 
-  energies.push_back( upperEnergy/eV );
-
-  if ( not ranges::is_sorted( energies ) ){
-    std::sort( energies.begin(), energies.end() );
-  }
-
-  energies |= ranges::action::unique;
   return energies;
 };
 
@@ -105,8 +83,8 @@ auto operator()( const unresolved::CaseA&,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
 
   std::vector< double > energies;
   /*
@@ -116,9 +94,9 @@ auto operator()( const unresolved::CaseA&,
    */
   energies.reserve( std::ceil( 5.645828264742274 *
                                std::log( upperEnergy / lowerEnergy ) ) );
-  energies.push_back( lowerEnergy );
+
   fill( lowerEnergy, upperEnergy, energies );
-  energies.push_back( upperEnergy );
+
   return energies;
 }
 
@@ -126,12 +104,12 @@ auto operator()( const unresolved::CaseB& caseB,
                  const ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
 
   std::vector< double > energies;
   energies.reserve( 8 * std::ceil( std::log( upperEnergy / lowerEnergy ) ) );
-  energies.push_back( lowerEnergy );
+
   auto clampedES =
     caseB.ES()
     | ranges::view::drop_while
@@ -144,7 +122,7 @@ auto operator()( const unresolved::CaseB& caseB,
   }
 
   fill( energies.back(), upperEnergy, energies );
-  energies.push_back( upperEnergy );
+
   return energies;
 }
 
@@ -175,26 +153,13 @@ auto operator()( const unresolved::CaseC& caseC,
    * In the first pass, we begin by extracting all energy values within the
    * range of the unresolved region, sorting them, and removing duplicates.
    */
-  auto lowerEnergy = sigfig( rRange.EL(), 1E-7 );
-  auto upperEnergy = sigfig( rRange.EH(), -1E-7 );
-
   std::vector< double > firstPass;
-  firstPass.push_back( lowerEnergy );
-  {
-    auto jEnergies = caseC.lValues() | ranges::view::for_each( *this );
-    RANGES_FOR( const auto jEnergy, jEnergies ){
-      ranges::action::push_back( firstPass,
-                                 jEnergy
-                                 | ranges::view::filter
-                                   ( [=]( const auto energy )
-                                     { return lowerEnergy < energy
-                                              and energy < upperEnergy; } ) );
-    }
+  auto jEnergies = caseC.lValues() | ranges::view::for_each( *this );
+  RANGES_FOR( const auto jEnergy, jEnergies ){
+    ranges::action::push_back( firstPass, jEnergy );
   }
 
-  firstPass.push_back( upperEnergy );
   std::sort( firstPass.begin(), firstPass.end() );
-  // orlp::pdqsort( firstPass.begin(), firstPass.end() );
   ranges::action::unique( firstPass );
 
   /* In the second pass, beginning with the first pass grid, we insert points 
@@ -206,7 +171,6 @@ auto operator()( const unresolved::CaseC& caseC,
   for( const auto energy : firstPass | ranges::view::drop_exactly(1) ){
     fill( energies.back(), energy, energies );
   }
-  energies.push_back( upperEnergy );
 
   return energies;
 }
@@ -216,19 +180,45 @@ operator()( const SpecialCase&,
             const ResonanceRange& rRange,
             const elementary::ParticleID&,
             const elementary::ParticleID& ) const {
-  return { sigfig( rRange.EL(), 1E-7 ), sigfig( rRange.EH(), -1E-7 ) };
+  return { };
 
 }
 
 template< typename... TS >
-auto operator()( const std::variant< TS... >& range_variant, 
-                 const ResonanceRange& rRange,
-                 const elementary::ParticleID& target,
-                 const elementary::ParticleID& proj ) const {
-  return std::visit( 
-    [&]( auto&& arg ){ return (*this)( arg, rRange, target, proj ); },
+std::vector< double >
+operator()( const std::variant< TS... >& range_variant, 
+            const ResonanceRange& rRange,
+            const elementary::ParticleID& target,
+            const elementary::ParticleID& proj ) const {
+
+  auto lowerEnergy = rRange.EL();
+  auto upperEnergy = rRange.EH();
+
+  auto values = std::visit( 
+    [&]( auto&& arg ){ 
+      return (*this)( arg, rRange, target, proj ); 
+    },
     range_variant
   );
+
+  auto energies = values
+    | ranges::view::filter(
+      [&]( const auto& energy ){  
+        return lowerEnergy < energy and energy < upperEnergy; } 
+  ) | ranges::to_vector;
+
+  energies.insert( energies.begin(), lowerEnergy );
+  energies.insert( energies.end(), upperEnergy );
+
+  std::sort( energies.begin(), energies.end() );
+  energies |= ranges::action::unique;
+
+  auto& el = energies.front();
+  auto& eh = energies.back();
+  // el = utility::sigfig( el, 7, -1 );
+  // eh = utility::sigfig( eh, 7, +1 );
+
+  return energies;
 }
 
 auto operator()( const Isotope& isotope,

@@ -7,9 +7,9 @@ linearize2( const LAW & law, double relTol, double absTol ){
 
     constexpr double infinity = std::numeric_limits<double>::infinity();
 
-    if( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
     // Limit of ENDF-6 precision
-    if( xRight/xLeft < 1E-7 ){ return true; }
+    auto ratio = 1.0 - ( xLeft/xRight );
+    if( ratio < 1E-7 ){ return true; }
 
     auto diff = std::abs( trial - reference );
     auto reldiff = (diff/reference);
@@ -39,10 +39,23 @@ linearize2( const LAW & law, double relTol, double absTol ){
 
 inline
 interp::LinearLinear
-linearize( const interp::Histogram& histo, double, double ){
+linearize( const interp::Histogram& histo, double r, double a ){
 
-  return interp::LinearLinear{ utility::copy( histo.x() ),
-                               utility::copy( histo.y() ) };
+  return linearize2( histo, r, a );
+  // auto hx = histo.x();
+  // auto hy = histo.y();
+  // std::vector< double > x{ hx.front() };
+
+  // for( auto& ene : hx | ranges::view::drop_exactly( 1 ) ){
+  //   // sigfig( 16, -1 )
+  //   x.push_back( sigfig( ene, -1E-7 ) );
+  //   x.push_back( ene );
+  // }
+  // std::sort( x.begin(), x.end() );
+
+  // auto y = x | ranges::view::transform( histo ) | ranges::to_vector;
+
+  // return interp::LinearLinear{ std::move( x ), std::move( y ) };
 }
 
 inline

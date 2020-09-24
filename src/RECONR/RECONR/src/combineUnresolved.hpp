@@ -45,7 +45,7 @@ void combineUnresolved( const Logger& logger,
       if( unres.LSSF() ){
         unresXS = uEnergies
           | ranges::view::transform(
-              [&]( auto&& e ){ return ( ( eL <= e ) && ( e <= eH ) ) 
+              [&]( auto&& e ){ return ( ( eL < e ) && ( e < eH ) ) 
                 ? table( e ) : 0.0; } 
             )
           | ranges::to_vector;
@@ -56,7 +56,7 @@ void combineUnresolved( const Logger& logger,
       } else {
         unresXS = uEnergies
           | ranges::view::transform(
-              [&]( auto&& e ){ return ( ( eL <= e ) && ( e <= eH ) )
+              [&]( auto&& e ){ return ( ( eL < e ) && ( e < eH ) )
                 ? table( e ) + rxn( e ) : 0.0; } 
             )
           | ranges::to_vector;
@@ -73,7 +73,6 @@ void combineUnresolved( const Logger& logger,
       }
 
       sumUXS = ranges::view::zip_with( std::plus< double >(), unresXS, sumUXS );
-
       unres.crossSections( 
         std::make_pair( utility::copy( uEnergies ), unresXS ) );
     };

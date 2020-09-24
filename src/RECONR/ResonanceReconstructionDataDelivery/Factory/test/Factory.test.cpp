@@ -18,11 +18,14 @@ class TFactory: protected njoy::RECONR::R2D2::Factory {
 
 public:
   using Factory::Factory;
+  using Factory::information;
   using Factory::collectRP;
   using Factory::collectXS;
   using Factory::collectPPXS;
   using Factory::collectResonanceRanges;
 };
+
+njoy::RECONR::Logger logger{ std::cout, std::cerr };
 
 #include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectPPXS.hpp"
