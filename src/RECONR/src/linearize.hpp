@@ -87,6 +87,7 @@ linearize( const interp::LogarithmicLogarithmic& loglog, double r, double a ){
   return linearize2( loglog, r, a );
 }
 
+/*
 template< typename Range >
 auto
 linearize( const Range& grid, double relTol, double absTol ){
@@ -139,6 +140,7 @@ linearize( const Range& grid, double relTol, double absTol ){
     return std::make_pair( std::move( energies ), std::move( XS ) );
   };
 }
+*/
 
 template< typename Range >
 auto

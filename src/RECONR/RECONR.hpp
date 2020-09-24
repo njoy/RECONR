@@ -8,7 +8,7 @@ public:
 protected:
   static constexpr double absoluteTolerance{ 1E-10 };
 
-  #include "RECONR/RECONR/src/storeBWReconstruction.hpp"
+  #include "RECONR/RECONR/src/reconstructViaReconstructor.hpp"
   #include "RECONR/RECONR/src/sumPartials.hpp"
 
   #include "RECONR/RECONR/ProcessedEvaluation.hpp"

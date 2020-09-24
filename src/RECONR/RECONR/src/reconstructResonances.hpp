@@ -85,10 +85,7 @@ void reconstructResonances(
 
   logger.first << "Reconstructing SLBW resonances." << std::endl;
 
-  auto bw = resonanceReconstruction::breitWigner::singleLevel::Apply{}(
-      rRange, linearize( grid, relTol, absTol ) );
-
-  storeBWReconstruction( bw, r2d2 );
+  reconstructViaReconstructor( logger, grid, r2d2, rRange, relTol, absTol );
 
 }
 
@@ -104,10 +101,7 @@ void reconstructResonances(
 
   logger.first << "Reconstructing SLBW resonances." << std::endl;
 
-  auto bw = resonanceReconstruction::breitWigner::multiLevel::Apply{}(
-      rRange, linearize( grid, relTol, absTol ) );
-
-  storeBWReconstruction( bw, r2d2 );
+  reconstructViaReconstructor( logger, grid, r2d2, rRange, relTol, absTol );
 
 }
 
@@ -123,31 +117,7 @@ void reconstructResonances(
 
   logger.first << "Reconstructing Reich-Moore resonances." << std::endl;
 
-  const auto& nMass = CODATA[ constants::neutronMass ];
-  const auto& eCharge = CODATA[ constants::elementaryCharge ];
-
-  auto rml = resonanceReconstruction::rmatrix::fromENDF( 
-    rRange, nMass, eCharge, r2d2.projectile(), r2d2.target() );
-
-  auto [ energies, crossSections ] = linearize( grid, rml, relTol, absTol );
-  // Remove units from x
-  auto x = energies 
-    | ranges::view::transform( 
-      []( auto&& energy ) -> double { return energy / dimwits::electronVolt; }
-    );
-
-  auto& reconstructed = r2d2.reconstructedResonances();
-  auto IDs = ranges::view::keys( crossSections.front() );
-  for( auto& id : IDs ){
-
-    auto xs = crossSections
-      | ranges::view::transform( 
-          [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
-      | ranges::to_vector;
-
-    reconstructed[ id ].push_back(
-      interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) } );
-  }
+  reconstructViaReconstructor( logger, grid, r2d2, rRange, relTol, absTol );
 
 }
 
@@ -163,33 +133,7 @@ void reconstructResonances(
 
   logger.first << "Reconstructing R-Matrix Limited resonances." << std::endl;
 
-  const auto& nMass = CODATA[ constants::neutronMass ];
-  const auto& eCharge = CODATA[ constants::elementaryCharge ];
-
-  auto rml = resonanceReconstruction::rmatrix::fromENDF( 
-    rRange, nMass, eCharge, r2d2.projectile(), r2d2.target() );
-
-  auto [ energies, crossSections ] = linearize( grid, rml, relTol, absTol );
-  // Remove units from x
-  auto x = energies 
-    | ranges::view::transform( 
-      []( auto&& energy ) -> double { return energy / dimwits::electronVolt; }
-    );
-
-  auto& reconstructed = r2d2.reconstructedResonances();
-  auto IDs = ranges::view::keys( crossSections.front() );
-  for( auto& id : IDs ){
-
-    auto xs = crossSections
-      | ranges::view::transform( 
-          [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
-      | ranges::to_vector;
-    if( elementary::toEndfReactionNumber( id ) == 601 ){
-    }
-
-    reconstructed[ id ].push_back(
-      interp::LinearLinear{ x | ranges::to_vector, std::move( xs ) } );
-  }
+  reconstructViaReconstructor( logger, grid, r2d2, rRange, relTol, absTol );
 
 }
 
