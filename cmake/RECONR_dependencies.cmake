@@ -40,6 +40,11 @@ FetchContent_Declare( twig
     GIT_TAG         origin/build/fetchcontent
     )
 
+FetchContent_Declare( header-utilities
+    GIT_REPOSITORY  http://github.com/njoy/header-utilities
+    GIT_TAG         origin/build/fetchcontent-guards
+    )
+
 FetchContent_Declare(json
     GIT_REPOSITORY https://github.com/nlohmann/json.git
     GIT_TAG v3.7.3
@@ -55,7 +60,7 @@ endif()
 
 FetchContent_Declare( interpolation
     GIT_REPOSITORY  http://github.com/njoy/interpolation
-    GIT_TAG         origin/build/fetchcontent
+    GIT_TAG         origin/build/fetchcontent-ranges
     )
 
 FetchContent_Declare( elementary

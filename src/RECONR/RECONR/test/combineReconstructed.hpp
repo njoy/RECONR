@@ -14,12 +14,7 @@ SCENARIO( "Testing combineReconstructed" ){
     auto target = r2d2.target();
 
     tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
-    auto refGrid = tRECONR::unionizeEnergyGrid(
-      logger, 
-      r2d2.reactions(), 
-      r2d2.photonProductions(), 
-      r2d2.resonanceReferenceGrid(),
-      userSupplied );
+    auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
@@ -126,12 +121,7 @@ SCENARIO( "Testing combineReconstructed" ){
     auto target = r2d2.target();
 
     tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
-    auto refGrid = tRECONR::unionizeEnergyGrid(
-      logger, 
-      r2d2.reactions(), 
-      r2d2.photonProductions(), 
-      r2d2.resonanceReferenceGrid(),
-      userSupplied );
+    auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
@@ -239,12 +229,7 @@ SCENARIO( "Testing combineReconstructed" ){
     auto target = r2d2.target();
 
     tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
-    auto refGrid = tRECONR::unionizeEnergyGrid(
-      logger, 
-      r2d2.reactions(), 
-      r2d2.photonProductions(), 
-      r2d2.resonanceReferenceGrid(),
-      userSupplied );
+    auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 

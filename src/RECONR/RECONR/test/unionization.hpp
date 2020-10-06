@@ -74,12 +74,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
           1.42e+07,     1.9e+07,      1.95e+07,     2e+07,        3e+07
         };
     
-        auto trial = tRECONR::unionizeEnergyGrid( 
-          logger, 
-          r2d2.reactions(), 
-          r2d2.photonProductions(), 
-          r2d2.resonanceReferenceGrid(),
-          userSupplied );
+        auto trial = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
     
         details::checkRanges( refGrid, trial );
       } // THEN
@@ -157,12 +152,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
           1.9e+07,      1.95e+07,     2e+07,        3e+07
         };
     
-        auto trial = tRECONR::unionizeEnergyGrid( 
-          logger, 
-          r2d2.reactions(), 
-          r2d2.photonProductions(), 
-          r2d2.resonanceReferenceGrid(),
-          userSupplied );
+        auto trial = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
     
         details::checkRanges( refGrid, trial );
       } // THEN
@@ -237,12 +227,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
           3e+07
         };
     
-        auto trial = tRECONR::unionizeEnergyGrid( 
-          logger, 
-          r2d2.reactions(), 
-          r2d2.photonProductions(), 
-          r2d2.resonanceReferenceGrid(),
-          userSupplied );
+        auto trial = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
     
         details::checkRanges( refGrid, trial );
       } // THEN
@@ -257,12 +242,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
       tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
-      auto refGrid = tRECONR::unionizeEnergyGrid( 
-          logger, 
-          r2d2.reactions(), 
-          r2d2.photonProductions(), 
-          r2d2.resonanceReferenceGrid(),
-          userSupplied );
+      auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
       auto energies = refGrid;
       tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
     
@@ -293,12 +273,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
       double absTolerance{ 1E-6 };
       double relTolerance{ 1E-1 }; // This tolerance is large by design
       tRECONR::linearizeXS( logger, r2d2, absTolerance, relTolerance );
-      auto refGrid = tRECONR::unionizeEnergyGrid( 
-          logger, 
-          r2d2.reactions(), 
-          r2d2.photonProductions(), 
-          r2d2.resonanceReferenceGrid(),
-          userSupplied );
+      auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
       auto energies = refGrid;
       tRECONR::reconstructResonances( logger, refGrid, r2d2, 1E-1, 1E-3 );
     

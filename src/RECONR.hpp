@@ -4,10 +4,23 @@
 #include <fstream>
 #include <optional>
 
+
+#include "range/v3/range_for.hpp"
+#include "range/v3/action/push_back.hpp"
+#include "range/v3/view/drop_while.hpp"
+#include "range/v3/view/for_each.hpp"
+#include "range/v3/view/generate.hpp"
+#include "range/v3/view/reverse.hpp"
+#include "range/v3/view/sliding.hpp"
+#include "range/v3/view/unique.hpp"
+
 #include "Log.hpp"
 #include "nlohmann/json.hpp"
 
-#include "ENDFtk.hpp"
+using namespace njoy;
+
+#include "RECONR/ENDFtk.hpp"
+
 #include "dimwits.hpp"
 #include "resonanceReconstruction.hpp"
 #include "interpolation.hpp"
@@ -15,6 +28,8 @@
 #include "constants.hpp"
 #include "constants/CODATA2018.hpp"
 #include "elementary.hpp"
+#include "header-utilities/copy.hpp"
+#include "header-utilities/slurpFileToMemory.hpp"
 
 inline
 auto CODATA = njoy::constants::CODATA2018;
@@ -26,8 +41,6 @@ namespace utility{
 } // namespace utility
 
 namespace RECONR {
-
-using namespace ENDFtk::resonanceParameters;
 
 using ReactionID = elementary::ReactionID;
 using Logger = std::pair< std::ostream&, std::ostream& >;

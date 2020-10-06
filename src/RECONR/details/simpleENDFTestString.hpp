@@ -251,7 +251,7 @@ std::string MF13(){
 }
 
 inline 
-njoy::ENDFtk::syntaxTree::Tape< std::string >::Material_t
+njoy::ENDFtk::tree::Tape< std::string >::Material_t
 ENDFMaterial( std::string formalism = "SLBW", int LSSF = 0, bool print = false ){
 
   const std::string endf = MF1() + MF2( formalism, LSSF ) + MF3() + MF13() + MEND();
@@ -266,7 +266,7 @@ ENDFMaterial( std::string formalism = "SLBW", int LSSF = 0, bool print = false )
   long lineNumber = 0;
   njoy::ENDFtk::HeadRecord head( begin, end, lineNumber );
 
-  return njoy::ENDFtk::syntaxTree::Tape< std::string >::Material_t( 
+  return njoy::ENDFtk::tree::Tape< std::string >::Material_t( 
     head, start, begin, end, lineNumber );
 }
 } // namespace details

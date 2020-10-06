@@ -3,7 +3,7 @@ static
 void reconstructResonances( std::ostream&,
                             Range& , 
                             R2D2&,
-                            const ResonanceRange&,
+                            const RP::ResonanceRange&,
                             const P& params,
                             double, double ){ 
   auto name = typeid( params ).name();
@@ -18,8 +18,8 @@ void reconstructResonances(
      const Logger& logger,
      Range&,
      R2D2&,
-     const ResonanceRange&,
-     const SpecialCase&,
+     const RP::ResonanceRange&,
+     const RP::SpecialCase&,
      double, double ){
   logger.first << "No resonance reconstruction needed for a SpecialCase." 
          << std::endl;
@@ -32,8 +32,8 @@ void reconstructResonances(
   const Logger& logger,
   Range&,
   R2D2& r2d2,
-  const ResonanceRange& rRange,
-  const unresolved::EnergyIndependent& uRange,
+  const RP::ResonanceRange& rRange,
+  const RP::CaseA& uRange,
   double, double){
 
   logger.first << "Reconstructing unresolved EnergyIndependent parameters." 
@@ -47,8 +47,8 @@ void reconstructResonances(
   const Logger& logger,
   Range&,
   R2D2& r2d2,
-  const ResonanceRange& rRange,
-  const unresolved::EnergyDependentFissionWidths& uRange,
+  const RP::ResonanceRange& rRange,
+  const RP::CaseB& uRange,
   double, double ){
 
   logger.first 
@@ -63,8 +63,8 @@ void reconstructResonances(
   const Logger& logger,
   Range&,
   R2D2& r2d2,
-  const ResonanceRange& rRange,
-  const unresolved::EnergyDependent& uRange,
+  const RP::ResonanceRange& rRange,
+  const RP::CaseC& uRange,
   double, double ){
 
   logger.first << "Reconstructing unresolved parameters." 
@@ -79,8 +79,8 @@ void reconstructResonances(
   const Logger& logger,
   Range& grid, 
   R2D2& r2d2, 
-  const ResonanceRange& rRange,
-  const resolved::SingleLevelBreitWigner&,
+  const RP::ResonanceRange& rRange,
+  const RP::SLBW&,
   double relTol, double absTol){
 
   logger.first << "Reconstructing SLBW resonances." << std::endl;
@@ -98,8 +98,8 @@ void reconstructResonances(
      const Logger& logger,
      Range& grid, 
      R2D2& r2d2, 
-     const ResonanceRange& rRange,
-     const resolved::MultiLevelBreitWigner&,
+     const RP::ResonanceRange& rRange,
+     const RP::MLBW&,
      double relTol, double absTol){
 
   logger.first << "Reconstructing SLBW resonances." << std::endl;
@@ -117,8 +117,8 @@ void reconstructResonances(
      const Logger& logger,
      Range& grid, 
      R2D2& r2d2,
-     const ResonanceRange& rRange,
-     const resolved::ReichMoore&,
+     const RP::ResonanceRange& rRange,
+     const RP::RM&,
      double relTol, double absTol){
 
   logger.first << "Reconstructing Reich-Moore resonances." << std::endl;
@@ -136,8 +136,8 @@ void reconstructResonances(
      const Logger& logger,
      Range& grid, 
      R2D2& r2d2,
-     const ResonanceRange& rRange,
-     const resolved::RMatrixLimited&,
+     const RP::ResonanceRange& rRange,
+     const RP::RML&,
      double relTol, double absTol){
 
   logger.first << "Reconstructing R-Matrix Limited resonances." << std::endl;
@@ -178,7 +178,7 @@ void reconstructResonances(
     const Logger& logger,
     Range& grid, 
     R2D2& r2d2,
-    std::vector< ENDFtk::resonanceParameters::Isotope >& isotopes,
+    std::vector< RP::Isotope >& isotopes,
     double relTol, double absTol ){
 
 

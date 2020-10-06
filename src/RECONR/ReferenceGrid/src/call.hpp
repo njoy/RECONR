@@ -1,8 +1,7 @@
 template< typename Range >
 std::array<double, 3>
 operator()( 
-  const ENDFtk::resonanceParameters::resolved::BreitWignerLValue::Resonance<
-    Range >& resonance ) const {
+  const RP::BreitWignerLValue::Resonance< Range >& resonance ) const {
   const double energy = resonance.ER();
   const double halfWidth = 0.5 * resonance.GT();
   return {{ energy - halfWidth, energy, energy + halfWidth }};
@@ -11,8 +10,7 @@ operator()(
 template< typename Range >
 std::array<double, 3>
 operator()( 
-  const ENDFtk::resonanceParameters::resolved::ReichMooreLValue::Resonance<
-           Range >& resonance ) const {
+  const RP::ReichMooreLValue::Resonance< Range >& resonance ) const {
   const double energy = resonance.ER();
   const double halfWidth = 0.5 * ( resonance.GN()
                                    + resonance.GG()
@@ -31,7 +29,7 @@ operator()( const ResolvedLvalue& lValue ) const {
 // Resolved resolved resonance ranges
 template< typename Range, if_< hasLvalues< Range > > = true >
 auto operator()( const Range& range,
-                 const ResonanceRange& rRange,
+                 const RP::ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
   auto lowerEnergy = rRange.EL();
@@ -53,8 +51,8 @@ auto operator()( const Range& range,
   return energies;
 }
 
-auto operator()( const resolved::RMatrixLimited& rml,
-                 const ResonanceRange& rRange,
+auto operator()( const RP::RML& rml,
+                 const RP::ResonanceRange& rRange,
                  const elementary::ParticleID& target,
                  const elementary::ParticleID& proj ) const {
 
@@ -79,8 +77,8 @@ auto operator()( const resolved::RMatrixLimited& rml,
   return energies;
 };
 
-auto operator()( const unresolved::CaseA&,
-                 const ResonanceRange& rRange,
+auto operator()( const RP::CaseA&,
+                 const RP::ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
   auto lowerEnergy = rRange.EL();
@@ -100,8 +98,8 @@ auto operator()( const unresolved::CaseA&,
   return energies;
 }
 
-auto operator()( const unresolved::CaseB& caseB,
-                 const ResonanceRange& rRange,
+auto operator()( const RP::CaseB& caseB,
+                 const RP::ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
   auto lowerEnergy = rRange.EL();
@@ -136,8 +134,8 @@ operator()( const UnresolvedLvalue& lValue ) const {
       ( []( const auto& jValue ){ return jValue.ES(); } );
 }
 
-auto operator()( const unresolved::CaseC& caseC,
-                 const ResonanceRange& rRange,
+auto operator()( const RP::CaseC& caseC,
+                 const RP::ResonanceRange& rRange,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
   std::vector< double > energies;
@@ -176,8 +174,8 @@ auto operator()( const unresolved::CaseC& caseC,
 }
 
 std::vector< double >
-operator()( const SpecialCase&,
-            const ResonanceRange& rRange,
+operator()( const RP::SpecialCase&,
+            const RP::ResonanceRange& rRange,
             const elementary::ParticleID&,
             const elementary::ParticleID& ) const {
   return { };
@@ -187,7 +185,7 @@ operator()( const SpecialCase&,
 template< typename... TS >
 std::vector< double >
 operator()( const std::variant< TS... >& range_variant, 
-            const ResonanceRange& rRange,
+            const RP::ResonanceRange& rRange,
             const elementary::ParticleID& target,
             const elementary::ParticleID& proj ) const {
 
@@ -221,7 +219,7 @@ operator()( const std::variant< TS... >& range_variant,
   return energies;
 }
 
-auto operator()( const Isotope& isotope,
+auto operator()( const RP::Isotope& isotope,
                  const elementary::ParticleID& target,
                  const elementary::ParticleID& proj ) const {
   auto grids =

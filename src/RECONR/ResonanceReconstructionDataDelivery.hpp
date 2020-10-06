@@ -32,7 +32,7 @@ private:
 public:
 
   using Buffer_t = const std::string;
-  using Tape_t = ENDFtk::syntaxTree::Tape< Buffer_t >;
+  using Tape_t = ENDFtk::tree::Tape< Buffer_t >;
   using ENDFMaterial_t = Tape_t::Material_t;
 
   #include "RECONR/ResonanceReconstructionDataDelivery/Factory.hpp"

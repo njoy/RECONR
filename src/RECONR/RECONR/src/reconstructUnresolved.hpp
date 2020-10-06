@@ -3,7 +3,7 @@ static
 void reconstructUnresolved(
   const Logger&,
   R2D2& r2d2,
-  const ResonanceRange& rRange,
+  const RP::ResonanceRange& rRange,
   const U& uRange ){
 
   const auto& MT451 = std::get< 0 >( r2d2.info() );

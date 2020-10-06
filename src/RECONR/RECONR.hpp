@@ -1,7 +1,7 @@
 class RECONR{
 
 public:
-  using Tape_t = ENDFtk::syntaxTree::Tape< std::string >;
+  using Tape_t = ENDFtk::tree::Tape< std::string >;
   using Format_t = std::variant< Tape_t >;
 
 

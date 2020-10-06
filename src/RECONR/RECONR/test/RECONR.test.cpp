@@ -2,6 +2,8 @@
 
 #include "catch.hpp"
 
+#include "range/v3/algorithm/equal.hpp"
+
 #include "RECONR.hpp"
 
 #include "RECONR/details/simpleENDFTestString.hpp"
@@ -116,12 +118,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol,
   auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
   tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
-  auto refGrid = tRECONR::unionizeEnergyGrid(
-    logger, 
-    r2d2.reactions(), 
-    r2d2.photonProductions(), 
-    r2d2.resonanceReferenceGrid(),
-    userSupplied );
+  auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
 
   tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
