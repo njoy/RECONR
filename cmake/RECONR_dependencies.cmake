@@ -12,7 +12,7 @@ include( FetchContent )
 
 FetchContent_Declare( ENDFtk
     GIT_REPOSITORY  http://github.com/njoy/ENDFtk
-    GIT_TAG         origin/build/fetchcontent
+    GIT_TAG         origin/feature/guards
     )
 
 FetchContent_Declare( catch-adapter
@@ -27,7 +27,7 @@ FetchContent_Declare( constants
 
 FetchContent_Declare( resonanceReconstruction
     GIT_REPOSITORY  http://github.com/njoy/resonanceReconstruction
-    GIT_TAG         origin/master
+    GIT_TAG         origin/update/ENDFtk
     )
 
 FetchContent_Declare( Log
