@@ -40,18 +40,71 @@ The call operator is analogous to the ``reconr`` subroutine in Legacy NJOY. It t
 
 The data needed to perform the operations done in RECONR is contained in a ``ResonanceReconstructionDataDelivery`` :doc:`R2D2` object. After the input evaluation file is read in with the ``getEvaluated`` function, the data is passed to the ``ResonanceReconstructionDataDelivery`` constructor to:
 
-.. toctree::
-   :maxdepth: 2
-   :numbered:
-   :caption: RECONR methods
+RECONR Methods
+--------------
 
-   linearizeXS
+Listed here are the different methods (i.e., functions) called by the ``RECONR`` class to perform the operations of the RECONR module.
+
+``getEvaluated``
+    Read the evaluated file; i.e., ENDF or (eventually) GNDS. This returns a ``std::variant`` which is then passed to ``findR2D2``.
+
+``findR2D2``
+    Create an instance of the :ref:`ResonanceReconstructionDatatDelivery <R2D2>` object.
+
+``linearizeXS`` 
+   Linearize all of the background cross sections and photon production cross sections. It uses the interpolation library to interpolate between cross section values.
+
+``unionizeEnergyGrid``
+    Create an energy grid used as a common energy grid for reconstruction. It uses these energy values:
+
+    - Cross section energies,
+    - Photon production energies,
+    - Resonance range boundaries, and
+    - Resonance energies.
+
+    It is in this method that the infamous ``sigfig`` method is used to avoid discontinuities. When two adjacent energy values are found, the first value is nudged down and the second value is nudged up so that they are no longer identical. ``sigifig`` does the nudging.
+
+    I tried to remove the need for ``sigfig``, but it caused problems at the interface of the resonance regions, giving incorrect answers.
+
+``reconstructResonances``
+   This is an overloaded function that, well, reconstructs the resonances based on the formalism. These functions call to `resonanceReconstruction <https://github.com/njoy/resonanceReconstruction>`_ to do the actual work. The function creates a linear-linear interpolation table for each of the reactions that are reconstructed and adds them to the ``ResonanceReconstructionDataDelivery`` instance.
+
+``reconstructUnresolved``
+   This method reconstructs the unresolved resonances, also using `resonanceReconstruction <https://github.com/njoy/resonanceReconstruction>`_. The function creates a linear-linear interpolation table for each of the reactions that are reconstructed and adds them to the ``ResonanceReconstructionDataDelivery`` instance.
+
+``reconstructCrossSections``
+   After all the resonances have been reconstructed and the energy grid unionized, ``reconstructCrossSections`` creates :math:`(E, \sigma)` pairs (actually stored as a ``std::pair< std::vector< double >, std::vector< double > >``). 
+
+``combineUnresolved``
+    Combine the unresolved cross sections with the background cross sections. This is all dependent on the value of ``LSSF`` flag.
+
+``combineReconstructed``
+    This will add the reconstructed cross sections to the background cross sections.
+
+``summateUnresolved``
+    This sums up the unresolved cross sections and---depending on the ``LSSF`` flag---adds it to the background cross section.
+
+``summateReactions``
+    Add up all the partial cross sections to calculate the redundant (e.g., total) cross section. To determine the definition of what is redundant and what is not, it uses the ENDF definition of a redundant cross section---Table 14 in the current edition as of this writing.
+
+    .. note:: 
+    
+       NJOY21 ignores redundant cross sections as given in the evaluation file. It will simply recaluclate the redundant cross section from its partials. If there are no partials, it treats the redundant reaction as any other reaction.
+    
+
+``summateProductions``
+    Similar to ``summateReactions``, this adds up the partial photon production cross sections to create the redundant photon production cross sections.
+
+``truncateReactions``
+    All the cross sections are evaluated on the same energy grid. For some reactions (i.e., threshold), the cross section is zero when the energy is less than the :math:`Q`-value. This function will remove energy, cross section values from the beginning of a reaction when the cross section value is zero. 
 
 .. toctree::
    :maxdepth: 2
    :caption: Supporting classes
 
    R2D2.rst
+   ProcessedEvaluation.rst
+   Reaction.rst
 
 Additional Components
 =====================

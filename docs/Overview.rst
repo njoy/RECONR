@@ -1,6 +1,9 @@
 ********************
-What does RECONR do?
+Overview
 ********************
+
+What does RECONR do?
+====================
 
 As the first page says:
    The RECONR module is used to reconstruct resonance cross sections from resonance parameters and to reconstruct cross sections from ENDF nonlinear interpolations schemes. 

@@ -13,7 +13,7 @@ This is the documentation for the modern RECONR module [#adapted]_. Please see t
    :maxdepth: 2
    :caption: Contents:
 
-   What.rst
+   Overview.rst
    running
    CodeDescription/index.rst
 
