@@ -16,6 +16,7 @@ This is the documentation for the modern RECONR module [#adapted]_. Please see t
    Overview.rst
    running
    CodeDescription/index.rst
+   zbibliography.rst
 
 .. [#adapted] Much of this documentation was taken from the `NJOY2016 manual <https://github.com/njoy/NJOY2016-manual>`_ and adapted as needed for the modern module in NJOY21.
 
