@@ -45,7 +45,11 @@ Card 3
 Card 4
 ------
 
+.. _err:
+
 .. glossary::
+   
+
    ``err``
       Fractional reconstruction tolerance used to linearize cross sections and reconstruct resonance parameters.
 
