@@ -39,6 +39,7 @@ This process is described graphically in :numref:`fig:linearize`.
 
 Energy Grid Unionization
 ========================
+Having a common energy grid for all cross sections is important to be able to simply add cross sections together---whether adding the reconstructed cross sections to the background or adding partial cross sections to obtain a redundant cross section. The ``unionizeEnergyGrid`` :ref:`function <unionizeEnergyGrid>` performs this task. It is called twice during a RECONR run; after the cross sections have been linearized, and after the resonances have been reconstructed. The second call just appends energy values to the first call.
 
 Resonance Reconstruction
 ========================
@@ -71,18 +72,16 @@ Once the cross sections have been reconstructed from the parameters given on the
 
 Summation of Redundant Reactions
 ================================
+RECONR will calculate the redundant cross sections and ignores the redundant cross sections on the evaluation file. Since all the cross section values have already been linearized and calculated on the same energy grid, summing the cross sections is as simple as adding vectors of data. 
+
+.. note:: 
+
+   The rules RECONR uses to determine which partial reactions make up a redundant reaction are those given in the ENDF manual, table 14 :cite:`Trkov:2018ENDF-0`.
 
 
-But the RECONR module does *so much more* than just :
-
-* Linearization of cross sections
-* Reconstruction of cross sections from resolved and unresolved resonance parameters
-* Unionization of energy grid
-* Addition of reconstructed cross sections to background cross sections
-
-  Because the cross sections (reconstructed and background) have been linearized and are on the same energy grid, adding the cross sections is just adding two numbers. 
-
-* Summation of cross sections to calculate redundant reactions
+Truncation of Cross Section Arrays
+==================================
+Many (most?) of reactions are threshold reactions and thus don't span the same energy range. Since RECONR uses the same unionized energy grid for all reactions, many reactions have many zeros before a non-zero cross section value is given. Modern RECONR will truncate all the reactions that leading zeros so as not to bloat the size of the processed evaluation. This is done in the :ref:`truncate <truncate>` method.
 
 .. [#] Often refered to as a PENDF file.
 .. [#] In ENDF, the precision is limited to seven significant digits.

@@ -54,6 +54,8 @@ Listed here are the different methods (i.e., functions) called by the ``RECONR``
 ``linearizeXS`` 
    Linearize all of the background cross sections and photon production cross sections. It uses the interpolation library to interpolate between cross section values.
 
+.. _unionizeEnergyGrid:
+
 ``unionizeEnergyGrid``
     Create an energy grid used as a common energy grid for reconstruction. It uses these energy values:
 
@@ -94,6 +96,8 @@ Listed here are the different methods (i.e., functions) called by the ``RECONR``
 
 ``summateProductions``
     Similar to ``summateReactions``, this adds up the partial photon production cross sections to create the redundant photon production cross sections.
+
+.. _truncate:
 
 ``truncateReactions``
     All the cross sections are evaluated on the same energy grid. For some reactions (i.e., threshold), the cross section is zero when the energy is less than the :math:`Q`-value. This function will remove energy, cross section values from the beginning of a reaction when the cross section value is zero. 
