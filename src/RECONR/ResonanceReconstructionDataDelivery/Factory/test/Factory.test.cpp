@@ -2,6 +2,8 @@
 
 #include "catch.hpp"
 
+#include "range/v3/algorithm/equal.hpp"
+
 #include "RECONR.hpp"
 
 #include "RECONR/details/simpleENDFTestString.hpp"

@@ -32,7 +32,7 @@ FetchContent_Declare( resonanceReconstruction
 
 FetchContent_Declare( Log
     GIT_REPOSITORY  http://github.com/njoy/Log
-    GIT_TAG         origin/build/fetchcontent
+    GIT_TAG         origin/removeAdapters
     )
 
 FetchContent_Declare( twig

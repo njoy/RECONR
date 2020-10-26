@@ -107,6 +107,8 @@ auto operator()( const RP::CaseB& caseB,
 
   std::vector< double > energies;
   energies.reserve( 8 * std::ceil( std::log( upperEnergy / lowerEnergy ) ) );
+  energies.push_back( lowerEnergy );
+
 
   auto clampedES =
     caseB.ES()
