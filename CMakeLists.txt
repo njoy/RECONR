@@ -38,7 +38,7 @@ target_link_libraries( RECONR
     INTERFACE resonanceReconstruction
     INTERFACE Log
     INTERFACE twig
-    INTERFACE nlohmann_json::nlohmann_json
+    INTERFACE nlohmann_json
     INTERFACE interpolation
     INTERFACE elementary
     )
