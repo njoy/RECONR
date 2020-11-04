@@ -1,5 +1,5 @@
 ENDFtk::file::Type< 2 >
-mf2( const Logger& logger, const int& MAT, const R2D2& data ){
+mf2( const Logger& logger, const R2D2& data ){
 
   logger.first << "Preparing MF=2 data." << std::endl;
   logger.first << "MT=151" << std::endl;

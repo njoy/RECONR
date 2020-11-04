@@ -42,9 +42,8 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   cs.emplace_back( std::move( table ) );
 
   // Do the rest
-  for( const auto& [INT, NBT] : 
-      ranges::view::zip( interpolants, boundaries ) 
-        | ranges::view::drop_exactly( 1 ) ){
+  for( const auto [INT, NBT] : ranges::view::zip( interpolants, boundaries ) 
+                                  | ranges::view::drop_exactly( 1 ) ){
 
     left = right;
     right = NBT;

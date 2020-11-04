@@ -1,5 +1,5 @@
 std::optional< ENDFtk::file::Type< 13 > >
-mf13( const Logger& logger, const int& MAT, const R2D2& data ){
+mf13( const Logger& logger, const R2D2& data ){
 
   const auto& productions = data.photonProductions();
   if( productions.empty() ){ return std::nullopt; }

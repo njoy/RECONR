@@ -5,8 +5,6 @@ linearize2( const LAW & law, double relTol, double absTol ){
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-    constexpr double infinity = std::numeric_limits<double>::infinity();
-
     // Limit of ENDF-6 precision
     auto ratio = 1.0 - ( xLeft/xRight );
     if( ratio < 1E-7 ){ return true; }

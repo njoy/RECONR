@@ -6,9 +6,9 @@ void material( const Logger& logger,
 
   logger.first << "Preparing data to be written to PENDF file." << std::endl;
 
-  auto MF2  = this->mf2( logger, MAT, data );
-  auto MF3  = this->mf3( logger, MAT, data );
-  auto MF13 = this->mf13( logger, MAT, data );
+  auto MF2  = this->mf2( logger, data );
+  auto MF3  = this->mf3( logger, data );
+  auto MF13 = this->mf13( logger, data );
   auto MF1  = this->mf1( logger, MAT, sequence, MF2, MF3, MF13 );
 
   logger.first << "\nWriting PENDF data to file." << std::endl;

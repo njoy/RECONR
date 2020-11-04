@@ -1,5 +1,5 @@
 ENDFtk::file::Type< 3 >
-mf3( const Logger& logger, const int& MAT, const R2D2& data ){
+mf3( const Logger& logger, const R2D2& data ){
 
   logger.first << "Preparing MF=3 data." << std::endl;
   std::vector< ENDFtk::section::Type< 3 > > sections;

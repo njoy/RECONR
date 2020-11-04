@@ -73,6 +73,8 @@ void operator()( const nlohmann::json& njoyArgs,
 void operator()( std::ostream& output, std::ostream& error, 
                  const nlohmann::json& arguments ){
 
+  Logger logger{ output, error };
+
   output << "Modern RECONR interface.\n"
          << "Input arguments: \n" << arguments.dump( 2 ) << std::endl;
 

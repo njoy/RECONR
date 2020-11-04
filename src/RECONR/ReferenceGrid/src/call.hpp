@@ -51,14 +51,14 @@ auto operator()( const Range& range,
   return energies;
 }
 
-auto operator()( const RP::RML& rml,
+auto operator()( const RP::RML&,
                  const RP::ResonanceRange& rRange,
                  const elementary::ParticleID& target,
                  const elementary::ParticleID& proj ) const {
 
   auto eV = dimwits::electronVolt;
-  auto lowerEnergy = rRange.EL();
-  auto upperEnergy = rRange.EH();
+  // auto lowerEnergy = rRange.EL();
+  // auto upperEnergy = rRange.EH();
 
   const auto& nMass = CODATA[ constants::neutronMass ];
   const auto& eCharge = CODATA[ constants::elementaryCharge ];
@@ -137,7 +137,7 @@ operator()( const UnresolvedLvalue& lValue ) const {
 }
 
 auto operator()( const RP::CaseC& caseC,
-                 const RP::ResonanceRange& rRange,
+                 const RP::ResonanceRange&,
                  const elementary::ParticleID&,
                  const elementary::ParticleID& ) const {
   std::vector< double > energies;
@@ -177,7 +177,7 @@ auto operator()( const RP::CaseC& caseC,
 
 std::vector< double >
 operator()( const RP::SpecialCase&,
-            const RP::ResonanceRange& rRange,
+            const RP::ResonanceRange&,
             const elementary::ParticleID&,
             const elementary::ParticleID& ) const {
   return { };
@@ -213,8 +213,8 @@ operator()( const std::variant< TS... >& range_variant,
   std::sort( energies.begin(), energies.end() );
   energies |= ranges::action::unique;
 
-  auto& el = energies.front();
-  auto& eh = energies.back();
+  // auto& el = energies.front();
+  // auto& eh = energies.back();
   // el = utility::sigfig( el, 7, -1 );
   // eh = utility::sigfig( eh, 7, +1 );
 
