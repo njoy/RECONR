@@ -6,8 +6,9 @@ linearize2( const LAW & law, double relTol, double absTol ){
           auto&&, auto&&  ){
 
     // Limit of ENDF-6 precision
-    auto ratio = 1.0 - ( xLeft/xRight );
-    if( ratio < 1E-7 ){ return true; }
+    if( utility::sigfig( xRight, 7, -1 ) <= utility::sigfig( xLeft, 7, +1 ) ){
+      return true;
+    }
 
     auto diff = std::abs( trial - reference );
     auto reldiff = (diff/reference);
@@ -106,11 +107,11 @@ linearize( const Range& grid, double relTol, double absTol ){
 
       constexpr double infinity = std::numeric_limits< double >::infinity();
 
-      if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
-        return true; }
       // Limit of ENDF-6 precision
-      auto ratio = 1.0 - ( xLeft.value/xRight.value );
-      if( ratio < 1E-7 ){ return true; }
+      if( utility::sigfig( xRight.value, 7, -1 ) <= 
+          utility::sigfig( xLeft.value, 7, +1 ) ){
+        return true;
+      }
 
       auto cDiff = trial - reference;
 
@@ -167,12 +168,11 @@ linearize( const Range& grid,
           auto&&, auto&&  ){
 
 
-    if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
+    // Limit of ENDF-6 precision
+    if( utility::sigfig( xRight.value, 7, -1 ) <= 
+        utility::sigfig( xLeft.value, 7, +1 ) ){
       return true;
     }
-    // Limit of ENDF-6 precision
-    auto ratio = 1.0 - ( xLeft.value/xRight.value );
-    if( ratio < 1E-7 ){ return true; }
 
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){

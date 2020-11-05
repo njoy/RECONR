@@ -23,9 +23,9 @@ void linearizeXS( const Logger& logger,
     for( const auto& law : 
          reaction.crossSections< std::vector< interp::Variant > >() ){
       auto l = std::visit( 
-          [&]( auto&& arg ){ 
-            return njoy::RECONR::linearize( arg, relTol, absTol ); }, 
-          law );
+        [&]( auto&& arg ){ 
+          return njoy::RECONR::linearize( arg, relTol, absTol ); }, 
+        law );
       linearized.emplace_back( l );
     }
 

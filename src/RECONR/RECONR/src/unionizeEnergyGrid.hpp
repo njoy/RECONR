@@ -21,8 +21,11 @@ auto unionizeEnergyGrid( const Logger& logger,
       reaction.crossSections< interp::LinearTable >().x() );
   }
 
+  Log::info( "Photon productions" );
   for( const auto& [ ID, reaction ] : ppReactions ){
+    Log::info( "{}", ID.symbol() );
     for( const auto& discrete : reaction.productions< interp::LinearTable >() ){
+      Log::info( "\t{:4}", ranges::distance( discrete.x() ) );
       grid |= ranges::action::push_back( discrete.x() );
     }
   }
@@ -31,6 +34,7 @@ auto unionizeEnergyGrid( const Logger& logger,
 
   return grid 
     | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
+    | ranges::view::unique
     | ranges::to_vector;
 }
 
