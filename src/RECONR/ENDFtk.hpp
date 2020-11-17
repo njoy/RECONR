@@ -2,6 +2,7 @@
 #include "ENDFtk/file/1.hpp"
 #include "ENDFtk/file/2.hpp"
 #include "ENDFtk/file/3.hpp"
+#include "ENDFtk/file/12.hpp"
 #include "ENDFtk/file/13.hpp"
 #include "ENDFtk/isRedundant.hpp"
 

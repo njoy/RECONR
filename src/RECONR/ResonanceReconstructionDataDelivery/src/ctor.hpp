@@ -5,6 +5,7 @@ ResonanceReconstructionDataDelivery(
     std::vector< int > mts,
     XSMap_t&& reactions,
     PPMap_t&& pProductions,
+    PYMap_t&& pYields,
     RPVariant&& resonanceParameters,
     std::pair< Range_t, Range_t >&& resRanges
     )
@@ -15,6 +16,7 @@ ResonanceReconstructionDataDelivery(
     MF3MTs_( std::move( mts ) ),
     reactions_( std::move( reactions ) ),
     photonProductions_( std::move( pProductions ) ),
+    photonYields_( std::move( pYields ) ),
     resonanceParameters_( std::move( resonanceParameters ) ),
     resonanceReferenceGrid_( 
       getResonanceReferenceGrid( this->resonanceParameters_, 

@@ -7,7 +7,7 @@ include( FetchContent )
 
 FetchContent_Declare( ENDFtk
     GIT_REPOSITORY  https://github.com/njoy/ENDFtk
-    GIT_TAG         origin/master
+    GIT_TAG         origin/develop
     GIT_SHALLOW     TRUE
     )
 

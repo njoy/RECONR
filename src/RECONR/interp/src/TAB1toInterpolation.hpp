@@ -11,8 +11,8 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   std::vector< Variant > cs;
 
   // We have to convert to a vector to "own" the data
-  auto energies = section.energies() | ranges::to_vector;
-  auto barns = section.crossSections() | ranges::to_vector;
+  auto energies = section.x() | ranges::to_vector;
+  auto barns = section.y() | ranges::to_vector;
 
   auto interpolants = section.interpolants();
   auto boundaries = section.boundaries();

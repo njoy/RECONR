@@ -69,10 +69,20 @@ using PPForms = std::variant<
   PPair
 >;
 
+// ForPhotonYields
+using PYPair = std::pair< std::vector< double >, std::vector< double > >;
+using PYForms = std::variant< 
+  std::vector< interp::Variant >,
+  interp::LinearTable,
+  PYPair
+>;
+
+#include "RECONR/interp/src/MF12toInterpolation.hpp"
 #include "RECONR/interp/src/MF13toInterpolation.hpp"
 
 #include "RECONR/Reaction.hpp"
 #include "RECONR/PhotonProduction.hpp"
+#include "RECONR/PhotonYields.hpp"
 #include "RECONR/UnresolvedReaction.hpp"
 #include "RECONR/ReferenceGrid.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
