@@ -1,20 +1,23 @@
 static
-PYMap_t collectPYields( const Material_t& material,
+PYMap_t collectPYields( const Logger& logger,
+                        const Material_t& material,
                         const elementary::ParticleID& projectile,
                         const elementary::ParticleID& target ){
   return std::visit( 
     [&]( auto&& arg ){ 
-      return Factory::collectPYields( arg, projectile, target ); },
+      return Factory::collectPYields( logger, arg, projectile, target ); },
     material );
 }
 
 static
-PYMap_t collectPYields( const ENDFMaterial_t& material,
+PYMap_t collectPYields( const Logger& logger,
+                        const ENDFMaterial_t& material,
                         const elementary::ParticleID& projectile,
                         const elementary::ParticleID& target ){
 
   PYMap_t yields{};
   if( material.hasFileNumber( 12 ) ){
+    logger.first << "\nCollecting photon yield data from MF=12" << std::endl;
     auto MF12 = material.fileNumber( 12 ).parse< 12 >();
 
     for( const auto& section : MF12.sections() ){

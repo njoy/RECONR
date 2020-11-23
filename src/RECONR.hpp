@@ -70,7 +70,7 @@ using PPForms = std::variant<
 >;
 
 // ForPhotonYields
-using PYPair = std::pair< std::vector< double >, std::vector< double > >;
+using PYPair = std::pair< double, double >;
 using PYForms = std::variant< 
   std::vector< interp::Variant >,
   interp::LinearTable,

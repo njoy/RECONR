@@ -30,7 +30,7 @@ public:
 
 njoy::RECONR::Logger logger{ std::cout, std::cerr };
 
-// #include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.hpp"
-// #include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectPPXS.hpp"
-// #include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectRP.hpp"
+#include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectXS.hpp"
+#include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectPPXS.hpp"
+#include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectRP.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery/Factory/test/collectPYields.hpp"

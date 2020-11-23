@@ -25,7 +25,14 @@ auto unionizeEnergyGrid( const Logger& logger,
   for( const auto& [ ID, reaction ] : ppReactions ){
     Log::info( "{}", ID.symbol() );
     for( const auto& discrete : reaction.productions< interp::LinearTable >() ){
-      Log::info( "\t{:4}", ranges::distance( discrete.x() ) );
+      grid |= ranges::action::push_back( discrete.x() );
+    }
+  }
+
+  Log::info( "Photon yields" );
+  for( const auto& [ ID, yields ] : r2d2.photonYields() ){
+    Log::info( "{}", ID.symbol() );
+    for( const auto& discrete : yields.yields< interp::LinearTable >() ){
       grid |= ranges::action::push_back( discrete.x() );
     }
   }

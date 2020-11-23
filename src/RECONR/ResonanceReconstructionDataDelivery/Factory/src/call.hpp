@@ -14,7 +14,7 @@ ResonanceReconstructionDataDelivery operator()( const Logger& logger,
     Factory::MTs( material ),
     Factory::collectXS( logger, material, info, projectile, target ),
     Factory::collectPPXS( material, projectile, target ),
-    Factory::collectPYields( material, projectile, target ),
+    Factory::collectPYields( logger, material, projectile, target ),
     std::move( resonanceParameters ),
     std::move( resRanges )
   };
