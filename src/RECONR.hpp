@@ -86,6 +86,7 @@ using PYForms = std::variant<
 #include "RECONR/UnresolvedReaction.hpp"
 #include "RECONR/ReferenceGrid.hpp"
 #include "RECONR/ResonanceReconstructionDataDelivery.hpp"
+#include "RECONR/src/linearizeCriterion.hpp"
 #include "RECONR/src/linearize.hpp"
 #include "RECONR/RECONR.hpp"
 

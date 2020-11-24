@@ -5,18 +5,7 @@ linearize2( const LAW & law, double relTol, double absTol ){
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-    if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
-      return true; }
-
-    // // Limit of ENDF-6 precision
-    // if( utility::sigfig( xRight, 7, -1 ) <= utility::sigfig( xLeft, 7, +1 ) ){
-    //   return true;
-    // }
-
-    auto diff = std::abs( trial - reference );
-    auto reldiff = (diff/reference);
-
-    return ( diff < absTol ) or ( reldiff < relTol );
+    return linearizeCriterion(trial, reference, xLeft, xRight, relTol, absTol);
   };
 
   auto midpoint = []( auto&& x, auto&& y ){
@@ -44,20 +33,6 @@ interp::LinearLinear
 linearize( const interp::Histogram& histo, double r, double a ){
 
   return linearize2( histo, r, a );
-  // auto hx = histo.x();
-  // auto hy = histo.y();
-  // std::vector< double > x{ hx.front() };
-
-  // for( auto& ene : hx | ranges::view::drop_exactly( 1 ) ){
-  //   // sigfig( 16, -1 )
-  //   x.push_back( sigfig( ene, -1E-7 ) );
-  //   x.push_back( ene );
-  // }
-  // std::sort( x.begin(), x.end() );
-
-  // auto y = x | ranges::view::transform( histo ) | ranges::to_vector;
-
-  // return interp::LinearLinear{ std::move( x ), std::move( y ) };
 }
 
 inline
@@ -108,30 +83,27 @@ linearize( const Range& grid, double relTol, double absTol ){
             auto&& xLeft, auto&& xRight,
             auto&&, auto&&  ){
 
-      constexpr double infinity = std::numeric_limits< double >::infinity();
-      if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
-        return true; }
+      auto ratio = 1.0 - ( xLeft.value/xRight.value );
+      if( ratio < 1E-7 ){ return true; }
 
-
-      // Limit of ENDF-6 precision
-      // if( utility::sigfig( xRight.value, 7, -1 ) <= 
-      //     utility::sigfig( xLeft.value, 7, +1 ) ){
-      //   return true;
-      // }
-
-      auto cDiff = trial - reference;
-
-      double eRelDiff = std::abs( cDiff.elastic/reference.elastic );
-      double fRelDiff = std::abs( cDiff.fission/reference.fission );
-      double cRelDiff = std::abs( cDiff.capture/reference.capture );
-
-      double diff = std::max( { std::abs( cDiff.elastic.value ), 
-                                std::abs( cDiff.fission.value ), 
-                                std::abs( cDiff.capture.value ) } );
-      double reldiff = std::max( { eRelDiff, fRelDiff, cRelDiff } );
-
-      return ( diff < absTol ) or ( reldiff < relTol );
-
+      if( not linearizeCriterion( 
+                trial.elastic.value, reference.elastic.value,
+                xLeft.value, xRight.value, relTol, absTol ) ){
+        return false;
+      }
+      else if( not linearizeCriterion( 
+              trial.fission.value, reference.fission.value,
+                xLeft.value, xRight.value, relTol, absTol ) ){
+        return false;
+      }
+      else if( not linearizeCriterion( 
+                trial.capture.value, reference.capture.value,
+                xLeft.value, xRight.value, relTol, absTol ) ){
+        return false;
+      }
+      else{
+        return true;
+      }
     };
 
     auto first = grid.begin();
@@ -168,32 +140,22 @@ linearize( const Range& grid,
     return std::make_pair( midEnergy, midXS );
   };
 
-  constexpr double infinity = std::numeric_limits< double >::infinity();
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
-
-    if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
-      return true; }
-
-    // Limit of ENDF-6 precision
-    // if( utility::sigfig( xRight.value, 7, -1 ) <= 
-    //     utility::sigfig( xLeft.value, 7, +1 ) ){
-    //   return true;
-    }
 
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
       auto t = trial.at( id );
       auto r = reference.at( id );
 
-      auto diff = std::abs( t - r );
-      auto rdiff = diff/r;
-
-      if( ( diff.value >= absTol ) and ( rdiff >= relTol ) ){ 
+      if( not linearizeCriterion( t.value, r.value,
+                                  xLeft.value, xRight.value, 
+                                  relTol, absTol ) ){
         return false;
       }
     }
+    // If we haven't returned false yet, we are true
     return true;
   };
 
