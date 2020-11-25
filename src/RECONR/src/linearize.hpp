@@ -1,6 +1,6 @@
 template< typename LAW >
 interp::LinearLinear
-linearize2( const LAW & law, double relTol, double absTol ){
+linearize( const LAW & law, double relTol, double absTol ){
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
@@ -29,45 +29,18 @@ linearize2( const LAW & law, double relTol, double absTol ){
 
 }
 
+template<>
 inline
 interp::LinearLinear
-linearize( const interp::Histogram& histo, double r, double a ){
-
-  return linearize2( histo, r, a );
-}
-
-inline
-interp::LinearLinear
-linearize( const interp::LinearLinear& linlin, double, double ){
+linearize< interp::LinearLinear >( 
+    const interp::LinearLinear& linlin, double, double ){
 
   return linlin;
 }
 
-inline
-interp::LinearLinear
-linearize( const interp::LinearLogarithmic& linlog, double r, double a ){
-
-  return linearize2( linlog, r, a );
-
-}
-
-inline
-interp::LinearLinear
-linearize( const interp::LogarithmicLinear& loglin, double r, double a ){
-
-  return linearize2( loglin, r, a );
-}
-
-inline
-interp::LinearLinear
-linearize( const interp::LogarithmicLogarithmic& loglog, double r, double a ){
-
-  return linearize2( loglog, r, a );
-}
-
 template< typename Range >
 auto
-linearize( const Range& grid, double relTol, double absTol ){
+linearizeRes( const Range& grid, double relTol, double absTol ){
   using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 
   auto midpoint = []( auto&& energy, auto&& xs ){

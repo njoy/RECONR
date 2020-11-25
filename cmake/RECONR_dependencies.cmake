@@ -12,7 +12,7 @@ include( FetchContent )
 
 FetchContent_Declare( ENDFtk
     GIT_REPOSITORY  http://github.com/njoy/ENDFtk
-    GIT_TAG         origin/master
+    GIT_TAG         origin/develop
     )
 
 FetchContent_Declare( catch-adapter
