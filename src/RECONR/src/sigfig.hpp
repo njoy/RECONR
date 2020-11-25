@@ -18,9 +18,12 @@ double sigfig( const V& value, const int sigdig, const int magnitude = 1){
     return magnitude * std::copysign( std::pow( 10, -sigdig ), magnitude );
   }
 
-  int p = std::floor( std::log10( std::fabs( value ) ) );
-  double mult = std::pow( 10, sigdig - p - 1 );
-  return std::round(value*mult + magnitude)/mult;
+  int power = sigdig - 1 - std::floor( std::log10( std::fabs( value ) ) );
+
+  auto nudge = std::pow( 10, sigdig - 11 - power ) +
+               magnitude*std::pow( 10, -power );
+
+  return value + nudge;
 }
 
 template< typename Q >

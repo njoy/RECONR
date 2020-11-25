@@ -91,24 +91,24 @@ SCENARIO( "Testing sigfig" ){
 
 } // SCENARIO
 
-SCENARIO( "Testing round" ){
-  CHECK(-1.000000000000000 == Approx( sigfig(-1.234567891123456, 1, 0) ).epsilon( 1E-16) );
-  CHECK(-1.200000000000000 == Approx( sigfig(-1.234567891123456, 2, 0) ).epsilon( 1E-16) );
-  CHECK(-1.230000000000000 == Approx( sigfig(-1.234567891123456, 3, 0) ).epsilon( 1E-16) );
-  CHECK(-1.235000000000000 == Approx( sigfig(-1.234567891123456, 4, 0) ).epsilon( 1E-16) );
-  CHECK(-1.234600000000000 == Approx( sigfig(-1.234567891123456, 5, 0) ).epsilon( 1E-16) );
-  CHECK(-1.234570000000000 == Approx( sigfig(-1.234567891123456, 6, 0) ).epsilon( 1E-16) );
-  CHECK(-1.234568000000000 == Approx( sigfig(-1.234567891123456, 7, 0) ).epsilon( 1E-16) );
-  CHECK(-1.234567900000000 == Approx( sigfig(-1.234567891123456, 8, 0) ).epsilon( 1E-16) );
-  CHECK(-1.234567890000000 == Approx( sigfig(-1.234567891123456, 9, 0) ).epsilon( 1E-16) );
-  CHECK( 1.000000000000000 == Approx( sigfig( 1.234567891123456, 1, 0) ).epsilon( 1E-16) );
-  CHECK( 1.200000000000000 == Approx( sigfig( 1.234567891123456, 2, 0) ).epsilon( 1E-16) );
-  CHECK( 1.230000000000000 == Approx( sigfig( 1.234567891123456, 3, 0) ).epsilon( 1E-16) );
-  CHECK( 1.235000000000000 == Approx( sigfig( 1.234567891123456, 4, 0) ).epsilon( 1E-16) );
-  CHECK( 1.234600000000000 == Approx( sigfig( 1.234567891123456, 5, 0) ).epsilon( 1E-16) );
-  CHECK( 1.234570000000000 == Approx( sigfig( 1.234567891123456, 6, 0) ).epsilon( 1E-16) );
-  CHECK( 1.234568000000000 == Approx( sigfig( 1.234567891123456, 7, 0) ).epsilon( 1E-16) );
-  CHECK( 1.234567900000000 == Approx( sigfig( 1.234567891123456, 8, 0) ).epsilon( 1E-16) );
-  CHECK( 1.234567890000000 == Approx( sigfig( 1.234567891123456, 9, 0) ).epsilon( 1E-16) );
+// SCENARIO( "Testing round" ){
+//   CHECK(-1.000000000000000 == Approx( sigfig(-1.234567891123456, 1, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.200000000000000 == Approx( sigfig(-1.234567891123456, 2, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.230000000000000 == Approx( sigfig(-1.234567891123456, 3, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.235000000000000 == Approx( sigfig(-1.234567891123456, 4, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.234600000000000 == Approx( sigfig(-1.234567891123456, 5, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.234570000000000 == Approx( sigfig(-1.234567891123456, 6, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.234568000000000 == Approx( sigfig(-1.234567891123456, 7, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.234567900000000 == Approx( sigfig(-1.234567891123456, 8, 0) ).epsilon( 1E-16) );
+//   CHECK(-1.234567890000000 == Approx( sigfig(-1.234567891123456, 9, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.000000000000000 == Approx( sigfig( 1.234567891123456, 1, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.200000000000000 == Approx( sigfig( 1.234567891123456, 2, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.230000000000000 == Approx( sigfig( 1.234567891123456, 3, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.235000000000000 == Approx( sigfig( 1.234567891123456, 4, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.234600000000000 == Approx( sigfig( 1.234567891123456, 5, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.234570000000000 == Approx( sigfig( 1.234567891123456, 6, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.234568000000000 == Approx( sigfig( 1.234567891123456, 7, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.234567900000000 == Approx( sigfig( 1.234567891123456, 8, 0) ).epsilon( 1E-16) );
+//   CHECK( 1.234567890000000 == Approx( sigfig( 1.234567891123456, 9, 0) ).epsilon( 1E-16) );
   
-} // SCENARIO
+// } // SCENARIO
