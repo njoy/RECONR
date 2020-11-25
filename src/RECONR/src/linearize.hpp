@@ -20,7 +20,8 @@ linearize2( const LAW & law, double relTol, double absTol ){
   std::vector< double > x, y;
 
   auto cached = law.cachedSearch();
-  auto call = [&]( auto&& e ){ return law( e, cached ); };
+  auto call = [&]( auto&& e ){ 
+    return law( utility::sigfig( e, 7, 0 ), cached ); };
   auto linearization = twig::linearize::callable( x, y );
   linearization( first, end, call, criterion, midpoint );
 
@@ -111,7 +112,8 @@ linearize( const Range& grid, double relTol, double absTol ){
     std::vector< EV > energies;
     std::vector< njoy::resonanceReconstruction::breitWigner::CrossSection > XS;
     auto linearization = twig::linearize::callable( energies, XS );
-    linearization( first, end, xs, criterion, midpoint );
+    auto call = [&]( auto&& e ){ return xs( utility::sigfig( e, 7, 0 ) ); };
+    linearization( first, end, call, criterion, midpoint );
 
     return std::make_pair( std::move( energies ), std::move( XS ) );
   };
@@ -164,7 +166,9 @@ linearize( const Range& grid,
   std::vector< EV > energies;
   std::vector< XS_t > crossSections;
   auto linearization = twig::linearize::callable( energies, crossSections );
-  linearization( first, end, reconstructor, criterion, midpoint );
+  auto call = [&]( auto&& e ){ 
+    return reconstructor( utility::sigfig( e, 7, 0 ) ); };
+  linearization( first, end, call, criterion, midpoint );
 
   return std::make_pair( std::move( energies ), std::move( crossSections ) );
 }

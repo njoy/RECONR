@@ -2,10 +2,14 @@
 
 #include "catch.hpp"
 #include "Log.hpp"
+#include "dimwits.hpp"
 
 #include "RECONR/src/sigfig.hpp"
 
+using namespace dimwits;
 SCENARIO( "Testing sigfig" ){
+  Quantity< ElectronVolt> ev = 3.14*dimwits::electronVolt;
+  sigfig( ev, 7, 0 );
 
   CHECK( 9E-7 == Approx( sigfig( 0.0, 7, -9 ) ).epsilon( 1E-7 ) );
   CHECK( 8E-7 == Approx( sigfig( 0.0, 7, -8 ) ).epsilon( 1E-7 ) );

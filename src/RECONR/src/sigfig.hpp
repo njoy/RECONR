@@ -22,3 +22,11 @@ double sigfig( const V& value, const int sigdig, const int magnitude = 1){
   double mult = std::pow( 10, sigdig - p - 1 );
   return std::round(value*mult + magnitude)/mult;
 }
+
+template< typename Q >
+dimwits::Quantity< Q >
+sigfig( const dimwits::Quantity< Q >& v, const int sigdig, const int magnitude = 1 ){
+  dimwits::Quantity< Q > q;
+  q.value = sigfig( v.value, sigdig, magnitude );
+  return q;
+}
