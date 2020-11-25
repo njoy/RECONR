@@ -5,7 +5,8 @@ linearize2( const LAW & law, double relTol, double absTol ){
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-    return linearizeCriterion(trial, reference, xLeft, xRight, relTol, absTol);
+    if( linearizeCriterion( xLeft, xRight ) ){ return true; }
+    else{ return linearizeCriterion(trial, reference, relTol, absTol); }
   };
 
   auto midpoint = []( auto&& x, auto&& y ){
@@ -83,22 +84,21 @@ linearize( const Range& grid, double relTol, double absTol ){
             auto&& xLeft, auto&& xRight,
             auto&&, auto&&  ){
 
-      auto ratio = 1.0 - ( xLeft.value/xRight.value );
-      if( ratio < 1E-7 ){ return true; }
+      if( linearizeCriterion( xLeft.value, xRight.value ) ){ return true; }
 
       if( not linearizeCriterion( 
                 trial.elastic.value, reference.elastic.value,
-                xLeft.value, xRight.value, relTol, absTol ) ){
+                relTol, absTol ) ){
         return false;
       }
       else if( not linearizeCriterion( 
-              trial.fission.value, reference.fission.value,
-                xLeft.value, xRight.value, relTol, absTol ) ){
+                trial.fission.value, reference.fission.value,
+                relTol, absTol ) ){
         return false;
       }
       else if( not linearizeCriterion( 
                 trial.capture.value, reference.capture.value,
-                xLeft.value, xRight.value, relTol, absTol ) ){
+                relTol, absTol ) ){
         return false;
       }
       else{
@@ -144,14 +144,14 @@ linearize( const Range& grid,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
+    if( linearizeCriterion( xLeft.value, xRight.value ) ){ return true; }
+
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
       auto t = trial.at( id );
       auto r = reference.at( id );
 
-      if( not linearizeCriterion( t.value, r.value,
-                                  xLeft.value, xRight.value, 
-                                  relTol, absTol ) ){
+      if( not linearizeCriterion( t.value, r.value, relTol, absTol ) ){
         return false;
       }
     }
