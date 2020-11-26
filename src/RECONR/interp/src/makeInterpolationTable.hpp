@@ -12,11 +12,11 @@ Variant makeInterpolationTable( const E& energies, const B& barns,
         auto& right = pE[ i ];
 
         if( pE[ i-1 ] == right ){ 
-          right = utility::sigfig( right, 7, +1 );
+          right = utility::sigfig( right, 9, +1 );
         }
       }
       if( pE[ s-2 ] == pE.back() ){ 
-        pE[ s-2 ] = utility::sigfig( pE[ s-2 ], 7, -1 );
+        pE[ s-2 ] = utility::sigfig( pE[ s-2 ], 9, -1 );
       }
       return Variant( HogHog( std::move( pE ), std::move( pB ) ) );
       break;

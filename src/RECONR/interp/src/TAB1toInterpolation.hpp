@@ -24,13 +24,13 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   if( threshold != 0.0 ){
     auto energy = energies.begin();
     if( *energy < threshold ){
-      auto sigfigged = utility::sigfig( threshold, 7, +1 );
+      auto sigfigged = utility::sigfig( threshold, 9, +1 );
       Log::info( "Changed threshold from {:13.6e} to {:13.6e} for mt {:3}",
                  *energy, sigfigged, MT );
       *energy = sigfigged;
 
       while( *(energy+1) < *(energy) ){
-        *(energy+1) = utility::sigfig( *energy, 7, +1 );
+        *(energy+1) = utility::sigfig( *energy, 9, +1 );
         energy++;
       }
     }
