@@ -42,7 +42,8 @@ void operator()( const nlohmann::json& njoyArgs,
       logger, grid, data, err, this->absoluteTolerance );
     // Recalculate linearized cross sections
     auto energies = this->unionizeEnergyGrid( 
-      logger, grid, data.reconstructedResonances() );
+      logger, grid, data.resolvedRange(), data.unresolvedRange(),
+      data.reconstructedResonances() );
 
     auto eSize = ranges::distance( energies );
     output <<  fmt::format(

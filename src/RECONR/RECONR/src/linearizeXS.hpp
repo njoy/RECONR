@@ -36,11 +36,11 @@ void linearizeXS( const Logger& logger,
 
 static
 void linearizeXS( const Logger& logger,
-                  R2D2::PPMap_t& reactions, 
+                  R2D2::PPMap_t& productions, 
                   double relTol, double absTol ){
 
   logger.first << "\nLinearizing photon productions." << std::endl;
-  for( auto& [ id, reaction ] : reactions ){
+  for( auto& [ id, reaction ] : productions ){
     auto mt = elementary::toEndfReactionNumber( id );
     logger.first << fmt::format( "\t{:3}, {}", mt, id.symbol()  ) << std::endl;
     std::vector< PPForms > linearized{};

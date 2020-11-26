@@ -11,6 +11,7 @@ linearize( const LAW & law, double relTol, double absTol ){
 
   auto midpoint = []( auto&& x, auto&& y ){
     auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
+    mx = utility::sigfig( mx, 9, 0 );
     auto my =  0.5 * ( std::get<0>(y) + std::get<1>(y) );
     return std::make_pair( mx, my );
   };
@@ -45,6 +46,7 @@ linearizeRes( const Range& grid, double relTol, double absTol ){
 
   auto midpoint = []( auto&& energy, auto&& xs ){
     auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
+    midEnergy.value = utility::sigfig( midEnergy.value, 9, 0 );
     auto midXS = std::get<0>( xs ) + std::get<1>( xs );
     midXS.elastic *= 0.5;
     midXS.fission *= 0.5;
@@ -100,6 +102,7 @@ linearize( const Range& grid,
 
   auto midpoint = []( auto&& energy, auto&& XS ){
     auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
+    midEnergy.value = utility::sigfig( midEnergy.value, 9, 0 );
 
     auto& [ lXS, rXS ] = XS;
     auto IDs = ranges::view::keys( lXS );

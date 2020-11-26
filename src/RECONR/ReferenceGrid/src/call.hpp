@@ -213,11 +213,6 @@ operator()( const std::variant< TS... >& range_variant,
   std::sort( energies.begin(), energies.end() );
   energies |= ranges::action::unique;
 
-  // auto& el = energies.front();
-  // auto& eh = energies.back();
-  // el = utility::sigfig( el, 7, -1 );
-  // eh = utility::sigfig( eh, 7, +1 );
-
   return energies;
 }
 
@@ -258,4 +253,11 @@ auto operator()( const RP::Isotope& isotope,
 
   grids |= ranges::action::unique;
   return grids | ranges::view::join | ranges::to_vector;
+  // grids |= ranges::action::unique;
+  // auto energies = grids | ranges::view::join | ranges::to_vector;
+  // auto last = energies.back(); energies.pop_back();
+  // energies.push_back( utility::sigfig( last, 7, -1 ) );
+  // energies.push_back( utility::sigfig( last, 7, +1 ) );
+
+  // return energies;
 }

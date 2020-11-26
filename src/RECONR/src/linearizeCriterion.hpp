@@ -5,7 +5,7 @@ bool linearizeCriterion( double xLeft, double xRight ){
 
     // Limit of ENDF-6 precision
     auto ratio = 1.0 - ( xLeft/xRight );
-    if( ratio < 1E-7 ){ return true; }
+    if( ratio < 1E-9 ){ return true; }
 
     return false;
 }
