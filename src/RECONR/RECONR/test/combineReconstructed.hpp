@@ -19,7 +19,9 @@ SCENARIO( "Testing combineReconstructed" ){
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
     auto energies = tRECONR::unionizeEnergyGrid(
-      logger, refGrid, r2d2.reconstructedResonances() );
+    logger, refGrid, 
+    r2d2.resolvedRange(), r2d2.unresolvedRange(),
+    r2d2.reconstructedResonances() );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
@@ -126,7 +128,9 @@ SCENARIO( "Testing combineReconstructed" ){
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
     auto energies = tRECONR::unionizeEnergyGrid(
-      logger, refGrid, r2d2.reconstructedResonances() );
+    logger, refGrid, 
+    r2d2.resolvedRange(), r2d2.unresolvedRange(),
+    r2d2.reconstructedResonances() );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
@@ -234,7 +238,9 @@ SCENARIO( "Testing combineReconstructed" ){
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
     auto energies = tRECONR::unionizeEnergyGrid(
-      logger, refGrid, r2d2.reconstructedResonances() );
+    logger, refGrid, 
+    r2d2.resolvedRange(), r2d2.unresolvedRange(),
+    r2d2.reconstructedResonances() );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 

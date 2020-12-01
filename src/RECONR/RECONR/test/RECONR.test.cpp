@@ -123,7 +123,9 @@ auto lin_recon( std::string formalism, double absTol, double relTol,
   tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
   auto energies = tRECONR::unionizeEnergyGrid(
-    logger, refGrid, r2d2.reconstructedResonances() );
+    logger, refGrid, 
+    r2d2.resolvedRange(), r2d2.unresolvedRange(),
+    r2d2.reconstructedResonances() );
 
   tRECONR::reconstructCrossSections( logger, r2d2, energies );
   tRECONR::combineReconstructed( logger, r2d2, energies );
@@ -148,10 +150,10 @@ void printSummations( const njoy::RECONR::R2D2& data ){
 
 
 #include "RECONR/RECONR/test/constructor.hpp"
-// #include "RECONR/RECONR/test/combineReconstructed.hpp"
-// #include "RECONR/RECONR/test/evaluatedData.hpp"
+#include "RECONR/RECONR/test/combineReconstructed.hpp"
+#include "RECONR/RECONR/test/evaluatedData.hpp"
 #include "RECONR/RECONR/test/linearization.hpp"
-// #include "RECONR/RECONR/test/resonanceReconstruction.hpp"
-// #include "RECONR/RECONR/test/summateReactions.hpp"
+#include "RECONR/RECONR/test/resonanceReconstruction.hpp"
+#include "RECONR/RECONR/test/summateReactions.hpp"
 #include "RECONR/RECONR/test/unionization.hpp"
 

@@ -248,6 +248,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         auto trial = tRECONR::unionizeEnergyGrid( 
           logger, 
           energies,
+          r2d2.resolvedRange(), r2d2.unresolvedRange(),
           r2d2.reconstructedResonances() );
 
         details::checkRanges( ref, trial );
@@ -340,6 +341,7 @@ SCENARIO( "Testing the unionization of the energy Grid" ){
         auto trial = tRECONR::unionizeEnergyGrid( 
           logger, 
           energies,
+          r2d2.resolvedRange(), r2d2.unresolvedRange(),
           r2d2.reconstructedResonances() );
 
         details::checkRanges( ref, trial );
