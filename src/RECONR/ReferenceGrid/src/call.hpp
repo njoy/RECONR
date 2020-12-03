@@ -252,7 +252,11 @@ auto operator()( const RP::Isotope& isotope,
   }
 
   grids |= ranges::action::unique;
-  return grids | ranges::view::join | ranges::to_vector;
+  return grids 
+    | ranges::view::join 
+    | ranges::view::transform( 
+      []( auto&& e ){ return utility::sigfig( e, 9, 0 ); } )
+    | ranges::to_vector;
   // grids |= ranges::action::unique;
   // auto energies = grids | ranges::view::join | ranges::to_vector;
   // auto last = energies.back(); energies.pop_back();

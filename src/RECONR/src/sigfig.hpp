@@ -5,23 +5,28 @@
  *
  * @param value: The value to be nudged.
  * @param sigdig: The number of signficant digits to keep.
- * @param magnitude: The relative fraction of value by which value will be nudged.
+ * @param nudge: The relative fraction of value by which value will be nudged.
  *
  * I didn't want to write this, but it is just needed in so many places to be
  * conformant with Legacy NJOY
  */
 
-template< typename V >
-double sigfig( const V& value, const int sigdig, const int magnitude = 1){
+double sigfig( const double& value, const int sigdig = 9, const int nudge = 0 ){
 
   if( value == 0.0 ){
-    return magnitude * std::copysign( std::pow( 10, -sigdig ), magnitude );
+    return nudge * std::copysign( std::pow( 10, -sigdig ), nudge );
   }
 
-  int power = sigdig - 1 - std::floor( std::log10( std::fabs( value ) ) );
-
-  auto nudge = std::pow( 10, sigdig - 11 - power ) +
-               magnitude*std::pow( 10, -power );
-
-  return value + nudge;
+  int p = std::floor( std::log10( std::fabs( value ) ) );
+  double mult = std::pow( 10, sigdig - p - 1 );
+  return std::round(value*mult + nudge)/mult;
 }
+
+template< typename Q >
+dimwits::Quantity< Q >
+sigfig( dimwits::Quantity< Q >& v, const int sigdig = 9, const int nudge = 1 ){
+  dimwits::Quantity< Q > q;
+  q.value = sigfig( v.value, sigdig, nudge );
+  return q;
+}
+
