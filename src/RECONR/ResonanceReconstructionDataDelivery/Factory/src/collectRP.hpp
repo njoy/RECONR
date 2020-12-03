@@ -7,5 +7,5 @@ RPVariant collectRP( const Material_t& material ){
 
 static
 RPVariant collectRP( const ENDFMaterial_t& material ){
-  return material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  return material.file( 2 ).section( 151 ).parse< 2, 151 >();
 }

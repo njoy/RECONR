@@ -1,6 +1,6 @@
 static
 auto MTs( const ENDFMaterial_t& material ){
-  return material.fileNumber( 3 ).sectionNumbers();
+  return material.file( 3 ).sectionNumbers();
 }
 
 static

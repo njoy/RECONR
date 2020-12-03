@@ -14,8 +14,8 @@ PPMap_t collectPPXS( const ENDFMaterial_t& material,
                      const elementary::ParticleID& target ){
   PPMap_t xs{};
 
-  if( material.hasFileNumber( 13 ) ){
-    auto MF13 = material.fileNumber( 13 ).parse< 13 >();
+  if( material.hasFile( 13 ) ){
+    auto MF13 = material.file( 13 ).parse< 13 >();
     for( const auto& section : MF13.sections() ){
       PPReaction reaction{
         section.ZA(), section.AWR(),

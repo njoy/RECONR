@@ -202,7 +202,7 @@ std::string caseCString(){
 RP::Isotope isotope(){
 
   auto material = details::ENDFMaterial( "SLBW" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
   return MT151.isotopes().front();
 }
@@ -210,7 +210,7 @@ RP::Isotope isotope(){
 RP::SLBW breitWigner(){
 
   auto material = details::ENDFMaterial( "SLBW" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
   return std::get< RP::SLBW >(
       MT151.isotopes().front().resonanceRanges().front().parameters() );
@@ -219,7 +219,7 @@ RP::SLBW breitWigner(){
 RP::ResonanceRange reichMoore(){
 
   auto material = details::ENDFMaterial( "RM" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
   return MT151.isotopes().front().resonanceRanges().front();
 }
@@ -227,7 +227,7 @@ RP::ResonanceRange reichMoore(){
 RP::ResonanceRange rMatrixLimited(){
 
   auto material = details::ENDFMaterial( "RML" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
   return MT151.isotopes().front().resonanceRanges().front();
 }

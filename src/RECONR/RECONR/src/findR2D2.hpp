@@ -5,7 +5,7 @@ R2D2 findR2D2( const Logger& logger,
   output << "\nExtracting resonance reconstruction data from an ENDF file."
          << std::endl;
   try {
-    auto material = tape.materialNumber( sequence[ "mat" ] ).front();
+    auto material = tape.material( sequence[ "mat" ] ).front();
     return R2D2::Factory()( logger, material );
 
   } catch( ... ){

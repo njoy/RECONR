@@ -16,9 +16,9 @@ PYMap_t collectPYields( const Logger& logger,
                         const elementary::ParticleID& target ){
 
   PYMap_t yields{};
-  if( material.hasFileNumber( 12 ) ){
+  if( material.hasFile( 12 ) ){
     logger.first << "\nCollecting photon yield data from MF=12" << std::endl;
-    auto MF12 = material.fileNumber( 12 ).parse< 12 >();
+    auto MF12 = material.file( 12 ).parse< 12 >();
 
     for( const auto& section : MF12.sections() ){
       if( section.LO() == 1 ){

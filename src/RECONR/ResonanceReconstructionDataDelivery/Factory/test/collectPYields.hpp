@@ -5,7 +5,7 @@ SCENARIO( "Testing the collection of photon yields" ){
     WHEN( "the photon yields have been extracted" ){
       njoy::elementary::ParticleID proj{ "n" };
       njoy::elementary::ParticleID target{ "fe56" };
-      auto yields = TFactory::collectPYields( material, proj, target );
+      auto yields = TFactory::collectPYields( logger, material, proj, target );
       
       using PID = ParticleID;
       using NID = NucleusID;
