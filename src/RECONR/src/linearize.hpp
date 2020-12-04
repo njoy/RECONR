@@ -1,3 +1,4 @@
+
 template< typename LAW >
 interp::LinearLinear
 linearize( const LAW & law, double relTol, double absTol ){
@@ -10,9 +11,13 @@ linearize( const LAW & law, double relTol, double absTol ){
   };
 
   auto midpoint = []( auto&& x, auto&& y ){
-    auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
+    auto& [x0, x1] = x;
+    auto mx =  0.5 * ( x0 + x1 );
     mx = utility::sigfig( mx, 9, 0 );
-    auto my =  0.5 * ( std::get<0>(y) + std::get<1>(y) );
+
+    auto& [y0, y1] = y;
+    auto my = interpolation::LinearLinear::apply(mx, x0, x1, y0, y1 );
+    my = utility::sigfig( my, 9, 0 );
     return std::make_pair( mx, my );
   };
     
@@ -33,8 +38,8 @@ linearize( const LAW & law, double relTol, double absTol ){
 template<>
 inline
 interp::LinearLinear
-linearize< interp::LinearLinear >( 
-    const interp::LinearLinear& linlin, double, double ){
+linearize< interp::LinearLinear >( const interp::LinearLinear& linlin, 
+                                   double, double ){
 
   return linlin;
 }
@@ -45,12 +50,22 @@ linearizeRes( const Range& grid, double relTol, double absTol ){
   using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 
   auto midpoint = []( auto&& energy, auto&& xs ){
-    auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
+    decltype( auto ) x0 = std::get< 0 >( energy );
+    decltype( auto ) x1 = std::get< 1 >( energy );
+    auto midEnergy =  0.5 * ( x0 + x1 );
     midEnergy.value = utility::sigfig( midEnergy.value, 9, 0 );
-    auto midXS = std::get<0>( xs ) + std::get<1>( xs );
-    midXS.elastic *= 0.5;
-    midXS.fission *= 0.5;
-    midXS.capture *= 0.5;
+
+    auto interp = [&]( auto&& y0, auto&& y1 ){
+      return interpolation::LinearLinear::apply( 
+          midEnergy.value, x0.value, x1.value, y0, y1 );
+    };
+
+
+    auto& [y0, y1] = xs;
+    auto midXS = y0;
+    midXS.elastic = utility::sigfig( interp( y0.elastic, y1.elastic ), 9, 0 );
+    midXS.fission = utility::sigfig( interp( y0.fission, y1.fission ), 9, 0 );
+    midXS.capture = utility::sigfig( interp( y0.capture, y1.capture ), 9, 0 );
     return std::make_pair( midEnergy, midXS );
   };
 
@@ -101,15 +116,24 @@ linearize( const Range& grid,
   using XS_t = decltype( reconstructor( EV{} ) );
 
   auto midpoint = []( auto&& energy, auto&& XS ){
-    auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
+    decltype( auto ) x0 = std::get< 0 >( energy );
+    decltype( auto ) x1 = std::get< 1 >( energy );
+    auto midEnergy =  0.5 * ( x0 + x1 );
     midEnergy.value = utility::sigfig( midEnergy.value, 9, 0 );
 
-    auto& [ lXS, rXS ] = XS;
-    auto IDs = ranges::view::keys( lXS );
+    auto interp = [&]( auto&& y0, auto&& y1 ){
+      return interpolation::LinearLinear::apply( 
+          midEnergy.value, x0.value, x1.value, y0, y1 );
+    };
 
+    auto& [ lXS, rXS ] = XS;
     decltype( lXS ) midXS;
+
+    auto IDs = ranges::view::keys( lXS );
     for( const auto& id : IDs ){
-      auto y = 0.5*( lXS.at( id ) + rXS.at( id ) );
+      auto y = lXS.at( id );
+      y.value = utility::sigfig( interp( lXS.at( id ).value, 
+                                         rXS.at( id ).value ), 9, 0 );
 
       midXS.emplace( id, std::move( y ) );
     }

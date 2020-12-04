@@ -13,7 +13,6 @@ auto mf1( const Logger& logger,
                        .file( 1 ).section( 451 ).parse< 1, 451 >();
 
   auto cards = sequence[ "cards" ].get< std::vector< std::string > >();
-  long NWD = cards.size();
   std::string description;
   for( auto& card : cards ){ 
     // Make right-padded
