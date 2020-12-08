@@ -28,6 +28,8 @@ SCENARIO( "Testing sigfig" ){
   CHECK( 8E-7 == Approx( sigfig( 0.0, 7,  8 ) ).epsilon( 1E-7 ) );
   CHECK( 9E-7 == Approx( sigfig( 0.0, 7,  9 ) ).epsilon( 1E-7 ) );
 
+  CHECK( 1E-5 == Approx( sigfig( 1E-5, 9, +1 ) ).epsilon( 1E-7 ) );
+
   CHECK( 1234558 == Approx( sigfig( 1234567, 7, -9 ) ).epsilon( 1E-7 ) );
   CHECK( 1234559 == Approx( sigfig( 1234567, 7, -8 ) ).epsilon( 1E-7 ) );
   CHECK( 1234560 == Approx( sigfig( 1234567, 7, -7 ) ).epsilon( 1E-7 ) );

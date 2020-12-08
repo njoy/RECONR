@@ -7,7 +7,7 @@ ResonanceReconstructionDataDelivery(
     PPMap_t&& pProductions,
     // PYMap_t&& pYields,
     RPVariant&& resonanceParameters,
-    std::pair< Range_t, Range_t >&& resRanges
+    std::pair< std::optional< Range_t >, std::optional< Range_t > >&& resRanges
     )
   try:
     projectile_( std::move( projectile ) ),

@@ -17,25 +17,26 @@ auto unionizeEnergyGrid( const Logger& logger,
   grid |= ranges::action::push_back( user );
 
   for( const auto& [ID, reaction] : reactions ){
-    auto x = reaction.crossSections< interp::LinearTable >().x();
-    Log::info( "ID: {:20}\tsize: {}", ID.symbol(), ranges::distance( x ) );
+    logger.first << fmt::format( "{}", ID.symbol() ) << std::endl;
+    // auto x = reaction.crossSections< interp::LinearTable >().x();
+    // Log::info( "ID: {:20}\tsize: {}", ID.symbol(), ranges::distance( x ) );
+    // grid |= ranges::action::push_back( x );
 
-    // grid |= ranges::action::push_back( 
-    //   reaction.crossSections< interp::LinearTable >().x() );
-    grid |= ranges::action::push_back( x );
+    grid |= ranges::action::push_back( 
+      reaction.crossSections< interp::LinearTable >().x() );
   }
 
-  Log::info( "Photon productions" );
+  logger.first <<  "Photon productions" << std::endl;
   for( const auto& [ ID, reaction ] : ppReactions ){
-    Log::info( "{}", ID.symbol() );
+    logger.first << fmt::format( "{}", ID.symbol() ) << std::endl;
     for( const auto& discrete : reaction.productions< interp::LinearTable >() ){
       grid |= ranges::action::push_back( discrete.x() );
     }
   }
 
-  Log::info( "Photon yields" );
+  logger.first << "Photon yields" << std::endl;
   for( const auto& [ ID, yields ] : r2d2.photonYields() ){
-    Log::info( "{}", ID.symbol() );
+    logger.first << fmt::format( "{}", ID.symbol() ) << std::endl;
     for( const auto& discrete : yields.yields< interp::LinearTable >() ){
       grid |= ranges::action::push_back( discrete.x() );
     }
@@ -53,11 +54,12 @@ auto unionizeEnergyGrid( const Logger& logger,
  * This method is used *after* resonances are reconstructed
  */
 static
-auto unionizeEnergyGrid( const Logger& logger,
-                         std::vector< double >& grid,
-                         const R2D2::Range_t& resolvedBoundaries,
-                         const R2D2::Range_t& unresolvedBoundaries,
-                         const R2D2::ReconMap_t& resonances ){
+auto unionizeEnergyGrid( 
+  const Logger& logger,
+  std::vector< double >& grid,
+  const std::optional< R2D2::Range_t >& resolvedBoundaries,
+  const std::optional< R2D2::Range_t >& unresolvedBoundaries,
+  const R2D2::ReconMap_t& resonances ){
   logger.first << 
     "\nGenerating unionized energy grid after reconstructing resonances"
          << std::endl;
@@ -67,23 +69,36 @@ auto unionizeEnergyGrid( const Logger& logger,
       grid |= ranges::action::push_back( XS.x() );
     }
   }
+  if( resolvedBoundaries ){
+    grid |= ranges::action::push_back( {
+      utility::sigfig( resolvedBoundaries->first,  9, -1 ),
+      utility::sigfig( resolvedBoundaries->second, 9, +1 ),
+      } );
+  }
+  if( unresolvedBoundaries ){
+    grid |= ranges::action::push_back( {
+      utility::sigfig( unresolvedBoundaries->first,  9, -1 ),
+      utility::sigfig( unresolvedBoundaries->second, 9, +1 ),
+      } );
+  }
   ranges::sort( grid );
 
   // Find energies at resonance boundaries and nudge them.
   // resolved resonances
-  auto found = std::find( std::begin(grid), std::end(grid), 
-                          resolvedBoundaries.first );
-  if( found != grid.end() ){ *found = utility::sigfig( *found, 9, -1 ); }
-  found = std::find( std::begin(grid), std::end(grid), 
-                     resolvedBoundaries.second );
-  if( found != grid.end() ){ *found = utility::sigfig( *found, 9, +1 ); }
+  if( resolvedBoundaries ){
+    auto found = ranges::find( grid, resolvedBoundaries->first );
+    if( found != grid.end() ){ *found = utility::sigfig( *found, 9, -1 ); }
+    found = ranges::find( grid, resolvedBoundaries->second );
+    if( found != grid.end() ){ *found = utility::sigfig( *found, 9, +1 ); }
+  }
+
   // unresolved resonances
-  found = std::find( std::begin(grid), std::end(grid), 
-                     unresolvedBoundaries.first );
-  if( found != grid.end() ){ *found = utility::sigfig( *found, 9, -1 ); }
-  found = std::find( std::begin(grid), std::end(grid), 
-                     unresolvedBoundaries.second );
-  if( found != grid.end() ){ *found = utility::sigfig( *found, 9, +1 ); }
+  if( unresolvedBoundaries ){
+    auto found = ranges::find( grid, unresolvedBoundaries->first );
+    if( found != grid.end() ){ *found = utility::sigfig( *found, 9, -1 ); }
+    found = ranges::find( grid, unresolvedBoundaries->second );
+    if( found != grid.end() ){ *found = utility::sigfig( *found, 9, +1 ); }
+  }
 
 
   ranges::sort( grid );

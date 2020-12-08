@@ -1,10 +1,12 @@
 static
-std::pair< Range_t, Range_t >
+std::pair< std::optional< Range_t >, std::optional< Range_t > >
 collectResonanceRanges( const ENDFtk::section::Type< 2, 151 >& mt151 ){
 
   // These are the same defaults that Legacy NJOY uses
-  Range_t resolved{ 1E10, 0.0 };
-  Range_t unresolved{ 1E10, 0.0 };
+  // Range_t resolved{ 1E10, 0.0 };
+  // Range_t unresolved{ 1E10, 0.0 };
+  std::optional< Range_t > resolved;
+  std::optional< Range_t > unresolved;
 
   for( const auto& isotope : mt151.isotopes() ){
     for( const auto& range : isotope.resonanceRanges() ){
@@ -13,16 +15,24 @@ collectResonanceRanges( const ENDFtk::section::Type< 2, 151 >& mt151 ){
           // Do nothing
           break;
         case 1:
-          resolved = Range_t{
-            std::min( resolved.first, range.lowerEnergy() ),
-            std::max( resolved.second, range.upperEnergy() )
-          };
+          if( resolved ){
+            resolved = Range_t{
+              std::min( resolved->first, range.lowerEnergy() ),
+              std::max( resolved->second, range.upperEnergy() )
+            };
+          } else {
+            resolved = Range_t{ range.lowerEnergy(), range.upperEnergy() };
+          }
           break;
         case 2:
-          unresolved = Range_t{
-            std::min( unresolved.first, range.lowerEnergy() ),
-            std::max( unresolved.second, range.upperEnergy() )
-          };
+          if( unresolved ){
+            unresolved = Range_t{
+              std::min( unresolved->first, range.lowerEnergy() ),
+              std::max( unresolved->second, range.upperEnergy() )
+            };
+          } else {
+            unresolved = Range_t{ range.lowerEnergy(), range.upperEnergy() };
+          }
           break;
         default:
           // A la @whaeck

@@ -36,8 +36,15 @@ void combineUnresolved( const Logger& logger,
       auto& reaction = reactions.at( rxnID );
       const auto& rxn = reaction.crossSections< interp::LinearTable >();
 
-      auto eL = r2d2.resolvedRange().second;
-      auto eH = r2d2.unresolvedRange().second;
+      double eL{ 0.0 };
+      double eH{ 1E10 };
+      if( r2d2.resolvedRange() ){
+        eL = r2d2.resolvedRange()->second;
+        
+      }
+      if( r2d2.unresolvedRange() ){
+        eL = r2d2.unresolvedRange()->second;
+      }
 
       const auto& table = unres.crossSections< interp::LinearLinear >();
 
