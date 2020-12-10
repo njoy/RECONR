@@ -24,7 +24,7 @@ double sigfig( const double& value, const int sigdig = 9, const int nudge = 0 ){
 
 template< typename Q >
 dimwits::Quantity< Q >
-sigfig( dimwits::Quantity< Q >&& v, const int sigdig = 9, const int nudge = 1 ){
+sigfig( const dimwits::Quantity< Q >& v, const int sigdig = 9, const int nudge = 1 ){
   dimwits::Quantity< Q > q;
   q.value = sigfig( v.value, sigdig, nudge );
   return q;

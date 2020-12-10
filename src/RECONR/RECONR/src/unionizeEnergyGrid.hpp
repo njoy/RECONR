@@ -104,6 +104,8 @@ auto unionizeEnergyGrid(
   ranges::sort( grid );
   return grid 
     | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
+    | ranges::view::transform( 
+      []( auto && e ){ return utility::sigfig( e, 9, 0 ); } )
     | ranges::view::unique
     | ranges::to_vector;
 }
