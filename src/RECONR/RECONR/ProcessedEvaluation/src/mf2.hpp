@@ -2,7 +2,7 @@ ENDFtk::file::Type< 2 >
 mf2( const Logger& logger, const R2D2& data ){
 
   logger.first << "Preparing MF=2 data." << std::endl;
-  logger.first << "MT=151" << std::endl;
+  logger.first << "\tMT=151" << std::endl;
   // MT151
   // We're going to assume that everything we see only has one resolved range
   auto params = std::get< 0 >( data.resonanceParameters() );
@@ -24,7 +24,7 @@ mf2( const Logger& logger, const R2D2& data ){
     return ENDFtk::file::Type< 2 >{ std::move( mt151 ) };
   }
 
-  logger.first << "MT=152" << std::endl;
+  logger.first << "\tMT=152" << std::endl;
   const auto& proj = data.projectile();
   const auto& target = data.target();
 

@@ -36,25 +36,12 @@ void combineUnresolved( const Logger& logger,
       auto& reaction = reactions.at( rxnID );
       const auto& rxn = reaction.crossSections< interp::LinearTable >();
 
-      double eL{ 1E10 };
-      double eH{ 0.0 };
-      if( r2d2.resolvedRange() != std::nullopt ){
-        eL = r2d2.resolvedRange()->second;
-        
-      }
-      if( r2d2.unresolvedRange() != std::nullopt ){
-        eL = r2d2.unresolvedRange()->second;
-      }
-
       const auto& table = unres.crossSections< interp::LinearLinear >();
 
       std::vector< double > unresXS;
       if( unres.LSSF() ){
         unresXS = uEnergies
-          | ranges::view::transform(
-              [&]( auto&& e ){ return ( ( eL < e ) && ( e < eH ) ) 
-                ? table( e ) : 0.0; } 
-            )
+          | ranges::view::transform( [&]( auto&& e ){ return table( e ) ; } )
           | ranges::to_vector;
 
         partials.push_back(
@@ -63,8 +50,7 @@ void combineUnresolved( const Logger& logger,
       } else {
         unresXS = uEnergies
           | ranges::view::transform(
-              [&]( auto&& e ){ return ( ( eL < e ) && ( e < eH ) )
-                ? table( e ) + rxn( e ) : 0.0; } 
+              [&]( auto&& e ){ return table( e ) + rxn( e ); } 
             )
           | ranges::to_vector;
         
@@ -108,14 +94,21 @@ void combineUnresolved( const Logger& logger,
   if( uRxn.LSSF() ){
 
     auto parts = sumPartials( partials );
-    auto comp = ranges::view::zip_with( std::minus< double >(), tXS, parts );
-    auto total = ranges::view::zip_with( std::plus< double >(), comp, sumUXS )
+    auto competitive = ranges::view::zip_with( 
+        std::minus< double >(), tXS, parts );
+    auto total = ranges::view::zip_with( 
+        std::plus< double >(), competitive, sumUXS )
       | ranges::to_vector;
     
     URxn uTotal{ uRxn.ZA(), uRxn.AWR(), uRxn.LSSF(), 
-                std::make_pair( utility::copy( uEnergies ), 
-                                std::move( total ) ) 
+                 std::make_pair( std::move( uEnergies ), 
+                                 std::move( total ) ) 
     };
+    unresolved.emplace( tID, std::move( uTotal ) );
+  } else {
+    URxn uTotal{ uRxn.ZA(), uRxn.AWR(), uRxn.LSSF(), 
+                 std::make_pair( std::move( uEnergies ), 
+                                 std::move( sumUXS ) ) };
     unresolved.emplace( tID, std::move( uTotal ) );
   }
   logger.first << std::endl;

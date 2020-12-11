@@ -54,7 +54,7 @@ void operator()( const nlohmann::json& njoyArgs,
     this->reconstructCrossSections( logger, data, energies );
     this->combineReconstructed( logger, data, energies );
     this->summateReactions( logger, data, energies );
-    this->summateUnresolved( logger, data );
+    // this->summateUnresolved( logger, data );
     this->summateProductions( logger, data, energies );
 
     // Remove leading zeros
