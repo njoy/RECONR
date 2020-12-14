@@ -31,7 +31,7 @@ FetchContent_Declare( constants
 
 FetchContent_Declare( resonanceReconstruction
     GIT_REPOSITORY  https://github.com/njoy/resonanceReconstruction
-    GIT_TAG         origin/master
+    GIT_TAG         origin/develop
     GIT_SHALLOW     TRUE
     )
 
