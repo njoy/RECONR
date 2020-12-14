@@ -132,7 +132,8 @@ SCENARIO( "Extracting the reference grid" ){
     auto& parameters = std::get< RP::CaseA >( ca.parameters() );
 
     std::vector<double> refEnergies{
-      27456.9, 32777.4, 39128.8, 46711.1, 55762.6, 66568.1, 79467.5, 94866.4
+      23000, 23000, 25000, 29844.4, 35000, 40000, 
+      47751.1, 57004.1, 68050.2, 81236.7, 96978.5
     };
     auto energies = referenceGrid( parameters, ca, target, proj );
 

@@ -285,4 +285,4 @@ RP::ResonanceRange caseC(){
 }
 
 #include "RECONR/ReferenceGrid/test/call.hpp"
-// #include "RECONR/ReferenceGrid/test/fill.hpp"
+#include "RECONR/ReferenceGrid/test/fill.hpp"

@@ -16,20 +16,16 @@ SCENARIO( "Filling the sparse energy grid" ){
       THEN( "the appropriate values are appended" ){
         TestReferenceGrid::fill( 1.0, 2.0, grid );
         std::vector< double > refGrid = {{ 
-          1.0, 1.1937766417, 1.4251026703, 1.7012542799, 2.0 }};
-        for(size_t i=0; i<refGrid.size(); i++){
-          REQUIRE( refGrid[i] == Approx( grid[i] ) );
-        }
+          1.0, 1.1937766417, 1.4251026703, 1.7012542799 }};
+        details::checkRanges( refGrid, grid );
       }
       THEN( "the appropriate values are appended" ){
         TestReferenceGrid::fill( 4, 15, grid );
         std::vector< double > refGrid = {{ 
           1.0, 4.7751065669, 5.7004106812, 6.8050171194, 8.1236704836,
-          9.6978480683, 11.5770644989, 13.8204291784, 15.0 }};
+          9.6978480683, 11.5770644989, 13.8204291784 }};
 
-        for(size_t i=0; i<refGrid.size(); i++){
-          REQUIRE( refGrid[i] == Approx( grid[i] ) );
-        }
+        details::checkRanges( refGrid, grid );
       }
     }
 

@@ -57,8 +57,6 @@ auto operator()( const RP::RML&,
                  const elementary::ParticleID& proj ) const {
 
   auto eV = dimwits::electronVolt;
-  // auto lowerEnergy = rRange.EL();
-  // auto upperEnergy = rRange.EH();
 
   const auto& nMass = CODATA[ constants::neutronMass ];
   const auto& eCharge = CODATA[ constants::elementaryCharge ];
@@ -79,21 +77,22 @@ auto operator()( const RP::RML&,
 
 auto operator()( const RP::CaseA&,
                  const RP::ResonanceRange& rRange,
-                 const elementary::ParticleID&,
-                 const elementary::ParticleID& ) const {
-  auto lowerEnergy = rRange.EL();
-  auto upperEnergy = rRange.EH();
+                 const elementary::ParticleID& target,
+                 const elementary::ParticleID& proj ) const {
+  auto eV = dimwits::electronVolt;
 
   std::vector< double > energies;
-  /*
-   * log( EH / EL ) / log( 10^(1/13) )
-   * = 13 * log( EH / EL ) / log( 10 )
-   * = 5.645828264742274 * log( EH / EL )
-   */
-  energies.reserve( std::ceil( 5.645828264742274 *
-                               std::log( upperEnergy / lowerEnergy ) ) );
+  energies.push_back( rRange.EL() );
 
-  fill( lowerEnergy, upperEnergy, energies );
+  const auto& nMass = CODATA[ constants::neutronMass ];
+  const auto& eCharge = CODATA[ constants::elementaryCharge ];
+
+  auto grid = resonanceReconstruction::rmatrix::fromENDF( 
+    rRange, nMass, eCharge, proj, target ).grid();
+
+  RANGES_FOR( const auto& energy, grid ){
+    fill( energies.back(), energy/eV, energies );
+  }
 
   return energies;
 }
@@ -117,7 +116,7 @@ auto operator()( const RP::CaseB& caseB,
     | ranges::view::take_while
       ( [=]( auto energy ){ return energy < upperEnergy; } );
 
-  RANGES_FOR( const auto energy, clampedES ){
+  RANGES_FOR( const auto& energy, clampedES ){
     fill( energies.back(), energy, energies );
   }
 
