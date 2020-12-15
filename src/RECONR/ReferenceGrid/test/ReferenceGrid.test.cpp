@@ -11,11 +11,6 @@
 
 using namespace njoy;
 
-class TestReferenceGrid: public njoy::RECONR::ReferenceGrid{
-public:
-  using ReferenceGrid::fill;
-};
-
 static double nextafter( const double value ){
   return std::nextafter( value, std::numeric_limits< double >::infinity() );
 }
@@ -285,4 +280,3 @@ RP::ResonanceRange caseC(){
 }
 
 #include "RECONR/ReferenceGrid/test/call.hpp"
-#include "RECONR/ReferenceGrid/test/fill.hpp"

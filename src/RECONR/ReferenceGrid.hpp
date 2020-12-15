@@ -4,7 +4,6 @@ protected:
 
 public:
   #include "RECONR/ReferenceGrid/src/call.hpp"
-  #include "RECONR/ReferenceGrid/src/fill.hpp"
 };
 
 constexpr ReferenceGrid referenceGrid{};
