@@ -40,7 +40,6 @@ inline
 interp::LinearLinear
 linearize< interp::LinearLinear >( const interp::LinearLinear& linlin, 
                                    double, double ){
-
   return linlin;
 }
 

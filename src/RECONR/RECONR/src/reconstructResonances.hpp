@@ -34,11 +34,11 @@ void reconstructResonances(
   R2D2& r2d2,
   const RP::ResonanceRange& rRange,
   const RP::CaseA& uRange,
-  double, double){
+  double relTol, double absTol){
 
   logger.first << "Reconstructing unresolved EnergyIndependent parameters." 
          << std::endl;
-  reconstructUnresolved( logger, r2d2, rRange, uRange );
+  reconstructUnresolved( logger, r2d2, rRange, uRange, relTol, absTol );
 }
 
 template< typename Range >
@@ -49,12 +49,12 @@ void reconstructResonances(
   R2D2& r2d2,
   const RP::ResonanceRange& rRange,
   const RP::CaseB& uRange,
-  double, double ){
+  double relTol, double absTol){
 
   logger.first 
     << "Reconstructing unresolved EnergyDependentFissionWidths parameters." 
          << std::endl;
-  reconstructUnresolved( logger, r2d2, rRange, uRange );
+  reconstructUnresolved( logger, r2d2, rRange, uRange, relTol, absTol );
 }
 
 template< typename Range >
@@ -65,12 +65,12 @@ void reconstructResonances(
   R2D2& r2d2,
   const RP::ResonanceRange& rRange,
   const RP::CaseC& uRange,
-  double, double ){
+  double relTol, double absTol){
 
   logger.first << "Reconstructing unresolved parameters." 
          << std::endl;
 
-  reconstructUnresolved( logger, r2d2, rRange, uRange );
+  reconstructUnresolved( logger, r2d2, rRange, uRange, relTol, absTol );
 }
 
 template< typename Range >

@@ -59,7 +59,8 @@ auto unionizeEnergyGrid(
   std::vector< double >& grid,
   const std::optional< R2D2::Range_t >& resolvedBoundaries,
   const std::optional< R2D2::Range_t >& unresolvedBoundaries,
-  const R2D2::ReconMap_t& resonances ){
+  const R2D2::ReconMap_t& resonances,
+  const R2D2::UnresolvedMap_t& unresolved ){
   logger.first << 
     "\nGenerating unionized energy grid after reconstructing resonances"
          << std::endl;
@@ -69,6 +70,12 @@ auto unionizeEnergyGrid(
       grid |= ranges::action::push_back( XS.x() );
     }
   }
+
+  for( const auto& [ID, U] : unresolved ){
+    auto& XS = U.crossSections< interp::LinearLinear >();
+    grid |= ranges::action::push_back( XS.x() );
+  }
+
   if( resolvedBoundaries ){
     grid |= ranges::action::push_back( {
       utility::sigfig( resolvedBoundaries->first,  9, -1 ),

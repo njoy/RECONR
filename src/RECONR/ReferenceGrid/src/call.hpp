@@ -99,7 +99,7 @@ auto operator()( const RP::CaseA&,
   return energies;
 }
 
-auto operator()( const RP::CaseB& caseB,
+auto operator()( const RP::CaseB&,
                  const RP::ResonanceRange& rRange,
                  const elementary::ParticleID& target,
                  const elementary::ParticleID& proj ) const {
@@ -123,7 +123,7 @@ auto operator()( const RP::CaseB& caseB,
   return energies;
 }
 
-auto operator()( const RP::CaseC& caseC,
+auto operator()( const RP::CaseC&,
                  const RP::ResonanceRange& rRange,
                  const elementary::ParticleID& target,
                  const elementary::ParticleID& proj ) const {
