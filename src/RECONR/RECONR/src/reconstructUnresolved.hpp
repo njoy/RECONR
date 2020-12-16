@@ -28,17 +28,20 @@ void reconstructUnresolved(
   auto& unresolved = r2d2.unresolved();
   auto IDs = ranges::view::keys( crossSections.front() );
   for( auto& id : IDs ){
+    Log::info( "id: {}", id.symbol() );
 
     auto xs = crossSections
       | ranges::view::transform( 
           [&]( auto&& m ) -> double { return m.at( id ) / dimwits::barns; } )
       | ranges::to_vector;
 
+    Log::info( "xs: {}", xs | ranges::view::all );
+
     auto INT = lru.interpolation().value_or( 5 );
     auto table = interp::makeInterpolationTable( 
         x, xs, 0, ranges::distance( x ), INT );
     auto linlin = std::visit(
-      [&]( auto&& t ){ return linearize( t, relTol, absTol ); },
+        [&]( auto&& t ){ return linearize( t, relTol, absTol ); },
       table );
 
     URxn rxn{ MT451.ZA(), MT451.AWR(), uRange.LSSF(), std::move( linlin ) };

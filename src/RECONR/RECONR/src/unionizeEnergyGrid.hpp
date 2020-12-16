@@ -18,9 +18,6 @@ auto unionizeEnergyGrid( const Logger& logger,
 
   for( const auto& [ID, reaction] : reactions ){
     logger.first << fmt::format( "{}", ID.symbol() ) << std::endl;
-    // auto x = reaction.crossSections< interp::LinearTable >().x();
-    // Log::info( "ID: {:20}\tsize: {}", ID.symbol(), ranges::distance( x ) );
-    // grid |= ranges::action::push_back( x );
 
     grid |= ranges::action::push_back( 
       reaction.crossSections< interp::LinearTable >().x() );
@@ -42,11 +39,10 @@ auto unionizeEnergyGrid( const Logger& logger,
     }
   }
 
-  ranges::sort( grid );
+  grid |= ranges::action::sort | ranges::action::unique;
 
   return grid 
     | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
-    | ranges::view::unique
     | ranges::to_vector;
 }
 
@@ -88,7 +84,8 @@ auto unionizeEnergyGrid(
       utility::sigfig( unresolvedBoundaries->second, 9, +1 ),
       } );
   }
-  ranges::sort( grid );
+  // Remove duplicate values
+  grid |= ranges::action::sort | ranges::action::unique;
 
   // Find energies at resonance boundaries and nudge them.
   // resolved resonances
@@ -106,7 +103,6 @@ auto unionizeEnergyGrid(
     found = ranges::find( grid, unresolvedBoundaries->second );
     if( found != grid.end() ){ *found = utility::sigfig( *found, 9, +1 ); }
   }
-
 
   ranges::sort( grid );
   return grid 
