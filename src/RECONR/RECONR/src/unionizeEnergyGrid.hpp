@@ -75,12 +75,16 @@ auto unionizeEnergyGrid(
   if( resolvedBoundaries ){
     grid |= ranges::action::push_back( {
       utility::sigfig( resolvedBoundaries->first,  9, -1 ),
+      utility::sigfig( resolvedBoundaries->first,  9, +1 ),
+      utility::sigfig( resolvedBoundaries->second, 9, -1 ),
       utility::sigfig( resolvedBoundaries->second, 9, +1 ),
       } );
   }
   if( unresolvedBoundaries ){
     grid |= ranges::action::push_back( {
       utility::sigfig( unresolvedBoundaries->first,  9, -1 ),
+      utility::sigfig( unresolvedBoundaries->first,  9, +1 ),
+      utility::sigfig( unresolvedBoundaries->second, 9, -1 ),
       utility::sigfig( unresolvedBoundaries->second, 9, +1 ),
       } );
   }
