@@ -39,7 +39,12 @@ auto unionizeEnergyGrid( const Logger& logger,
     }
   }
 
-  grid |= ranges::action::sort | ranges::action::unique;
+  std::sort( grid.begin(), grid.end() );
+  auto last = std::unique( grid.begin(), grid.end(), 
+    []( auto&& l, auto&& r ){ 
+      return utility::sigfig( l ) == utility::sigfig( r ); } );
+
+  grid.erase( last, grid.end() );
 
   return grid 
     | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
@@ -89,7 +94,11 @@ auto unionizeEnergyGrid(
       } );
   }
   // Remove duplicate values
-  grid |= ranges::action::sort | ranges::action::unique;
+  std::sort( grid.begin(), grid.end() );
+  std::unique( grid.begin(), grid.end(), 
+    []( auto&& l, auto&& r ){ 
+      return utility::sigfig( l, 9, 0 ) == 
+             utility::sigfig( r, 9, 0 ); } );
 
   // Find energies at resonance boundaries and nudge them.
   // resolved resonances
@@ -108,11 +117,18 @@ auto unionizeEnergyGrid(
     if( found != grid.end() ){ *found = utility::sigfig( *found, 9, +1 ); }
   }
 
-  ranges::sort( grid );
+  // Remove duplicate values
+  std::sort( grid.begin(), grid.end() );
+  auto last = std::unique( grid.begin(), grid.end(), 
+    []( auto&& l, auto&& r ){ 
+      return utility::sigfig( l, 9, 0 ) == 
+             utility::sigfig( r, 9, 0 ); } );
+
+  grid.erase( last, grid.end() );
+
   return grid 
     | ranges::view::filter( []( auto&& e ){ return e != 0.0; } )
     | ranges::view::transform( 
       []( auto && e ){ return utility::sigfig( e, 9, 0 ); } )
-    | ranges::view::unique
     | ranges::to_vector;
 }
