@@ -2,9 +2,9 @@
  * This method is used *before* resonances are reconstructed
  */
 static
-auto unionizeEnergyGrid( const Logger& logger,
+std::vector< double > unionizeEnergyGrid( const Logger& logger,
                          const R2D2& r2d2,
-                         const std::vector< double >& user ){
+                         const std::set< double >& user ){
 
   const auto& reactions = r2d2.reactions();
   const auto& ppReactions = r2d2.photonProductions();
@@ -57,26 +57,24 @@ auto unionizeEnergyGrid( const Logger& logger,
 static
 auto unionizeEnergyGrid( 
   const Logger& logger,
-  std::vector< double >& grid,
-  const std::optional< R2D2::Range_t >& resolvedBoundaries,
-  const std::optional< R2D2::Range_t >& unresolvedBoundaries,
-  const R2D2::ReconMap_t& resonances,
-  const R2D2::UnresolvedMap_t& unresolved ){
+  R2D2& r2d2,
+  std::vector< double >& grid ){
   logger.first << 
     "\nGenerating unionized energy grid after reconstructing resonances"
          << std::endl;
 
-  for( const auto& [ID, V] : resonances ){
+  for( const auto& [ID, V] : r2d2.reconstructedResonances() ){
     for( const auto& XS : V ){
       grid |= ranges::action::push_back( XS.x() );
     }
   }
 
-  for( const auto& [ID, U] : unresolved ){
+  for( const auto& [ID, U] : r2d2.unresolved() ){
     auto& XS = U.crossSections< interp::LinearLinear >();
     grid |= ranges::action::push_back( XS.x() );
   }
 
+  const auto& resolvedBoundaries = r2d2.resolvedRange();
   if( resolvedBoundaries ){
     grid |= ranges::action::push_back( {
       utility::sigfig( resolvedBoundaries->first,  9, -1 ),
@@ -85,6 +83,7 @@ auto unionizeEnergyGrid(
       utility::sigfig( resolvedBoundaries->second, 9, +1 ),
       } );
   }
+  const auto& unresolvedBoundaries = r2d2.unresolvedRange();
   if( unresolvedBoundaries ){
     grid |= ranges::action::push_back( {
       utility::sigfig( unresolvedBoundaries->first,  9, -1 ),

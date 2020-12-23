@@ -6,7 +6,7 @@ SCENARIO( "Testing combineReconstructed" ){
   using PPair = njoy::RECONR::PPair;
 
   GIVEN( "an SLBW object" ){
-    std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
+    std::set< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "SLBW", 1 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
@@ -18,10 +18,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
-    auto energies = tRECONR::unionizeEnergyGrid(
-    logger, refGrid, 
-    r2d2.resolvedRange(), r2d2.unresolvedRange(),
-    r2d2.reconstructedResonances() );
+    auto energies = tRECONR::unionizeEnergyGrid( logger, r2d2, refGrid );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
@@ -115,7 +112,7 @@ SCENARIO( "Testing combineReconstructed" ){
     
   } // GIVEN
   GIVEN( "an RM object" ){
-    std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
+    std::set< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "RM", 0 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
@@ -127,10 +124,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
-    auto energies = tRECONR::unionizeEnergyGrid(
-    logger, refGrid, 
-    r2d2.resolvedRange(), r2d2.unresolvedRange(),
-    r2d2.reconstructedResonances() );
+    auto energies = tRECONR::unionizeEnergyGrid( logger, r2d2, refGrid );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
@@ -225,7 +219,7 @@ SCENARIO( "Testing combineReconstructed" ){
     
   } // GIVEN
   GIVEN( "an RML object" ){
-    std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
+    std::set< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "RML", 1 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
@@ -237,10 +231,7 @@ SCENARIO( "Testing combineReconstructed" ){
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
-    auto energies = tRECONR::unionizeEnergyGrid(
-    logger, refGrid, 
-    r2d2.resolvedRange(), r2d2.unresolvedRange(),
-    r2d2.reconstructedResonances() );
+    auto energies = tRECONR::unionizeEnergyGrid( logger, r2d2, refGrid );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 

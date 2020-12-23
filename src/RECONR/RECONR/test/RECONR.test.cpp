@@ -113,7 +113,7 @@ std::vector< double > sumRanges( const Ranges&... ranges ){
 // Linearize and reconstruct resonances
 auto lin_recon( std::string formalism, double absTol, double relTol, 
                 int LSSF = 0 ){
-  std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
+  std::set< double > userSupplied{ 1.0, 2.0, 3.0 };
   auto material = details::ENDFMaterial( formalism, LSSF );
   auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
@@ -122,10 +122,7 @@ auto lin_recon( std::string formalism, double absTol, double relTol,
 
   tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
-  auto energies = tRECONR::unionizeEnergyGrid(
-    logger, refGrid, 
-    r2d2.resolvedRange(), r2d2.unresolvedRange(),
-    r2d2.reconstructedResonances() );
+  auto energies = tRECONR::unionizeEnergyGrid( logger, r2d2, refGrid );
 
   tRECONR::reconstructCrossSections( logger, r2d2, energies );
   tRECONR::combineReconstructed( logger, r2d2, energies );

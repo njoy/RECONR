@@ -27,8 +27,9 @@ void operator()( const nlohmann::json& njoyArgs,
     this->linearizeXS( logger, data, err, this->absoluteTolerance );
 
     // Get unionized energy grid
-    std::vector< double > enode = sequence.at( "enode" );
-    auto grid = this->unionizeEnergyGrid( logger, data, enode );
+    std::set< double > enode = sequence.at( "enode" );
+    auto grid = this->unionizeEnergyGrid( logger, data, 
+                                          sequence.at( "enode" ) );
     auto gridSize = ranges::distance( grid );
 
     output << fmt::format(
@@ -41,9 +42,7 @@ void operator()( const nlohmann::json& njoyArgs,
     this->reconstructResonances( 
       logger, grid, data, err, this->absoluteTolerance );
     // Recalculate linearized cross sections
-    auto energies = this->unionizeEnergyGrid( 
-      logger, grid, data.resolvedRange(), data.unresolvedRange(),
-      data.reconstructedResonances(), data.unresolved() );
+    auto energies = this->unionizeEnergyGrid( logger, data, grid );
 
     auto eSize = ranges::distance( energies );
     output <<  fmt::format(
