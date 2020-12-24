@@ -31,10 +31,12 @@ set( debug_flags "-O0" "-g" )
 # Dependencies
 ########################################################################
 
-set( REPOSITORIES "develop"
+set( REPOSITORIES "release"
     CACHE STRING
     "Options for where to fetch repositories: develop, release, local"
     )
+
+message( STATUS "Using ${REPOSITORIES} repositories" )
 
 if( REPOSITORIES STREQUAL "develop" )
     include( cmake/develop_dependencies.cmake )
