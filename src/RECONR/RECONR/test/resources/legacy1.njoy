@@ -1,0 +1,8 @@
+reconr
+  40 42                                        / Card 1
+  "Modern RECONR Testing"                      / Card 2
+  9437 1 0                                     / Card 3.1
+  0.1 0.0 0.1 5E-7                             / Card 4.1
+  "Material 125 processed with modern RECONR"  / Card 5.1
+  0                                            / Card 6.0
+stop
