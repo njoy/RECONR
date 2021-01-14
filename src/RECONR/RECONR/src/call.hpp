@@ -6,6 +6,15 @@ void operator()( const nlohmann::json& njoyArgs,
   Logger logger{ output, error };
 
   output << "Input arguments:\n" << njoyArgs.dump( 2 ) << std::endl;
+  int nendf = njoyArgs[ "nendf" ];
+  int npend = njoyArgs[ "npend" ];
+  if( ( nendf < 0 ) or ( npend < 0 ) ){
+    Log::error( "RECONR input tape numbers must be positive." );
+    Log::info( "nendf: {}, npend: {}", nendf, npend );
+    Log::info( "Binary ENDF tapes are not supported at this time." );
+    throw std::exception();
+    
+  }
   std::string inputFilename = "tape" + 
     std::to_string( njoyArgs[ "nendf" ].get< int >() );
   auto outputFilename = "tape" + 
