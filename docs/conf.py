@@ -29,7 +29,7 @@ author = 'Jeremy Lloyd Conlin'
 # ones.
 extensions = ['sphinx.ext.mathjax',
     'sphinx.ext.githubpages',
-    'sphinxcontrib.bibtex',
+    'sphinxcontrib-bibtex',
     'recommonmark']
 
 # Add any paths that contain templates here, relative to this directory.
