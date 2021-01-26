@@ -27,12 +27,9 @@ void operator()( const nlohmann::json& njoyArgs,
     this->linearizeXS( logger, data, err, this->absoluteTolerance );
 
     // Get unionized energy grid
-    std::vector< double > enode = sequence.at( "enode" );
-    auto grid = this->unionizeEnergyGrid( logger, 
-                                          data.reactions(), 
-                                          data.photonProductions(),
-                                          data.resonanceReferenceGrid(),
-                                          enode );
+    std::set< double > enode = sequence.at( "enode" );
+    auto grid = this->unionizeEnergyGrid( logger, data, 
+                                          sequence.at( "enode" ) );
     auto gridSize = ranges::distance( grid );
 
     output << fmt::format(
@@ -45,10 +42,9 @@ void operator()( const nlohmann::json& njoyArgs,
     this->reconstructResonances( 
       logger, grid, data, err, this->absoluteTolerance );
     // Recalculate linearized cross sections
-    auto energies = this->unionizeEnergyGrid( 
-      logger, grid, data.reconstructedResonances() );
-    auto eSize = ranges::distance( energies );
+    auto energies = this->unionizeEnergyGrid( logger, data, grid );
 
+    auto eSize = ranges::distance( energies );
     output <<  fmt::format(
       "number of points in final unionized grid    = {:10d}\n", eSize )
            << std::endl;
@@ -57,7 +53,7 @@ void operator()( const nlohmann::json& njoyArgs,
     this->reconstructCrossSections( logger, data, energies );
     this->combineReconstructed( logger, data, energies );
     this->summateReactions( logger, data, energies );
-    this->summateUnresolved( logger, data );
+    // this->summateUnresolved( logger, data );
     this->summateProductions( logger, data, energies );
 
     // Remove leading zeros
@@ -76,6 +72,8 @@ void operator()( const nlohmann::json& njoyArgs,
  */
 void operator()( std::ostream& output, std::ostream& error, 
                  const nlohmann::json& arguments ){
+
+  Logger logger{ output, error };
 
   output << "Modern RECONR interface.\n"
          << "Input arguments: \n" << arguments.dump( 2 ) << std::endl;

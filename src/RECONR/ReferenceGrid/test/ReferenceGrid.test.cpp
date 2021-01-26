@@ -8,14 +8,8 @@
 #include "RECONR/details/checkRanges.hpp"
 #include "RECONR/details/simpleENDFTestString.hpp"
 
-namespace RP = njoy::ENDFtk::resonanceParameters;
 
 using namespace njoy;
-
-class TestReferenceGrid: public njoy::RECONR::ReferenceGrid{
-public:
-  using ReferenceGrid::fill;
-};
 
 static double nextafter( const double value ){
   return std::nextafter( value, std::numeric_limits< double >::infinity() );
@@ -203,37 +197,37 @@ std::string caseCString(){
 RP::Isotope isotope(){
 
   auto material = details::ENDFMaterial( "SLBW" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
   return MT151.isotopes().front();
 }
 
-RP::resolved::SLBW breitWigner(){
+RP::SLBW breitWigner(){
 
   auto material = details::ENDFMaterial( "SLBW" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
-  return std::get< RP::resolved::SingleLevelBreitWigner >(
+  return std::get< RP::SLBW >(
       MT151.isotopes().front().resonanceRanges().front().parameters() );
 }
 
-njoy::RECONR::ResonanceRange reichMoore(){
+RP::ResonanceRange reichMoore(){
 
   auto material = details::ENDFMaterial( "RM" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
   return MT151.isotopes().front().resonanceRanges().front();
 }
 
-njoy::ENDFtk::resonanceParameters::ResonanceRange rMatrixLimited(){
+RP::ResonanceRange rMatrixLimited(){
 
   auto material = details::ENDFMaterial( "RML" );
-  auto MT151 = material.fileNumber( 2 ).sectionNumber( 151 ).parse< 2, 151 >();
+  auto MT151 = material.file( 2 ).section( 151 ).parse< 2, 151 >();
 
   return MT151.isotopes().front().resonanceRanges().front();
 }
 
-njoy::RECONR::ResonanceRange specialCase(){
+RP::ResonanceRange specialCase(){
   long ln = 0;
 
   auto scs = specialCaseString();
@@ -246,7 +240,7 @@ njoy::RECONR::ResonanceRange specialCase(){
   return mt151.isotopes().front().resonanceRanges().front();
 }
 
-njoy::RECONR::ResonanceRange caseA(){
+RP::ResonanceRange caseA(){
     long ln = 0;
     
     std::string ENDF = caseAString();
@@ -259,7 +253,7 @@ njoy::RECONR::ResonanceRange caseA(){
     return mt151.isotopes().front().resonanceRanges().front();
 }
 
-njoy::RECONR::ResonanceRange caseB(){
+RP::ResonanceRange caseB(){
     long ln = 0;
 
     std::string ENDF = caseBString();
@@ -272,7 +266,7 @@ njoy::RECONR::ResonanceRange caseB(){
     return mt151.isotopes().front().resonanceRanges().front();
 }
 
-njoy::RECONR::ResonanceRange caseC(){
+RP::ResonanceRange caseC(){
     long ln = 0;
 
     std::string ENDF = caseCString();
@@ -286,4 +280,3 @@ njoy::RECONR::ResonanceRange caseC(){
 }
 
 #include "RECONR/ReferenceGrid/test/call.hpp"
-// #include "RECONR/ReferenceGrid/test/fill.hpp"

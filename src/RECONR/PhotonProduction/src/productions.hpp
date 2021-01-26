@@ -1,6 +1,5 @@
 template< typename F >
-const auto
-productions() const{
+auto productions() const{
   try {
     return this->productions_
       | ranges::view::transform(

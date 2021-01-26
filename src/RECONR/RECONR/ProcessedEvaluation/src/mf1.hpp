@@ -9,15 +9,14 @@ auto mf1( const Logger& logger,
   logger.first << "Preparing MF=1 data." << std::endl;
 
   auto eval = std::get< 0 >( this->evaluated );
-  const auto mt = eval.materialNumber( MAT ).front()
-                       .fileNumber( 1 ).sectionNumber( 451 ).parse< 1, 451 >();
+  const auto mt = eval.material( MAT ).front()
+                       .file( 1 ).section( 451 ).parse< 1, 451 >();
 
   auto cards = sequence[ "cards" ].get< std::vector< std::string > >();
-  long NWD = cards.size();
-  std::vector< ENDFtk::TEXT > description;
+  std::string description;
   for( auto& card : cards ){ 
     // Make right-padded
-    description.emplace_back( fmt::format( "{:<66s}", card ) );
+    description += fmt::format( "{:<66s}\n", card );
   }
 
   std::vector< ENDFtk::DIR > directory;
@@ -36,17 +35,13 @@ auto mf1( const Logger& logger,
   }
   //                                   MF,  MT, | <------- NC -------> |
   directory.emplace( directory.begin(), 1, 451, directory.size() + 1 + 4, 0 );
-  long NXC = directory.size();
 
-  std::array< ENDFtk::CONT, 3 > parameters{
-    ENDFtk::CONT{ mt.ELIS(), mt.STA(), mt.LIS(), mt.LISO(), 0, mt.NFOR() }, 
-    ENDFtk::CONT{ mt.AWI(), mt.EMAX(), mt.LREL(), 0, mt.NSUB(), mt.NVER() }, 
-    ENDFtk::CONT{ mt.TEMP(), sequence[ "err" ], mt.LDRV(), 0, NWD, NXC       }
-  };
-
+    // mt.TEMP(), /*sequence[ "err" ],*/ mt.LDRV(),
   ENDFtk::section::Type< 1, 451 > mt451( 
-    mt.ZA(), mt.AWR(), mt.LRP(), mt.LFI(), mt.NLIB(), mt.NMOD(),
-    std::move( parameters ),
+    mt.ZA(),    mt.AWR(),   mt.LRP(),   mt.LFI(),   mt.NLIB(),  mt.NMOD(),  
+    mt.ELIS(),  mt.STA(),   mt.LIS(),   mt.LISO(),  mt.NFOR(),  
+    mt.AWI(),   mt.EMAX(),  mt.LREL(),  mt.NSUB(),  mt.NVER(),  
+    mt.TEMP(),  mt.LDRV(),  
     std::move( description ),
     std::move( directory )
   );

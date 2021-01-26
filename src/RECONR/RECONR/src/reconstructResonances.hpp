@@ -3,7 +3,7 @@ static
 void reconstructResonances( std::ostream&,
                             Range& , 
                             R2D2&,
-                            const ResonanceRange&,
+                            const RP::ResonanceRange&,
                             const P& params,
                             double, double ){ 
   auto name = typeid( params ).name();
@@ -18,8 +18,8 @@ void reconstructResonances(
      const Logger& logger,
      Range&,
      R2D2&,
-     const ResonanceRange&,
-     const SpecialCase&,
+     const RP::ResonanceRange&,
+     const RP::SpecialCase&,
      double, double ){
   logger.first << "No resonance reconstruction needed for a SpecialCase." 
          << std::endl;
@@ -32,13 +32,13 @@ void reconstructResonances(
   const Logger& logger,
   Range&,
   R2D2& r2d2,
-  const ResonanceRange& rRange,
-  const unresolved::EnergyIndependent& uRange,
-  double, double){
+  const RP::ResonanceRange& rRange,
+  const RP::CaseA& uRange,
+  double relTol, double absTol){
 
   logger.first << "Reconstructing unresolved EnergyIndependent parameters." 
          << std::endl;
-  reconstructUnresolved( logger, r2d2, rRange, uRange );
+  reconstructUnresolved( logger, r2d2, rRange, uRange, relTol, absTol );
 }
 
 template< typename Range >
@@ -47,14 +47,14 @@ void reconstructResonances(
   const Logger& logger,
   Range&,
   R2D2& r2d2,
-  const ResonanceRange& rRange,
-  const unresolved::EnergyDependentFissionWidths& uRange,
-  double, double ){
+  const RP::ResonanceRange& rRange,
+  const RP::CaseB& uRange,
+  double relTol, double absTol){
 
   logger.first 
     << "Reconstructing unresolved EnergyDependentFissionWidths parameters." 
          << std::endl;
-  reconstructUnresolved( logger, r2d2, rRange, uRange );
+  reconstructUnresolved( logger, r2d2, rRange, uRange, relTol, absTol );
 }
 
 template< typename Range >
@@ -63,14 +63,14 @@ void reconstructResonances(
   const Logger& logger,
   Range&,
   R2D2& r2d2,
-  const ResonanceRange& rRange,
-  const unresolved::EnergyDependent& uRange,
-  double, double ){
+  const RP::ResonanceRange& rRange,
+  const RP::CaseC& uRange,
+  double relTol, double absTol){
 
   logger.first << "Reconstructing unresolved parameters." 
          << std::endl;
 
-  reconstructUnresolved( logger, r2d2, rRange, uRange );
+  reconstructUnresolved( logger, r2d2, rRange, uRange, relTol, absTol );
 }
 
 template< typename Range >
@@ -79,14 +79,14 @@ void reconstructResonances(
   const Logger& logger,
   Range& grid, 
   R2D2& r2d2, 
-  const ResonanceRange& rRange,
-  const resolved::SingleLevelBreitWigner&,
+  const RP::ResonanceRange& rRange,
+  const RP::SLBW&,
   double relTol, double absTol){
 
   logger.first << "Reconstructing SLBW resonances." << std::endl;
 
   auto bw = resonanceReconstruction::breitWigner::singleLevel::Apply{}(
-      rRange, linearize( grid, relTol, absTol ) );
+      rRange, linearizeRes( grid, relTol, absTol ) );
 
   storeBWReconstruction( bw, r2d2 );
 
@@ -98,14 +98,14 @@ void reconstructResonances(
      const Logger& logger,
      Range& grid, 
      R2D2& r2d2, 
-     const ResonanceRange& rRange,
-     const resolved::MultiLevelBreitWigner&,
+     const RP::ResonanceRange& rRange,
+     const RP::MLBW&,
      double relTol, double absTol){
 
-  logger.first << "Reconstructing SLBW resonances." << std::endl;
+  logger.first << "Reconstructing MLBW resonances." << std::endl;
 
   auto bw = resonanceReconstruction::breitWigner::multiLevel::Apply{}(
-      rRange, linearize( grid, relTol, absTol ) );
+      rRange, linearizeRes( grid, relTol, absTol ) );
 
   storeBWReconstruction( bw, r2d2 );
 
@@ -117,14 +117,14 @@ void reconstructResonances(
      const Logger& logger,
      Range& grid, 
      R2D2& r2d2,
-     const ResonanceRange& rRange,
-     const resolved::ReichMoore&,
+     const RP::ResonanceRange& rRange,
+     const RP::RM&,
      double relTol, double absTol){
 
   logger.first << "Reconstructing Reich-Moore resonances." << std::endl;
 
   auto bw = resonanceReconstruction::reichMoore::Apply{}(
-      rRange, linearize( grid, relTol, absTol ) );
+      rRange, linearizeRes( grid, relTol, absTol ) );
 
   storeBWReconstruction( bw, r2d2 );
 
@@ -136,8 +136,8 @@ void reconstructResonances(
      const Logger& logger,
      Range& grid, 
      R2D2& r2d2,
-     const ResonanceRange& rRange,
-     const resolved::RMatrixLimited&,
+     const RP::ResonanceRange& rRange,
+     const RP::RML&,
      double relTol, double absTol){
 
   logger.first << "Reconstructing R-Matrix Limited resonances." << std::endl;
@@ -178,7 +178,7 @@ void reconstructResonances(
     const Logger& logger,
     Range& grid, 
     R2D2& r2d2,
-    std::vector< ENDFtk::resonanceParameters::Isotope >& isotopes,
+    std::vector< RP::Isotope >& isotopes,
     double relTol, double absTol ){
 
 

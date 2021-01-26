@@ -15,7 +15,7 @@ void reconstructCrossSections( const Logger& logger,
     
     auto barns =  energies 
       | ranges::view::transform( 
-          reaction.crossSections< interp::LinearTable >() )
+          reaction.template crossSections< interp::LinearTable >() )
       | ranges::to_vector;
 
     reaction.crossSections( 

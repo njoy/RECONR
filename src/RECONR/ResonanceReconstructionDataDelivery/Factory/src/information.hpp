@@ -8,5 +8,5 @@ Info_t information( const Material_t& material ){
 
 static
 Info_t information( const ENDFMaterial_t& material ){
-  return material.fileNumber( 1 ).sectionNumber( 451 ).parse< 1, 451 >();
+  return material.file( 1 ).section( 451 ).parse< 1, 451 >();
 }

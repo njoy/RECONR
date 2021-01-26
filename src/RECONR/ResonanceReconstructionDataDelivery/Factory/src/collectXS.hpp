@@ -20,7 +20,7 @@ XSMap_t collectXS( const Logger& logger,
   XSMap_t xs{};
 
 
-  if( not material.hasFileNumber( 3 ) ){
+  if( not material.hasFile( 3 ) ){
     Log::error( "ENDF file does not have MF=3. Can't proceed." );
     throw std::exception();
   }
@@ -29,7 +29,7 @@ XSMap_t collectXS( const Logger& logger,
     "\nCollecting cross section data (MF=3) from an ENDF file\n" );
 
 
-  auto MF3 = material.fileNumber( 3 ).parse< 3 >();
+  auto MF3 = material.file( 3 ).parse< 3 >();
   for( auto& section : MF3.sections() ){
     auto MT = section.MT();
     if( not elementary::ReactionType::isRegistered( MT ) ){

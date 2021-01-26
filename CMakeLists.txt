@@ -2,7 +2,7 @@
 # Preamble
 ########################################################################
 
-cmake_minimum_required( VERSION 3.16 )
+cmake_minimum_required( VERSION 3.14 )
 project( RECONR LANGUAGES CXX )
 
 
@@ -16,20 +16,46 @@ set( CMAKE_CXX_STANDARD_REQUIRED YES )
 option( RECONR_unit_tests
     "Compile the RECONR unit tests and integrate with ctest" ON
     )
+option( strict_compile
+    "Treat all warnings as errors." ON
+    )
+
+# Compile flags
+set( common_flags "-Wall" "-Wextra" "-Wpedantic" )
+set( strict_flags "-Werror" )
+set( release_flags "-O3" )
+set( debug_flags "-O0" "-g" )
 
 
 ########################################################################
 # Dependencies
 ########################################################################
 
-include( cmake/RECONR_dependencies.cmake )
+set( REPOSITORIES "release"
+    CACHE STRING
+    "Options for where to fetch repositories: develop, release, local"
+    )
+
+message( STATUS "Using ${REPOSITORIES} repositories" )
+
+if( REPOSITORIES STREQUAL "develop" )
+    include( cmake/develop_dependencies.cmake )
+
+elseif( REPOSITORIES STREQUAL "release" )
+    include( cmake/release_dependencies.cmake )
+
+elseif( REPOSITORIES STREQUAL "local" )
+    include( cmake/local_dependencies.cmake )
+
+endif()
 
 
 ########################################################################
 # Project targets
 ########################################################################
 
-add_library( RECONR INTERFACE )
+add_library( RECONR INTERFACE
+    )
 target_include_directories( RECONR INTERFACE src/ )
 target_link_libraries( RECONR
     INTERFACE ENDFtk
@@ -38,10 +64,11 @@ target_link_libraries( RECONR
     INTERFACE resonanceReconstruction
     INTERFACE Log
     INTERFACE twig
-    INTERFACE nlohmann_json::nlohmann_json
+    INTERFACE nlohmann_json
     INTERFACE interpolation
     INTERFACE elementary
     )
+
 
 #######################################################################
 # Top-level Only

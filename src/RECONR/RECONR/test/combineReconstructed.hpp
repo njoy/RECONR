@@ -6,7 +6,7 @@ SCENARIO( "Testing combineReconstructed" ){
   using PPair = njoy::RECONR::PPair;
 
   GIVEN( "an SLBW object" ){
-    std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
+    std::set< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "SLBW", 1 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
@@ -14,17 +14,11 @@ SCENARIO( "Testing combineReconstructed" ){
     auto target = r2d2.target();
 
     tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
-    auto refGrid = tRECONR::unionizeEnergyGrid(
-      logger, 
-      r2d2.reactions(), 
-      r2d2.photonProductions(), 
-      r2d2.resonanceReferenceGrid(),
-      userSupplied );
+    auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
-    auto energies = tRECONR::unionizeEnergyGrid(
-      logger, refGrid, r2d2.reconstructedResonances() );
+    auto energies = tRECONR::unionizeEnergyGrid( logger, r2d2, refGrid );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
@@ -118,7 +112,7 @@ SCENARIO( "Testing combineReconstructed" ){
     
   } // GIVEN
   GIVEN( "an RM object" ){
-    std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
+    std::set< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "RM", 0 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
@@ -126,17 +120,11 @@ SCENARIO( "Testing combineReconstructed" ){
     auto target = r2d2.target();
 
     tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
-    auto refGrid = tRECONR::unionizeEnergyGrid(
-      logger, 
-      r2d2.reactions(), 
-      r2d2.photonProductions(), 
-      r2d2.resonanceReferenceGrid(),
-      userSupplied );
+    auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
-    auto energies = tRECONR::unionizeEnergyGrid(
-      logger, refGrid, r2d2.reconstructedResonances() );
+    auto energies = tRECONR::unionizeEnergyGrid( logger, r2d2, refGrid );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 
@@ -231,7 +219,7 @@ SCENARIO( "Testing combineReconstructed" ){
     
   } // GIVEN
   GIVEN( "an RML object" ){
-    std::vector< double > userSupplied{ 1.0, 2.0, 3.0 };
+    std::set< double > userSupplied{ 1.0, 2.0, 3.0 };
     auto material = details::ENDFMaterial( "RML", 1 );
     auto r2d2 = njoy::RECONR::R2D2::Factory()( logger, material );
 
@@ -239,17 +227,11 @@ SCENARIO( "Testing combineReconstructed" ){
     auto target = r2d2.target();
 
     tRECONR::linearizeXS( logger, r2d2, absTol, relTol);
-    auto refGrid = tRECONR::unionizeEnergyGrid(
-      logger, 
-      r2d2.reactions(), 
-      r2d2.photonProductions(), 
-      r2d2.resonanceReferenceGrid(),
-      userSupplied );
+    auto refGrid = tRECONR::unionizeEnergyGrid( logger, r2d2, userSupplied );
 
     tRECONR::reconstructResonances( logger, refGrid, r2d2, relTol, absTol );
 
-    auto energies = tRECONR::unionizeEnergyGrid(
-      logger, refGrid, r2d2.reconstructedResonances() );
+    auto energies = tRECONR::unionizeEnergyGrid( logger, r2d2, refGrid );
 
     tRECONR::reconstructCrossSections( logger, r2d2, energies );
 

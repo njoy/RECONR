@@ -17,5 +17,7 @@ static void fill( const double lowerBound,
             [ = ]( auto energy ){ return energy < upperBound; } 
           ) 
         );
+  } else {
+    buffer.push_back( upperBound );
   }
 }

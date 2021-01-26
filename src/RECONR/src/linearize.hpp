@@ -1,25 +1,23 @@
+
 template< typename LAW >
 interp::LinearLinear
-linearize2( const LAW & law, double relTol, double absTol ){
+linearize( const LAW & law, double relTol, double absTol ){
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-    constexpr double infinity = std::numeric_limits<double>::infinity();
-
-    if( xRight == std::nextafter( xLeft, infinity ) ){ return true; }
-    // Limit of ENDF-6 precision
-    if( xRight/xLeft < 1E-7 ){ return true; }
-
-    auto diff = std::abs( trial - reference );
-    auto reldiff = (diff/reference);
-
-    return ( diff < absTol ) or ( reldiff < relTol );
+    if( linearizeCriterion( xLeft, xRight ) ){ return true; }
+    else{ return linearizeCriterion(trial, reference, relTol, absTol); }
   };
 
   auto midpoint = []( auto&& x, auto&& y ){
-    auto mx =  0.5 * ( std::get<0>(x) + std::get<1>(x) );
-    auto my =  0.5 * ( std::get<0>(y) + std::get<1>(y) );
+    auto& [x0, x1] = x;
+    auto mx =  0.5 * ( x0 + x1 );
+    mx = utility::sigfig( mx, 9, 0 );
+
+    auto& [y0, y1] = y;
+    auto my = interpolation::LinearLinear::apply(mx, x0, x1, y0, y1 );
+    my = utility::sigfig( my, 9, 0 );
     return std::make_pair( mx, my );
   };
     
@@ -37,67 +35,36 @@ linearize2( const LAW & law, double relTol, double absTol ){
 
 }
 
+template<>
 inline
 interp::LinearLinear
-linearize( const interp::Histogram& histo, double r, double a ){
-
-  return linearize2( histo, r, a );
-  // auto hx = histo.x();
-  // auto hy = histo.y();
-  // std::vector< double > x{ hx.front() };
-
-  // for( auto& ene : hx | ranges::view::drop_exactly( 1 ) ){
-  //   // sigfig( 16, -1 )
-  //   x.push_back( sigfig( ene, -1E-7 ) );
-  //   x.push_back( ene );
-  // }
-  // std::sort( x.begin(), x.end() );
-
-  // auto y = x | ranges::view::transform( histo ) | ranges::to_vector;
-
-  // return interp::LinearLinear{ std::move( x ), std::move( y ) };
-}
-
-inline
-interp::LinearLinear
-linearize( const interp::LinearLinear& linlin, double, double ){
-
+linearize< interp::LinearLinear >( const interp::LinearLinear& linlin, 
+                                   double, double ){
   return linlin;
-}
-
-inline
-interp::LinearLinear
-linearize( const interp::LinearLogarithmic& linlog, double r, double a ){
-
-  return linearize2( linlog, r, a );
-
-}
-
-inline
-interp::LinearLinear
-linearize( const interp::LogarithmicLinear& loglin, double r, double a ){
-
-  return linearize2( loglin, r, a );
-}
-
-inline
-interp::LinearLinear
-linearize( const interp::LogarithmicLogarithmic& loglog, double r, double a ){
-
-  return linearize2( loglog, r, a );
 }
 
 template< typename Range >
 auto
-linearize( const Range& grid, double relTol, double absTol ){
+linearizeRes( const Range& grid, double relTol, double absTol ){
   using EV = dimwits::Quantity< dimwits::ElectronVolt >;
 
   auto midpoint = []( auto&& energy, auto&& xs ){
-    auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
-    auto midXS = std::get<0>( xs ) + std::get<1>( xs );
-    midXS.elastic *= 0.5;
-    midXS.fission *= 0.5;
-    midXS.capture *= 0.5;
+    decltype( auto ) x0 = std::get< 0 >( energy );
+    decltype( auto ) x1 = std::get< 1 >( energy );
+    auto midEnergy =  0.5 * ( x0 + x1 );
+    midEnergy.value = utility::sigfig( midEnergy.value, 9, 0 );
+
+    auto interp = [&]( auto&& y0, auto&& y1 ){
+      return interpolation::LinearLinear::apply( 
+          midEnergy.value, x0.value, x1.value, y0, y1 );
+    };
+
+
+    auto& [y0, y1] = xs;
+    auto midXS = y0;
+    midXS.elastic = utility::sigfig( interp( y0.elastic, y1.elastic ), 9, 0 );
+    midXS.fission = utility::sigfig( interp( y0.fission, y1.fission ), 9, 0 );
+    midXS.capture = utility::sigfig( interp( y0.capture, y1.capture ), 9, 0 );
     return std::make_pair( midEnergy, midXS );
   };
 
@@ -106,27 +73,26 @@ linearize( const Range& grid, double relTol, double absTol ){
             auto&& xLeft, auto&& xRight,
             auto&&, auto&&  ){
 
-      constexpr double infinity = std::numeric_limits< double >::infinity();
+      if( linearizeCriterion( xLeft.value, xRight.value ) ){ return true; }
 
-      if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
-        return true; }
-      // Limit of ENDF-6 precision
-      auto ratio = 1.0 - ( xLeft.value/xRight.value );
-      if( ratio < 1E-7 ){ return true; }
-
-      auto cDiff = trial - reference;
-
-      double eRelDiff = std::abs( cDiff.elastic/reference.elastic );
-      double fRelDiff = std::abs( cDiff.fission/reference.fission );
-      double cRelDiff = std::abs( cDiff.capture/reference.capture );
-
-      double diff = std::max( { std::abs( cDiff.elastic.value ), 
-                                std::abs( cDiff.fission.value ), 
-                                std::abs( cDiff.capture.value ) } );
-      double reldiff = std::max( { eRelDiff, fRelDiff, cRelDiff } );
-
-      return ( diff < absTol ) or ( reldiff < relTol );
-
+      if( not linearizeCriterion( 
+                trial.elastic.value, reference.elastic.value,
+                relTol, absTol ) ){
+        return false;
+      }
+      else if( not linearizeCriterion( 
+                trial.fission.value, reference.fission.value,
+                relTol, absTol ) ){
+        return false;
+      }
+      else if( not linearizeCriterion( 
+                trial.capture.value, reference.capture.value,
+                relTol, absTol ) ){
+        return false;
+      }
+      else{
+        return true;
+      }
     };
 
     auto first = grid.begin();
@@ -149,45 +115,46 @@ linearize( const Range& grid,
   using XS_t = decltype( reconstructor( EV{} ) );
 
   auto midpoint = []( auto&& energy, auto&& XS ){
-    auto midEnergy =  0.5 * ( std::get<0>(energy) + std::get<1>(energy) );
+    decltype( auto ) x0 = std::get< 0 >( energy );
+    decltype( auto ) x1 = std::get< 1 >( energy );
+    auto midEnergy =  0.5 * ( x0 + x1 );
+    midEnergy.value = utility::sigfig( midEnergy.value, 9, 0 );
+
+    auto interp = [&]( auto&& y0, auto&& y1 ){
+      return interpolation::LinearLinear::apply( 
+          midEnergy.value, x0.value, x1.value, y0, y1 );
+    };
 
     auto& [ lXS, rXS ] = XS;
-    auto IDs = ranges::view::keys( lXS );
-
     decltype( lXS ) midXS;
+
+    auto IDs = ranges::view::keys( lXS );
     for( const auto& id : IDs ){
-      auto y = 0.5*( lXS.at( id ) + rXS.at( id ) );
+      auto y = lXS.at( id );
+      y.value = utility::sigfig( interp( lXS.at( id ).value, 
+                                         rXS.at( id ).value ), 9, 0 );
 
       midXS.emplace( id, std::move( y ) );
     }
     return std::make_pair( midEnergy, midXS );
   };
 
-  constexpr double infinity = std::numeric_limits< double >::infinity();
   auto criterion = [ & ]( auto&& trial, auto&& reference,
           auto&& xLeft, auto&& xRight,
           auto&&, auto&&  ){
 
-
-    if( xRight.value == std::nextafter( xLeft.value, infinity ) ){ 
-      return true;
-    }
-    // Limit of ENDF-6 precision
-    auto ratio = 1.0 - ( xLeft.value/xRight.value );
-    if( ratio < 1E-7 ){ return true; }
+    if( linearizeCriterion( xLeft.value, xRight.value ) ){ return true; }
 
     auto IDs = ranges::view::keys( reference );
     for( const auto& id : IDs ){
       auto t = trial.at( id );
       auto r = reference.at( id );
 
-      auto diff = std::abs( t - r );
-      auto rdiff = diff/r;
-
-      if( ( diff.value >= absTol ) and ( rdiff >= relTol ) ){ 
+      if( not linearizeCriterion( t.value, r.value, relTol, absTol ) ){
         return false;
       }
     }
+    // If we haven't returned false yet, we are true
     return true;
   };
 

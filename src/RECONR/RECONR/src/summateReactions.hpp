@@ -90,22 +90,6 @@ void summateReactions( const Logger& logger,
        summations.emplace( sumID,
          Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
  
-       /*
-       // Simply move to summations
-       if( ( partials.size() == 1 ) and ( reactions.count( sumID ) > 0 ) ){
-         for( const auto& ID : ranges::view::keys( reactions ) ){
-           auto mt = elementary::toEndfReactionNumber( ID );
-         }
-         auto reaction = reactions.at( sumID );
-         summations.emplace( sumID, std::move( reaction ) );
-         reactions.erase( sumID );
-       } else{
-         auto rPair = std::make_pair( utility::copy( energies ), 
-                                     sumPartials( partials ) );
-         summations.emplace( sumID,
-           Reaction{ ZA, AWR, 0.0, 0.0, 0, std::move( rPair ) } );
-       }
-       */
      } // partials size
    }; // sumRedundants
 

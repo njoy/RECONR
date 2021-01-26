@@ -11,8 +11,8 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   std::vector< Variant > cs;
 
   // We have to convert to a vector to "own" the data
-  auto energies = section.energies() | ranges::to_vector;
-  auto barns = section.crossSections() | ranges::to_vector;
+  auto energies = section.x() | ranges::to_vector;
+  auto barns = section.y() | ranges::to_vector;
 
   auto interpolants = section.interpolants();
   auto boundaries = section.boundaries();
@@ -24,26 +24,26 @@ TAB1toInterpolation( const S& section, int MT, double threshold = 0.0 ){
   if( threshold != 0.0 ){
     auto energy = energies.begin();
     if( *energy < threshold ){
-      auto sigfigged = sigfig( threshold, 1E-7 );
+      auto sigfigged = utility::sigfig( threshold, 9, +1 );
       Log::info( "Changed threshold from {:13.6e} to {:13.6e} for mt {:3}",
                  *energy, sigfigged, MT );
       *energy = sigfigged;
 
       while( *(energy+1) < *(energy) ){
-        *(energy+1) = sigfig( *energy, 1E-7 );
+        *(energy+1) = utility::sigfig( *energy, 9, +1 );
         energy++;
       }
     }
   }
+
   // Do the first one
   auto table = 
     makeInterpolationTable( energies, barns, drop, take, interpolants[ 0 ] );
   cs.emplace_back( std::move( table ) );
 
   // Do the rest
-  for( const auto& [INT, NBT] : 
-      ranges::view::zip( interpolants, boundaries ) 
-        | ranges::view::drop_exactly( 1 ) ){
+  for( const auto [INT, NBT] : ranges::view::zip( interpolants, boundaries ) 
+                                  | ranges::view::drop_exactly( 1 ) ){
 
     left = right;
     right = NBT;
