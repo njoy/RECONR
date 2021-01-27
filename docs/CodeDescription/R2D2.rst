@@ -1,0 +1,16 @@
+.. _R2D2:
+
+ResonanceReconstructionDataDelivery 
+***********************************
+
+The ``ResonanceReconstructionDataDelivery`` object [#R2D2_fn]_ is designed to hold all the data needed for RECONR. Rather than passing a number of arguments to a variety of functions, only the ``ResonanceReconstructionDataDelivery`` object needs to be passed and it can be queried for all the data it posses.
+
+This object is built using a factory builder pattern. The Factory performs the following operations
+
+* Collect all cross sections (e.g., MF=3) and photon production cross sections (e.g., MF=13), converting them to interpolation tables using our `interpolation <https://github.com/njoy/interpolation>`_ library.
+* Storing the resonance parameters (e.g., from MF=2).
+* Storing the min/max energy values for the resonance ranges (resolved and unresolved).
+
+Once the Factory has collected all the data from the evaluation file (e.g., ENDF), it passes the data to the constructor for ``ResonanceReconstructionDataDelivery``.
+
+.. [#R2D2_fn] affectionately known as the R2D2 object and even has an ``R2D2`` alias.
