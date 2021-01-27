@@ -5,6 +5,9 @@ name: Continuous Integration
 on: 
   pull_request: 
     branches: 'master'
+  push:
+    branches-ignore: # Don't run these tests on the docs branch
+      - 'docs'             
 
 jobs:
   build:
