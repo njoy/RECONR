@@ -6,10 +6,11 @@ SCENARIO( "Extracting the reference grid" ){
   GIVEN( "an Isotope" ){
 
     const std::vector< double > resonanceEnergies { 
-      1e-05,    0.986069,  1.0253,   1.06453,  2.98607,  
-      3.0253,   3.06453,   7.5,      15000,    17906.6,  
-      21376.5,  25518.8,   30463.8,  36366.9,  43414,    
-      51826.6,  61869.4,   73858.2,  88170.2,  100000
+        1e-05,   0.986069,  1.0253,  1.06453,  2.98607,  
+        3.0253,  3.06453,   7.5,     15000,    17000,    
+        20000,   25000,     30000,   35000,    40000,    
+        50000,   60000,     70000,   80000,    90000,    
+        100000
     };
     RP::Isotope iso = isotope();
 
@@ -132,11 +133,10 @@ SCENARIO( "Extracting the reference grid" ){
     auto& parameters = std::get< RP::CaseA >( ca.parameters() );
 
     std::vector<double> refEnergies{
-      23000, 23000, 25000, 29844.4, 35000, 40000, 
-      47751.1, 57004.1, 68050.2, 81236.7, 96978.5
+      23000,  25000,  30000,  35000,  40000,   
+      50000,  60000,  72000,  85000,  100000
     };
     auto energies = referenceGrid( parameters, ca, target, proj );
-
     details::checkRanges( refEnergies, energies );
   }
 
@@ -145,12 +145,11 @@ SCENARIO( "Extracting the reference grid" ){
     auto& parameters = std::get< RP::CaseB >( cb.parameters() );
 
     std::vector<double> refEnergies{
-      5700,     6804.53,  8000,     9000,   10000,  
-      11937.8,  14000,    16000,    18000,  20000,  
-      23875.5,  28502.1,  34025.1,  40000
+      5700,   7000,   8000,   9000,   10000,  
+      12000,  14000,  16000,  18000,  20000,  
+      25000,  30000,  35000,  40000
     };
     auto energies = referenceGrid( parameters, cb, target, proj );
-
     details::checkRanges( refEnergies, energies );
   }
 
@@ -159,13 +158,12 @@ SCENARIO( "Extracting the reference grid" ){
     auto& parameters = std::get< RP::CaseC >( cc.parameters() );
 
     std::vector<double> refEnergies{
-      6000,   7000,     8000,     9550.21,  11400.8,  
-      13610,  16247.3,  19395.7,  23154.1,  27640.9,  
-      32997,  39391.1,  47024.1,  56136.3,  67014.2,  
-      80000,  95502.1
+      6000,   7000,    8000,   10000,  12500,  
+      15000,  17000,   20000,  25000,  30000,  
+      35000,  40000,   50000,  60000,  70000,  
+      80000,  100000
     };
     auto energies = referenceGrid( parameters, cc, target, proj );
-
     details::checkRanges( refEnergies, energies );
   }
 }
