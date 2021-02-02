@@ -5,6 +5,12 @@ include( FetchContent )
 # Declare project dependencies
 #######################################################################
 
+FetchContent_Declare( nlohmann_json
+    GIT_REPOSITORY  https://github.com/nlohmann/json
+    GIT_TAG         v3.7.3
+    )
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+
 FetchContent_Declare( catch-adapter
     GIT_REPOSITORY  https://github.com/njoy/catch-adapter
     GIT_TAG         fb84b82ebf7a4789aa43cea560680cf745c6ee4f
@@ -37,7 +43,7 @@ FetchContent_Declare( elementary
 
 FetchContent_Declare( ENDFtk
     GIT_REPOSITORY  https://github.com/njoy/ENDFtk
-    GIT_TAG         ba3d29c58d6531ababb765822ca8e78fcf658b71
+    GIT_TAG         65f70e1b771a167b912b2a091f80b891b1b64d27
     )
 
 FetchContent_Declare( hana-adapter
@@ -60,11 +66,6 @@ FetchContent_Declare( Log
     GIT_TAG         52962b7796afe37ef1d8f7edb4bf9ecb1b868d15
     )
 
-FetchContent_Declare( nlohmann_json
-    GIT_REPOSITORY  https://github.com/nlohmann/json
-    GIT_TAG         e7b3b40b5a95bc74b9a7f662830a27c49ffc01b4 # tag: v3.7.3
-    )
-
 FetchContent_Declare( pybind11
     GIT_REPOSITORY  https://github.com/pybind/pybind11
     GIT_TAG         f1abf5d9159b805674197f6bc443592e631c9130 # tag: v2.6.1
@@ -77,7 +78,7 @@ FetchContent_Declare( range-v3-adapter
 
 FetchContent_Declare( resonanceReconstruction
     GIT_REPOSITORY  https://github.com/njoy/resonanceReconstruction
-    GIT_TAG         7d780b80afea4ab828eacd07f520c391a291da01
+    GIT_TAG         5c728c70ad5ca36bc42761f709d0501e237137b5
     )
 
 FetchContent_Declare( spdlog

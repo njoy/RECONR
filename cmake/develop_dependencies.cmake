@@ -5,6 +5,12 @@ include( FetchContent )
 # Declare project dependencies
 #######################################################################
 
+FetchContent_Declare( nlohmann_json
+    GIT_REPOSITORY  https://github.com/nlohmann/json
+    GIT_TAG         v3.7.3
+    )
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+
 FetchContent_Declare( ENDFtk
     GIT_REPOSITORY  https://github.com/njoy/ENDFtk
     GIT_TAG         origin/develop
@@ -40,12 +46,6 @@ FetchContent_Declare( twig
     GIT_TAG         origin/master
     GIT_SHALLOW     TRUE
     )
-
-FetchContent_Declare( nlohmann_json
-    GIT_REPOSITORY  https://github.com/nlohmann/json
-    GIT_TAG         v3.7.3
-    )
-set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 FetchContent_Declare( interpolation
     GIT_REPOSITORY  https://github.com/njoy/interpolation
