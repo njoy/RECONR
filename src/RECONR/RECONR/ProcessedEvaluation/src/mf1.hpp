@@ -36,14 +36,15 @@ auto mf1( const Logger& logger,
   //                                   MF,  MT, | <------- NC -------> |
   directory.emplace( directory.begin(), 1, 451, directory.size() + 1 + 4, 0 );
 
-    // mt.TEMP(), /*sequence[ "err" ],*/ mt.LDRV(),
+  double err = sequence[ "err" ];
   ENDFtk::section::Type< 1, 451 > mt451( 
     mt.ZA(),    mt.AWR(),   mt.LRP(),   mt.LFI(),   mt.NLIB(),  mt.NMOD(),  
     mt.ELIS(),  mt.STA(),   mt.LIS(),   mt.LISO(),  mt.NFOR(),  
     mt.AWI(),   mt.EMAX(),  mt.LREL(),  mt.NSUB(),  mt.NVER(),  
     mt.TEMP(),  mt.LDRV(),  
     std::move( description ),
-    std::move( directory )
+    std::move( directory ),
+    err // rtol
   );
 
   return mt451;

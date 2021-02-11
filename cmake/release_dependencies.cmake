@@ -29,7 +29,6 @@ FetchContent_Declare( eigen
     GIT_REPOSITORY  https://gitlab.com/libeigen/eigen.git
     GIT_TAG         dc252fbf00079ccab57948a164b1421703fe4361 # tag: 3.3.8
     )
-set(BUILD_TESTING OFF CACHE BOOL OFF )
 
 FetchContent_Declare( elementary
     GIT_REPOSITORY  https://github.com/njoy/elementary
@@ -38,7 +37,7 @@ FetchContent_Declare( elementary
 
 FetchContent_Declare( ENDFtk
     GIT_REPOSITORY  https://github.com/njoy/ENDFtk
-    GIT_TAG         65f70e1b771a167b912b2a091f80b891b1b64d27
+    GIT_TAG         48aa8bcbc1f326b3d48bfa084047d05762eaea09
     )
 
 FetchContent_Declare( hana-adapter
@@ -65,7 +64,6 @@ FetchContent_Declare( nlohmann_json
     GIT_REPOSITORY  https://github.com/nlohmann/json
     GIT_TAG         e7b3b40b5a95bc74b9a7f662830a27c49ffc01b4 # tag: v3.7.3
     )
-set(JSON_BuildTests OFF CACHE INTERNAL "" )
 
 FetchContent_Declare( pybind11
     GIT_REPOSITORY  https://github.com/pybind/pybind11
@@ -79,7 +77,7 @@ FetchContent_Declare( range-v3-adapter
 
 FetchContent_Declare( resonanceReconstruction
     GIT_REPOSITORY  https://github.com/njoy/resonanceReconstruction
-    GIT_TAG         47742369948a0cd262397700a41db19d1ca240d9
+    GIT_TAG         d54062b991c73e675f5afd2ba0db6c76eb2c2d9c
     )
 
 FetchContent_Declare( spdlog
