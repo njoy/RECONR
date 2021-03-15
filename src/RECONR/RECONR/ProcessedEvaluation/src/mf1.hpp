@@ -38,10 +38,10 @@ auto mf1( const Logger& logger,
 
   double err = sequence[ "err" ];
   ENDFtk::section::Type< 1, 451 > mt451( 
-    mt.ZA(),    mt.AWR(),   mt.LRP(),   mt.LFI(),   mt.NLIB(),  mt.NMOD(),  
+    mt.ZA(),    mt.AWR(),   2, /*LRP*/  mt.LFI(),   mt.NLIB(),  mt.NMOD(),
     mt.ELIS(),  mt.STA(),   mt.LIS(),   mt.LISO(),  mt.NFOR(),  
     mt.AWI(),   mt.EMAX(),  mt.LREL(),  mt.NSUB(),  mt.NVER(),  
-    mt.TEMP(),  mt.LDRV(),  
+    mt.TEMP(),  1, /*LDRV*/
     std::move( description ),
     std::move( directory ),
     err // rtol

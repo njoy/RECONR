@@ -1,4 +1,5 @@
 #include "ENDFtk/tree/Tape.hpp"
+#include "ENDFtk/tree/fromFile.hpp"
 #include "ENDFtk/file/1.hpp"
 #include "ENDFtk/file/2.hpp"
 #include "ENDFtk/file/3.hpp"

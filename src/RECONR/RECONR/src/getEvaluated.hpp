@@ -5,8 +5,7 @@ Format_t getEvaluated( const Logger& logger, std::string filename ){
       "\nReading evaluated data from file: {}", filename )
          << std::endl;
   try {
-    auto evaluated = njoy::utility::slurpFileToMemory( filename );
-    return Format_t{ std::move( evaluated ) };
+    return ENDFtk::tree::fromFile( filename );
   } catch( ... ){
     Log::info( "Error ocurred when trying to open evaluated data file: {}.",
                filename );
