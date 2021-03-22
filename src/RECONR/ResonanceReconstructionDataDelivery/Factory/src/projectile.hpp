@@ -9,11 +9,15 @@ elementary::ParticleID projectile(
     case 10010:
       return elementary::ParticleID( elementary::NuclideID( 1, 1, 0 ) );
       break;
+    case 3:
+      return elementary::ParticleID( 
+          elementary::FundamentalParticleID( "photon" ) );
+      break;
     default:
+      Log::error( "Failed to create a projectile." );
       Log::info( "I don't know how to make a particle ID out of: {}.", 
                  info.NSUB() );
       throw std::exception();
-      
   }
 }
 
